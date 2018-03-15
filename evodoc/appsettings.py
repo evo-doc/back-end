@@ -1,0 +1,2 @@
+class AppSettings:
+    TEST = False

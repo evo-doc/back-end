@@ -1,0 +1,5 @@
+# Configuration example for local, to use it use brain
+
+DEBUG = True
+DEVELOPMENT = True
+DATABASE_CONNECTION = "postgresql://user:secret@server/database_name"
