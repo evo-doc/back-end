@@ -2,6 +2,8 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from evodoc.app import db
 
+#todo: oddělit soubory podle užití napč User, Model, Package a dále v tomto souboru pouze importovat vše, neboť zde bude probíhat vlastní migrace a plnění daty
+
 class User(db.Model):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
