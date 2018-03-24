@@ -12,3 +12,7 @@ db = SQLAlchemy(app)
 from evodoc.entity.models import User, UserType
 
 migrate = Migrate(app, db)
+
+from evodoc.entity.seed.userseed import *
+
+userInsert()
