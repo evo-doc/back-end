@@ -3,6 +3,7 @@
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from evodoc.app import db
+import bcrypt
 
 class User(db.Model):
     __tablename__ = "user"
@@ -18,7 +19,7 @@ class User(db.Model):
     def __init__(self, name=None, email=None, password=None, created=None, update=None, active=True):
         self.name = name
         self.email = email
-        self.password = password
+        self.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
         self.created = created
         self.active = active
 
