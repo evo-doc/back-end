@@ -37,6 +37,7 @@ for i in range (1, 10):
 for i in range (1, 10):
 	session.add(User(name='kek9', fullname='Kektimus Prime', password='password', date=datetime.utcnow()  - timedelta(hours=9)))
 
+
 #session.commit()
 
 #for i in session.query(User).filter_by(name='kek'):
@@ -62,4 +63,3 @@ while session.query(User).filter_by(	name=kek).count() > 100:
 	
 	
 	
-
