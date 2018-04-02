@@ -39,3 +39,14 @@ class UserType(db.Model):
     def __repr__(self):
         return "<UserType %r>" % (self.name)
 
+
+class UserToken(db.Model):
+	__tablename__ = "user_token"
+	id = Column(Integer, primary_key=True)
+	token = Column(String(20), unique=True)
+	created = Column(DateTime, default=datetime.datetime.utcnow)
+    update = Column(DateTime, default=datetime.datetime.utcnow)
+    
+
+    def __repr__(self):
+        return "<UserToken %r>" % (self.token)
