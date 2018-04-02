@@ -43,7 +43,8 @@ class UserType(db.Model):
 class UserToken(db.Model):
 	__tablename__ = "user_token"
 	id = Column(Integer, primary_key=True)
-	token = Column(String(20), unique=True)
+	userId = Column(Integer)
+	token = Column(String(47), unique=True)
 	created = Column(DateTime, default=datetime.datetime.utcnow)
     update = Column(DateTime, default=datetime.datetime.utcnow)
     
