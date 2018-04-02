@@ -16,4 +16,6 @@ session.query(UserToken).filter(UserToken.created +  timedelta(hours=24) < datet
 
 session.query(UserToken).filter(UserToken.update +  timedelta(hours=2) < datetime.utcnow()).delete()
 
+session.commit()
+
 
