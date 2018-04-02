@@ -59,7 +59,4 @@ kek="kek"
 while session.query(User).filter_by(	name=kek).count() > 100:
 	print(kek)
 	break
-	
-	
-	
 

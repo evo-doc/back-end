@@ -56,3 +56,4 @@ class UserToken(db.Model):
 	
 	def __repr__(self):
 		return "<UserToken %r>" % (self.token)
+
