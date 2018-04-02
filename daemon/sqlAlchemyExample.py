@@ -40,3 +40,9 @@ for i in range (1, 10):
 session.query(User).filter(User.date +  timedelta(hours=9) < datetime.utcnow()).delete()
 
 session.commit()
+
+kek="kek"
+
+while session.query(User).filter_by(	name=kek).count() > 100:
+	print(kek)
+	break
