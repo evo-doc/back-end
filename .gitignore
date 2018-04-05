@@ -1,5 +1,7 @@
-conf/appsettings.local.ini
+# Editor related
+.vscode
 .idea
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -104,3 +106,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Project related
+conf/appsettings.local.ini
