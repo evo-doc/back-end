@@ -2,4 +2,4 @@
 
 DEBUG = True
 DEVELOPMENT = True
-SQLALCHEMY_DATABASE_URI = "postgresql://user:secret@server/database_name"
+SQLALCHEMY_DATABASE_URI = "postgresql://postgres:postgres@127.0.0.1/postgres"
