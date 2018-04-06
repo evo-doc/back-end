@@ -1,4 +1,4 @@
-from evodoc.entity.models import User, UserType
+from evodoc.entity.models import User, UserType, UserToken
 from evodoc.app import db
 
 def userInsert():
