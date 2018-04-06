@@ -1,3 +1,4 @@
+
 from evodoc.entity.user import User, UserType, UserToken
 from evodoc.app import db
 

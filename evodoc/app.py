@@ -16,6 +16,7 @@ from evodoc.entity.user import User, UserType, UserToken
 from evodoc.entity.module import Module, Project
 from evodoc.entity.permission import ModulePerm, ProjectPerm
 
+
 migrate = Migrate(app, db)
 #perform upgrade
 with app.app_context():
@@ -27,10 +28,9 @@ from evodoc.entity.seed.userseed import *
 from evodoc.login import *
 from evodoc.api.userapi import *
 
+
 @app.route('/')
 def home():
 	return "hillo wrld"
 
 #userInsert()
-
-print("loaded")
