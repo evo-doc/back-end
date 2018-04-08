@@ -27,7 +27,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('token')
     )
-    op.drop_table('company')
+#    op.drop_table('company')
     # ### end Alembic commands ###
 
 
