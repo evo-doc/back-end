@@ -9,7 +9,7 @@ app.config.from_object('evodoc.appsettings.AppSettings')
 app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
 
 db = SQLAlchemy(app)
-from evodoc.entity.models import User, UserType
+from evodoc.entity.user import User, UserType
 
 migrate = Migrate(app, db)
 #perform upgrade
