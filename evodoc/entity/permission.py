@@ -34,3 +34,4 @@ class ProjectPerm (db.Model):
 
 	def __repr__(self):
 		return "<ProjectPermission %r>" % (self.id)
+
