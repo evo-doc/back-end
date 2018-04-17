@@ -11,10 +11,8 @@ app.config.from_object('evodoc.appsettings.AppSettings')
 app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
 
 db = SQLAlchemy(app)
-#engine = create_engine("postgres://")
-#session_factory = sessionmaker(bind=db)
 
-from evodoc.entity.models import User, UserType, UserToken
+from evodoc.entity.user import User, UserType, UserToken
 
 migrate = Migrate(app, db)
 #perform upgrade
