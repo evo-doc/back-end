@@ -6,6 +6,7 @@ from evodoc.app import db
 import bcrypt
 from evodoc.exception import DbException
 
+###################################################################################
 class User(db.Model):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
@@ -30,7 +31,7 @@ class User(db.Model):
     def get_user_by_id(self, userId):
         user = self.query.get(userId)
         if (user == None):
-            raise DbException(DbException, 404, "No user found.")
+            raise DbException(DbException, 404, "User not found.")
         return user
         
     def get_user_all(self):
@@ -101,7 +102,6 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
 
     def serialize(self):
         return {
@@ -111,6 +111,7 @@ class User(db.Model):
             'active': self.active,
         }
 
+###################################################################################
 class UserType(db.Model):
     __tablename__ = "user_type"
     id = Column(Integer, primary_key=True)
@@ -123,8 +124,43 @@ class UserType(db.Model):
 
     def __repr__(self):
         return "<UserType %r>" % (self.name)
+    
+    def get_type_by_id(self, typeId):
+        userType = self.query.get(typeId)
+        if (userType == None):
+            raise DbException(DbException, 404, "UserToken not found.")
+        return user
+    
+    def get_type_all(self):
+        userType = self.query.all()
+        if (userType == None):
+            raise DbException(DbException, 404, "No userType found.")
+        return userType
+    
+    def update_type_name_by_id(self, id, name):
+        userType = self.get_type_by_id(id)
+        if (userType == None):
+            return False
+        userType.name = name
+        db.session.commit()
+        return True
+        
+    def update_type_permisson_by_id(self, id, permission):
+        userType = self.get_type_by_id(id)
+        if (userType == None):
+            return False
+        userType.permission = permission
+        db.session.commit()
+        return True
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'permission_flag':self.permission_flag
+        }
 
-
+###################################################################################
 class UserToken(db.Model):
 	__tablename__ = "user_token"
 	id = Column(Integer, primary_key=True)
