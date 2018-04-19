@@ -22,9 +22,9 @@ with app.app_context():
 
 
 from evodoc.entity.seed.userseed import *
+from evodoc.api import *
 
-from evodoc.login import *
-from evodoc.api.userapi import *
+userInsert()
 
 
 @app.route('/')

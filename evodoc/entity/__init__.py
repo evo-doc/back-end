@@ -5,6 +5,7 @@ from evodoc.entity.module import *
 __all__ = [
     'User',
     'UserType',
+    'UserToken',
     'Module',
     'Project',
     'ProjectPerm',
