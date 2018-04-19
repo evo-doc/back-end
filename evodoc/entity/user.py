@@ -131,8 +131,8 @@ class UserType(db.Model):
     def get_type_by_id(self, typeId):
         userType = self.query.get(typeId)
         if (userType == None):
-            raise DbException(DbException, 404, "UserToken not found.")
-        return user
+            raise DbException(DbException, 404, "UserType not found.")
+        return userType
     
     def get_type_all(self):
         userType = self.query.all()
@@ -180,6 +180,36 @@ class UserToken(db.Model):
 
     def __repr__(self):
         return "<UserToken %r>" % (self.token)
+    
+    def get_token_by_id(self, tokenId):
+        userToken = self.query.get(tokenId)
+        if (userToken == None):
+            raise DbException(DbException, 404, "UserToken not found.")
+        return token
+    
+    def get_token_all(self):
+        userToken = self.query.all()
+        if (userToken == None):
+            raise DbException(DbException, 404, "No userToken found.")
+        return token
+    
+    def update_token_user_id_by_id(self, id, userId):
+        userToken = self.get_token_by_id(id)
+        if (userToken == None):
+            return False
+        userToken.userId = userId
+        userToken.update = datetime.datetime.utcnow
+        db.session.commit()
+        return True
+    
+    def update_token_token_by_id(self, id, token):
+        userToken = self.get_token_by_id(id)
+        if (userToken == None):
+            return False
+        userToken.token = token
+        userToken.update = datetime.datetime.utcnow
+        db.session.commit()
+        return True
     
     def serialize(self):
         return {
