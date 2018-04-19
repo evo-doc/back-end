@@ -31,7 +31,7 @@ def createToken (userId) : #creates new token and adds it to the database
 	session.commit()
 	session.close()
 	return t
-	
+
 def authenticateUser (id, token=None): #returns active token
 	if (token==None) :
 		return createToken(id)
