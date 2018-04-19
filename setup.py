@@ -11,7 +11,6 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
@@ -33,8 +32,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name='evodoc',  # Required
-    include_package_data=True,
+    name='EvoDoc-backend',  # Required
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
@@ -67,7 +65,7 @@ setup(
 
     # This should be your name or the name of the organization which owns the
     # project.
-    author='Evodoc',  # Optional
+    author='The Python Packaging Authority',  # Optional
 
     # This should be a valid email address corresponding to the author listed
     # above.
@@ -116,7 +114,7 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(),  # Required
+    packages=find_packages(exclude=['''to be exclueded''']),  # Required
 
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
@@ -124,22 +122,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=[
-        'flask',
-        'flask-sqlalchemy',
-        'flask-migrate',
-        'flask_script',
-        'bcrypt',
-        'sqlalchemy',
-        'psycopg2'
-        ],  # Optional
-
-    setup_requires=[
-        'pytest-runner',
-    ],
-    tests_require=[
-        'pytest',
-    ],
+    install_requires=['postgres'],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
