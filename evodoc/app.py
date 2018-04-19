@@ -3,16 +3,16 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
+from sqlalchemy.orm import sessionmaker
+
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('evodoc.appsettings.AppSettings')
 app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
 
 db = SQLAlchemy(app)
-#engine = create_engine("postgres://")
-#session_factory = sessionmaker(bind=db)
 
-from evodoc.entity.models import User, UserType, UserToken
+from evodoc.entity import *
 
 migrate = Migrate(app, db)
 #perform upgrade
@@ -29,3 +29,4 @@ def home():
 	return "hillo wrld"
 
 #userInsert()
+

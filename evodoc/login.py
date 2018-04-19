@@ -10,11 +10,14 @@ from evodoc.app import *
 #from sqlalchemy.engine import create_engine
 #from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
+<<<<<<< HEAD
 #from sqlalchemy.ext.declarative import declarative_base
 #login = Flask(__name__, instance_relative_config=True)
 #login.config.from_object('evodoc.appsettings.AppSettings')
 #login.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
 #from evodoc.entity.models import User, UserType, UserToken
+=======
+>>>>>>> 682a79895f9964d00a3be2bd20859d3b37c584bc
 import uuid
 from flask_sqlalchemy_session import flask_scoped_session
 from datetime import 	datetime, timedelta
@@ -34,6 +37,7 @@ def createToken (userId) : #creates new token and adds it to the database
 		t = str(userId).zfill(10) + str(uuid.uuid4())
 	session.add(UserToken(user_id=userId,token=t))
 	session.commit()
+	session.close()
 	return t
 	
 def authenticateUser (id, token=None): #returns active token
@@ -43,10 +47,13 @@ def authenticateUser (id, token=None): #returns active token
 	#make sure the token is active
 	for token in session.query(UserToken).filter(UserToken.user_id==id, UserToken.created +  timedelta(hours=24) > datetime.utcnow(), UserToken.update +  timedelta(hours=2) > datetime.utcnow()):
 		token.update=datetime.utcnow()#if token is active update it
+		t=token.token
 		session.commit()
 		session.close()
-		return token.token
+		
+		return t
 	#otherwise createToken(id)
+	session.close()
 	return createToken(id)
 
 
