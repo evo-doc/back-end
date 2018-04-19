@@ -32,6 +32,14 @@ class User(db.Model):
             raise Exception("You are an asshole")
         return user
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'active': self.active,
+        }
+
 
 class UserType(db.Model):
     __tablename__ = "user_type"
