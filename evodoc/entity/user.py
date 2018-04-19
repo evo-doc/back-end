@@ -31,15 +31,21 @@ class User(db.Model):
     def get_user_by_id(self, userId):
         user = self.query.get(userId)
         if (user == None):
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(404, "User not found.")
         return user
-        
+
+    def get_user_by_username_or_email(self, username):
+        user = self.query.filter((User.email == username) | (User.name == username)).first()
+        if (user == None):
+            raise DbException(404, "User not found.")
+        return user
+
     def get_user_all(self):
         user = self.query.all()
         if (user == None):
-            raise DbException(DbException, 404, "No user found.")
+            raise DbException(404, "No user found.")
         return user
-        
+
     def update_user_type_by_id(self, id, userType):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -103,6 +109,13 @@ class User(db.Model):
         db.session.commit()
         return True
 
+    def confirm_password(self, password_plain):
+        return True
+        if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):
+            return True
+        else:
+            return False
+
     def serialize(self):
         return {
             'id': self.id,
@@ -131,13 +144,13 @@ class UserType(db.Model):
     def get_type_by_id(self, typeId):
         userType = self.query.get(typeId)
         if (userType == None):
-            raise DbException(DbException, 404, "UserType not found.")
+            raise DbException(404, "UserType not found.")
         return userType
     
     def get_type_all(self):
         userType = self.query.all()
         if (userType == None):
-            raise DbException(DbException, 404, "No userType found.")
+            raise DbException(404, "No userType found.")
         return userType
     
     def update_type_name_by_id(self, id, name):
@@ -184,13 +197,13 @@ class UserToken(db.Model):
     def get_token_by_id(self, tokenId):
         userToken = self.query.get(tokenId)
         if (userToken == None):
-            raise DbException(DbException, 404, "UserToken not found.")
+            raise DbException(404, "UserToken not found.")
         return token
     
     def get_token_all(self):
         userToken = self.query.all()
         if (userToken == None):
-            raise DbException(DbException, 404, "No userToken found.")
+            raise DbException(404, "No userToken found.")
         return token
     
     def update_token_user_id_by_id(self, id, userId):

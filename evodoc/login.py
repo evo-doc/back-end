@@ -1,26 +1,18 @@
-#needs to load connection from default file
-from evodoc import db
-#needs import UserToken
-#import os
-
-#from flask import Flask
-#from flask_sqlalchemy import SQLAlchemy
-#from flask_migrate import Migrate
-
-#from sqlalchemy.engine import create_engine
-#from sqlalchemy import *
-from sqlalchemy.orm import sessionmaker
 import uuid
+from evodoc.app import db
+from evodoc.exception import DbException
+from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy_session import flask_scoped_session
-from datetime import 	datetime, timedelta
+from datetime import datetime, timedelta
+from evodoc.entity import *
 
-#db = create_engine('postgresql://postgres:postgres@localhost:5432/postgres')
-
-
-
-#Session = sessionmaker(bind=db)
-#session = Session()
-#Base = declarative_base()
+def login(username, password_plain):
+	try:
+		user = User.get_user_by_username_or_email(User, username)
+		if (user.confirm_password(password_plain)):
+			return authenticateUser(user.id, None)
+	except DbException as err:
+			raise DbException(403, "Invalid username or password")
 
 def createToken (userId) : #creates new token and adds it to the database
 	t = str(userId).zfill(10) + str(uuid.uuid4())
@@ -42,8 +34,3 @@ def authenticateUser (id, token=None): #returns active token
 		return t
 	#otherwise createToken(id)
 	return createToken(id)
-
-
-authenticateUser(0,0)
-#token = createToken(123456789)
-#print(token)

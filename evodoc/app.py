@@ -24,6 +24,8 @@ with app.app_context():
 from evodoc.entity.seed.userseed import *
 from evodoc.api import *
 
+userInsert()
+
 
 @app.route('/')
 def home():
