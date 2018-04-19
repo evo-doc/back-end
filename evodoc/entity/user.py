@@ -26,6 +26,21 @@ class User(db.Model):
     def __repr__(self):
         return "<User %r>" % (self.name)
 
+    def user_by_id(self, userId):
+        user = self.query.get(userId)
+        if (user == None):
+            raise Exception("You are an asshole")
+        return user
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'active': self.active,
+        }
+
+
 class UserType(db.Model):
     __tablename__ = "user_type"
     id = Column(Integer, primary_key=True)
