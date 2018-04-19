@@ -12,9 +12,7 @@ app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.i
 
 db = SQLAlchemy(app)
 
-from evodoc.entity.user import User, UserType, UserToken
-from evodoc.entity.module import Module, Project
-from evodoc.entity.permission import ModulePerm, ProjectPerm
+from evodoc.entity import *
 
 
 migrate = Migrate(app, db)
