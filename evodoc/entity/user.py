@@ -40,8 +40,7 @@ class User(db.Model):
         return user
         
     def update_user_type_by_id(self, id, userType):
-        try:
-            user = self.get_user_by_id(id)
+        user = self.get_user_by_id(id)
         if (user == None):
             return False
         user.user_type_id = userType
@@ -50,8 +49,7 @@ class User(db.Model):
         return True
         
     def update_user_name_by_id(self, id, name):
-        try:
-            user = self.get_user_by_id(id)
+        user = self.get_user_by_id(id)
         if (user == None):
             return False
         user.name = name
@@ -60,8 +58,7 @@ class User(db.Model):
         return True
         
     def update_user_email_by_id(self, id, email):
-        try:
-            user = self.get_user_by_id(id)
+        user = self.get_user_by_id(id)
         if (user == None):
             return False
         user.email = email
@@ -79,8 +76,7 @@ class User(db.Model):
         return True
         
     def update_user_name_by_id(self, id, name):
-        try:
-            user = self.get_user_by_id(id)
+        user = self.get_user_by_id(id)
         if (user == None):
             return False
         user.name = name
@@ -89,8 +85,7 @@ class User(db.Model):
         return True
         
     def activate_user_by_id(self, id):
-        try:
-            user = self.get_user_by_id(id)
+        user = self.get_user_by_id(id)
         if (user == None):
             return False
         user.active = True
@@ -99,8 +94,7 @@ class User(db.Model):
         return True
         
     def deactivate_user_by_id(self, id):
-        try:
-            user = self.get_user_by_id(id)
+        user = self.get_user_by_id(id)
         if (user == None):
             return False
         user.active = False
