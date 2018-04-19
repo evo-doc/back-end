@@ -1,5 +1,5 @@
 #needs to load connection from default file
-from evodoc.app import *
+from evodoc import db
 #needs import UserToken
 #import os
 
@@ -38,7 +38,7 @@ def authenticateUser (id, token=None): #returns active token
 		token.update=datetime.utcnow()#if token is active update it
 		t=token.token
 		db.session.commit()
-		
+
 		return t
 	#otherwise createToken(id)
 	return createToken(id)
