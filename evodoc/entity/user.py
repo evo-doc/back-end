@@ -43,21 +43,27 @@ class User(db.Model):
     def get_user_by_email(self, userEmail):
         user = self.query.filter_by(email=userEmail).get(1)
         if (user == None):
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(404, "User not found.")
         return user
-        
+
+    def get_user_by_username_or_email(self, username):
+        user = self.query.filter((User.email == username) | (User.name == username)).first()
+        if (user == None):
+            raise DbException(404, "User not found.")
+        return user
+
     def get_user_all(self):
         user = self.query.all()
         if (user == None):
-            raise DbException(DbException, 404, "No user found.")
+            raise DbException(404, "No user found.")
         return user
-         
+ 
     def get_user_all_by_user_type_id(self, userType):
         user = self.query.filter_by(user_type_id=userType).all()
         if (user == None):
             raise DbException(DbException, 404, "No user found.")
         return user
-        
+
     def update_user_type_by_id(self, id, userType):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -66,7 +72,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def update_user_name_by_id(self, id, name):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -75,7 +81,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def update_user_email_by_id(self, id, email):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -84,7 +90,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-    
+
     def update_user_password_by_id(self, id, password):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -93,7 +99,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def update_user_name_by_id(self, id, name):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -102,7 +108,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def activate_user_by_id(self, id):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -111,7 +117,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def deactivate_user_by_id(self, id):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -120,6 +126,13 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
+
+    def confirm_password(self, password_plain):
+        return True
+        if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):
+            return True
+        else:
+            return False
 
     def serialize(self):
         return {
@@ -145,25 +158,25 @@ class UserType(db.Model):
 
     def __repr__(self):
         return "<UserType %r>" % (self.name)
-    
+
     def get_type_by_id(self, typeId):
         userType = self.query.filter_by(id=typeId).get(1)
         if (userType == None):
             raise DbException(DbException, 404, "UserType not found.")
         return userType
-    
+
     def get_type_by_name(self, typeName):
         userType = self.query.filter_by(name=typeName).get(1)
         if (userType == None):
-            raise DbException(DbException, 404, "UserType not found.")
+            raise DbException(404, "UserType not found.")
         return userType
-    
+
     def get_type_all(self):
         userType = self.query.all()
         if (userType == None):
-            raise DbException(DbException, 404, "No userType found.")
+            raise DbException(404, "No userType found.")
         return userType
-    
+
     def update_type_name_by_id(self, id, name):
         userType = self.get_type_by_id(id)
         if (userType == None):
@@ -171,7 +184,7 @@ class UserType(db.Model):
         userType.name = name
         db.session.commit()
         return True
-        
+
     def update_type_permisson_by_id(self, id, permission):
         userType = self.get_type_by_id(id)
         if (userType == None):
@@ -179,7 +192,7 @@ class UserType(db.Model):
         userType.permission = permission
         db.session.commit()
         return True
-    
+
     def serialize(self):
         return {
             'id': self.id,
@@ -210,25 +223,25 @@ class UserToken(db.Model):
         if (userToken == None):
             raise DbException(DbException, 404, "UserToken not found.")
         return token
-    
+
     def get_token_by_user_id(self, userId):         #returns newest token for user
         userToken = self.query.filter_by(user_id=userId).order_by(desc(table1.mycol)).first()
         if (userToken == None):
-            raise DbException(DbException, 404, "UserToken not found.")
+            raise DbException(404, "UserToken not found.")
         return token
-    
+
     def get_token_all(self):
         userToken = self.query.all()
         if (userToken == None):
-            raise DbException(DbException, 404, "No userToken found.")
+            raise DbException(404, "No userToken found.")
         return token
-    
+
     def get_token_all_by_user_id(self, userId):
         userToken = self.query.filter_by(user_id=userId).all()
         if (userToken == None):
             raise DbException(DbException, 404, "No userToken found.")
         return token
-    
+
     def update_token_user_id_by_id(self, id, userId):
         userToken = self.get_token_by_id(id)
         if (userToken == None):
@@ -237,7 +250,7 @@ class UserToken(db.Model):
         userToken.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-    
+
     def update_token_token_by_id(self, id, token):
         userToken = self.get_token_by_id(id)
         if (userToken == None):
@@ -246,7 +259,7 @@ class UserToken(db.Model):
         userToken.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-    
+
     def serialize(self):
         return {
             'id': self.id,
