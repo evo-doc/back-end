@@ -1,7 +1,7 @@
 """User: Contains all entities that are related to user
 """
 import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
 from evodoc.app import db
 import bcrypt
 from evodoc.exception import DbException
@@ -29,7 +29,19 @@ class User(db.Model):
         return "<User %r>" % (self.name)
 
     def get_user_by_id(self, userId):
-        user = self.query.get(userId)
+        user = self.query.filter_by(id=userId).get(1)
+        if (user == None):
+            raise DbException(DbException, 404, "User not found.")
+        return user
+        
+    def get_user_by_name(self, userName):
+        user = self.query.filter_by(name=userName).get(1)
+        if (user == None):
+            raise DbException(DbException, 404, "User not found.")
+        return user
+        
+    def get_user_by_email(self, userEmail):
+        user = self.query.filter_by(email=userEmail).get(1)
         if (user == None):
             raise DbException(404, "User not found.")
         return user
@@ -45,6 +57,12 @@ class User(db.Model):
         if (user == None):
             raise DbException(404, "No user found.")
         return user
+         
+    def get_user_all_by_user_type_id(self, userType):
+        user = self.query.filter_by(user_type_id=userType).all()
+        if (user == None):
+            raise DbException(DbException, 404, "No user found.")
+        return user
 
     def update_user_type_by_id(self, id, userType):
         user = self.get_user_by_id(id)
@@ -54,7 +72,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def update_user_name_by_id(self, id, name):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -63,7 +81,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def update_user_email_by_id(self, id, email):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -72,7 +90,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-    
+
     def update_user_password_by_id(self, id, password):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -81,7 +99,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def update_user_name_by_id(self, id, name):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -90,7 +108,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def activate_user_by_id(self, id):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -99,7 +117,7 @@ class User(db.Model):
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
-        
+
     def deactivate_user_by_id(self, id):
         user = self.get_user_by_id(id)
         if (user == None):
@@ -140,9 +158,15 @@ class UserType(db.Model):
 
     def __repr__(self):
         return "<UserType %r>" % (self.name)
-    
+
     def get_type_by_id(self, typeId):
-        userType = self.query.get(typeId)
+        userType = self.query.filter_by(id=typeId).get(1)
+        if (userType == None):
+            raise DbException(DbException, 404, "UserType not found.")
+        return userType
+    
+    def get_type_by_name(self, typeName):
+        userType = self.query.filter_by(name=typeName).get(1)
         if (userType == None):
             raise DbException(404, "UserType not found.")
         return userType
@@ -168,7 +192,7 @@ class UserType(db.Model):
         userType.permission = permission
         db.session.commit()
         return True
-    
+
     def serialize(self):
         return {
             'id': self.id,
@@ -195,7 +219,13 @@ class UserToken(db.Model):
         return "<UserToken %r>" % (self.token)
     
     def get_token_by_id(self, tokenId):
-        userToken = self.query.get(tokenId)
+        userToken = self.query.filter_by(id=tokenId).get(1)
+        if (userToken == None):
+            raise DbException(DbException, 404, "UserToken not found.")
+        return token
+    
+    def get_token_by_user_id(self, userId):         #returns newest token for user
+        userToken = self.query.filter_by(user_id=userId).order_by(desc(table1.mycol)).first()
         if (userToken == None):
             raise DbException(404, "UserToken not found.")
         return token
@@ -204,6 +234,12 @@ class UserToken(db.Model):
         userToken = self.query.all()
         if (userToken == None):
             raise DbException(404, "No userToken found.")
+        return token
+    
+    def get_token_all_by_user_id(self, userId):
+        userToken = self.query.filter_by(user_id=userId).all()
+        if (userToken == None):
+            raise DbException(DbException, 404, "No userToken found.")
         return token
     
     def update_token_user_id_by_id(self, id, userId):
