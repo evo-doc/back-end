@@ -119,7 +119,7 @@ class ProjectPerm (db.Model):
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_project_perm_all_by_module_id(self, permId):
+    def get_project_perm_all_by_project_id(self, permId):
         perm = self.query.filter_by(project_id=permId).all()
         if (perm == None):
             raise DbException(DbException, 404, "Permission not found.")
