@@ -1,7 +1,7 @@
 """User: Contains all entities that are related to user
 """
 import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
 from evodoc.app import db
 import bcrypt
 from evodoc.exception import DbException
@@ -29,13 +29,31 @@ class User(db.Model):
         return "<User %r>" % (self.name)
 
     def get_user_by_id(self, userId):
-        user = self.query.get(userId)
+        user = self.query.filter_by(id=userId).get(1)
+        if (user == None):
+            raise DbException(DbException, 404, "User not found.")
+        return user
+        
+    def get_user_by_name(self, userName):
+        user = self.query.filter_by(name=userName).get(1)
+        if (user == None):
+            raise DbException(DbException, 404, "User not found.")
+        return user
+        
+    def get_user_by_email(self, userEmail):
+        user = self.query.filter_by(email=userEmail).get(1)
         if (user == None):
             raise DbException(DbException, 404, "User not found.")
         return user
         
     def get_user_all(self):
         user = self.query.all()
+        if (user == None):
+            raise DbException(DbException, 404, "No user found.")
+        return user
+         
+    def get_user_all_by_user_type_id(self, userType):
+        user = self.query.filter_by(user_type_id=userType).all()
         if (user == None):
             raise DbException(DbException, 404, "No user found.")
         return user
@@ -129,7 +147,13 @@ class UserType(db.Model):
         return "<UserType %r>" % (self.name)
     
     def get_type_by_id(self, typeId):
-        userType = self.query.get(typeId)
+        userType = self.query.filter_by(id=typeId).get(1)
+        if (userType == None):
+            raise DbException(DbException, 404, "UserType not found.")
+        return userType
+    
+    def get_type_by_name(self, typeName):
+        userType = self.query.filter_by(name=typeName).get(1)
         if (userType == None):
             raise DbException(DbException, 404, "UserType not found.")
         return userType
@@ -182,13 +206,25 @@ class UserToken(db.Model):
         return "<UserToken %r>" % (self.token)
     
     def get_token_by_id(self, tokenId):
-        userToken = self.query.get(tokenId)
+        userToken = self.query.filter_by(id=tokenId).get(1)
+        if (userToken == None):
+            raise DbException(DbException, 404, "UserToken not found.")
+        return token
+    
+    def get_token_by_user_id(self, userId):         #returns newest token for user
+        userToken = self.query.filter_by(user_id=userId).order_by(desc(table1.mycol)).first()
         if (userToken == None):
             raise DbException(DbException, 404, "UserToken not found.")
         return token
     
     def get_token_all(self):
         userToken = self.query.all()
+        if (userToken == None):
+            raise DbException(DbException, 404, "No userToken found.")
+        return token
+    
+    def get_token_all_by_user_id(self, userId):
+        userToken = self.query.filter_by(user_id=userId).all()
         if (userToken == None):
             raise DbException(DbException, 404, "No userToken found.")
         return token
