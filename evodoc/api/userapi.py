@@ -18,6 +18,8 @@ def get_user_by_id_action(id):
         return response_ok_obj(data)
     except DbException as err:
         return response_err(err)
+    except ApiException as err:
+        return response_err(err)
 
 @app.route('/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
@@ -32,6 +34,8 @@ def delete_user(id):
         User.deactivate_user_by_id(user, user.id)
         return response_ok("Done")
     except DbException as err:
+        return response_err(err)
+    except ApiException as err:
         return response_err(err)
 
 @app.route('/user/all/', methods=['GET'])
