@@ -6,5 +6,4 @@ __all__ = [
     'response_err',
     'response_ok_list',
     'response_ok_obj',
-    'get_user_by_id'
 ]

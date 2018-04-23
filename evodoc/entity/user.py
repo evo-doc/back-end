@@ -17,32 +17,35 @@ class User(db.Model):
     created = Column(DateTime, default=datetime.datetime.utcnow)
     update = Column(DateTime, default=datetime.datetime.utcnow)
     active = Column(Boolean)
+    activated = Column(Boolean)
     tokens = db.relationship('UserToken', backref='user', lazy=False)
 
-    def __init__(self, name=None, email=None, password=None, created=None, update=None, active=True):
+    def __init__(self, name=None, email=None, password=None, created=None, update=None, active=True, activated = False):
         self.name = name
         self.email = email
         self.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
         self.created = created
         self.active = active
+        self.activated = activated
+        self.user_type_id = UserType.get_type_by_name(UserType,"GUEST").id
 
     def __repr__(self):
         return "<User %r>" % (self.name)
 
     def get_user_by_id(self, userId):
-        user = self.query.filter_by(id=userId).get(1)
+        user = self.query.filter_by(id=userId).first()
         if (user == None):
             raise DbException(404, "User not found.")
         return user
         
     def get_user_by_name(self, userName):
-        user = self.query.filter_by(name=userName).get(1)
+        user = self.query.filter_by(name=userName).first()
         if (user == None):
             raise DbException(404, "User not found.")
         return user
         
     def get_user_by_email(self, userEmail):
-        user = self.query.filter_by(email=userEmail).get(1)
+        user = self.query.filter_by(email=userEmail).first()
         if (user == None):
             raise DbException(404, "User not found.")
         return user
@@ -128,6 +131,33 @@ class User(db.Model):
         db.session.commit()
         return True
 
+    def save_entity(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def check_unique(self, username, email, raiseFlag = False):
+        """
+        Check if username and email are not presented in database (check unique)
+            :param self:
+            :param username:
+            :param email:
+            :param raiseFlag=False: if its true this function raise exception if email or username are already presented
+        """
+        userEmail = self.get_user_by_email(email)
+        userName = self.get_user_by_name(username)
+        if raiseFlag:
+            if userEmail != None:
+                raise DbException(400, "This email is already registered.")
+            if userName != None:
+                raise DbException(400, "Username is taken :(")
+            return True
+        else:
+            if userEmail != None:
+                return False
+            if userName != None:
+                return False
+            return True
+
     def confirm_password(self, password_plain):
         return True
         if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):
@@ -162,13 +192,13 @@ class UserType(db.Model):
         return "<UserType %r>" % (self.name)
 
     def get_type_by_id(self, typeId):
-        userType = self.query.filter_by(id=typeId).get(1)
+        userType = self.query.filter_by(id=typeId).first()
         if (userType == None):
             raise DbException(404, "UserType not found.")
         return userType
 
     def get_type_by_name(self, typeName):
-        userType = self.query.filter_by(name=typeName).get(1)
+        userType = self.query.filter_by(name=typeName).first()
         if (userType == None):
             raise DbException(404, "UserType not found.")
         return userType
@@ -221,7 +251,7 @@ class UserToken(db.Model):
         return "<UserToken %r>" % (self.token)
     
     def get_token_by_id(self, tokenId):
-        userToken = self.query.filter_by(id=tokenId).get(1)
+        userToken = self.query.filter_by(id=tokenId).first()
         if (userToken == None):
             raise DbException(404, "UserToken not found.")
         return token
