@@ -26,69 +26,69 @@ class Module(db.Model):
     def __repr__(self):
         return "<Module %r>" % (self.name)
 
-    def get_module_by_id(self, moduleId):
-        result = self.query.filter_by(id=moduleId).get(1)
-        if (result == None):
+    def get_module_by_id(self, moduleId, raiseFlag = True):
+        result = self.query.filter_by(id=moduleId).first()
+        if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_module_by_name(self, moduleName):
-        result = self.query.filter_by(name=moduleId).get(1)
-        if (result == None):
+    def get_module_by_name(self, moduleName, raiseFlag = True):
+        result = self.query.filter_by(name=moduleId).first()
+        if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_module_all(self):
+    def get_module_all(self, raiseFlag = True):
         result = self.query.all()
-        if (result == None):
+        if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_module_all_by_project_id(self, projectId):
+    def get_module_all_by_project_id(self, projectId, raiseFlag = True):
         result = self.query.filter_by(project_id=projectId).all()
-        if (result == None):
+        if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def update_name_by_id(self,moduleId,moduleName):
+    def update_name_by_id(self,moduleId,moduleName, raiseFlag = True):
         module = self.get_module_by_id(moduleId)
-        if (module == None):
+        if (module == None) & raiseFlag:
             return False
         module.name = moduleName
         module.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def update_module_data_by_id(self,moduleId,data):
+    def update_module_data_by_id(self,moduleId,data, raiseFlag = True):
         module = self.get_module_by_id(moduleId)
-        if (module == None):
+        if (module == None) & raiseFlag:
             return False
         module.data = data
         module.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def update_module_data_by_name(self,name,data):
+    def update_module_data_by_name(self,name,data, raiseFlag = True):
         module = self.get_module_by_name(name)
-        if (module == None):
+        if (module == None) & raiseFlag:
             return False
         module.data = data
         module.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def activate_module_by_id(self, id):
+    def activate_module_by_id(self, id, raiseFlag = True):
         module = self.get_module_by_id(id)
-        if (module == None):
+        if (module == None) & raiseFlag:
             return False
         module.active = True
         module.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def deactivate_module_by_id(self, id):
+    def deactivate_module_by_id(self, id, raiseFlag = True):
         module = self.get_module_by_id(id)
-        if (module == None):
+        if (module == None) & raiseFlag:
             return False
         module.active = False
         module.update = datetime.datetime.utcnow
@@ -116,63 +116,63 @@ class Project(db.Model):
     def __repr__(self):
         return "<Project %r>" % (self.name)
 
-    def get_project_by_id(self, projectId):
-        result = self.query.filter_by(id=projectId).get(1)
-        if (result == None):
+    def get_project_by_id(self, projectId, raiseFlag = True):
+        result = self.query.filter_by(id=projectId).first()
+        if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_project_by_name(self, moduleName):
-        result = self.query.filter_by(name=moduleId).get(1)
-        if (result == None):
+    def get_project_by_name(self, moduleName, raiseFlag = True):
+        result = self.query.filter_by(name=moduleId).first()
+        if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
     def get_project_all(self):
         result = self.query.all()
-        if (result == None):
+        if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def update_project_name_by_id(self,projectId,moduleName):
+    def update_project_name_by_id(self,projectId,moduleName, raiseFlag = True):
         project = self.get_project_by_id(projectId)
-        if (project == None):
+        if (project == None) & raiseFlag:
             return False
         project.name = moduleName
         project.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def update_project_data_by_id(self,projectId,data):
+    def update_project_data_by_id(self,projectId,data, raiseFlag = True):
         project = self.get_project_by_id(projectId)
-        if (project == None):
+        if (project == None) & raiseFlag:
             return False
         project.data = data
         project.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def update_project_data_by_name(self,name,data):
+    def update_project_data_by_name(self,name,data, raiseFlag = True):
         project = self.get_project_by_name(name)
-        if (project == None):
+        if (project == None) & raiseFlag:
             return False
         project.data = data
         project.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def activate_project_by_id(self, id):
+    def activate_project_by_id(self, id, raiseFlag = True):
         project = self.get_project_by_id(id)
-        if (project == None):
+        if (project == None) & raiseFlag:
             return False
         project.active = True
         project.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def deactivate_project_by_id(self, id):
+    def deactivate_project_by_id(self, id, raiseFlag = True):
         project = self.get_project_by_id(id)
-        if (project == None):
+        if (project == None) & raiseFlag:
             return False
         project.active = False
         project.update = datetime.datetime.utcnow

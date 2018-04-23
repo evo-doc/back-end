@@ -37,7 +37,7 @@ class User(db.Model):
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
-        
+
     def get_user_by_name(self, userName, raiseFlag = True):
         user = self.query.filter_by(name=userName).first()
         if (user == None) & raiseFlag:
@@ -68,6 +68,7 @@ class User(db.Model):
             raise DbException(404, "No user found.")
         return user
 
+
     def update_user_type_by_id(self, id, userType, raiseFlag = True):
         user = User.get_user_by_id(User, id)
         if (user == None) & raiseFlag:
@@ -95,9 +96,9 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    def update_user_name_by_id(self, id, name):
+    def update_user_name_by_id(self, id, name, raiseFlag = True):
         user = User.get_user_by_id(User, id)
-        if (user == None):
+        if (user == None) & raiseFlag:
             return False
         user.name = name
         user.update = datetime.datetime.utcnow
@@ -106,16 +107,16 @@ class User(db.Model):
 
     def activate_user_by_id(self, id):
         user = User.get_user_by_id(User, id)
-        if (user == None):
+        if (user == None) & raiseFlag:
             return False
         user.active = True
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def deactivate_user_by_id(self, id):
+    def deactivate_user_by_id(self, id, raiseFlag = True):
         user = User.get_user_by_id(User, id)
-        if (user == None):
+        if (user == None) & raiseFlag:
             return False
         user.active = False
         user.update = datetime.datetime.utcnow
@@ -184,35 +185,41 @@ class UserType(db.Model):
     def __repr__(self):
         return "<UserType %r>" % (self.name)
 
-    def get_type_by_id(self, typeId):
+    def get_type_by_id(self, typeId, raiseFlag = True):
         userType = self.query.filter_by(id=typeId).first()
-        if (userType == None):
+        if (userType == None) & raiseFlag:
             raise DbException(404, "UserType not found.")
         return userType
 
-    def get_type_by_name(self, typeName):
+#    def get_type_by_name(self, typeName, raiseFlag = True):
+#        userType = self.query.filter_by(name=typeName).first()
+#        if (userType == None) & raiseFlag:
+#            raise DbException(DbException, 404, "UserType not found.")
+#        return userType
+
+    def get_type_by_name(self, typeName, raiseFlag = True):
         userType = self.query.filter_by(name=typeName).first()
-        if (userType == None):
+        if (userType == None) & raiseFlag:
             raise DbException(404, "UserType not found.")
         return userType
 
-    def get_type_all(self):
+    def get_type_all(self, raiseFlag = True):
         userType = self.query.all()
-        if (userType == None):
+        if (userType == None) & raiseFlag:
             raise DbException(404, "No userType found.")
         return userType
 
-    def update_type_name_by_id(self, id, name):
+    def update_type_name_by_id(self, id, name, raiseFlag = True):
         userType = self.get_type_by_id(User, id)
-        if (userType == None):
+        if (userType == None) & raiseFlag:
             return False
         userType.name = name
         db.session.commit()
         return True
 
-    def update_type_permisson_by_id(self, id, permission):
+    def update_type_permisson_by_id(self, id, permission, raiseFlag = True):
         userType = self.get_type_by_id(User, id)
-        if (userType == None):
+        if (userType == None) & raiseFlag:
             return False
         userType.permission = permission
         db.session.commit()
@@ -243,11 +250,17 @@ class UserToken(db.Model):
     def __repr__(self):
         return "<UserToken %r>" % (self.token)
     
-    def get_token_by_id(self, tokenId):
+    def get_token_by_id(self, tokenId, raiseFlag = True):
         userToken = self.query.filter_by(id=tokenId).first()
-        if (userToken == None):
+        if (userToken == None) & raiseFlag:
             raise DbException(404, "UserToken not found.")
         return token
+
+#    def get_token_by_user_id(self, userId, raiseFlag = True):         #returns newest token for user
+#        userToken = self.query.filter_by(user_id=userId).order_by(desc(table1.mycol)).first()
+#        if (userToken == None) & raiseFlag:
+#            raise DbException(DbException, 404, "UserToken not found.")
+#        return token
 
     def get_token_by_user_id(self, userId):         #returns newest token for user
         userToken = self.query.filter_by(user_id=userId).order_by(desc(table1.mycol)).first()
@@ -255,30 +268,36 @@ class UserToken(db.Model):
             raise DbException(404, "UserToken not found.")
         return token
 
-    def get_token_all(self):
+    def get_token_all(self, raiseFlag = True):
         userToken = self.query.all()
-        if (userToken == None):
+        if (userToken == None) & raiseFlag:
             raise DbException(404, "No userToken found.")
         return token
 
-    def get_token_all_by_user_id(self, userId):
+    def get_token_all_by_user_id(self, userId, raiseFlag = True):
         userToken = self.query.filter_by(user_id=userId).all()
-        if (userToken == None):
+        if (userToken == None) & raiseFlag:
+            raise DbException(DbException, 404, "No userToken found.")
+        return token
+    
+    def get_token_all_by_user_id(self, userId, raiseFlag = True):
+        userToken = self.query.filter_by(user_id=userId).all()
+        if (userToken == None) & raiseFlag:
             raise DbException(DbException, 404, "No userToken found.")
         return token
 
-    def update_token_user_id_by_id(self, id, userId):
+    def update_token_user_id_by_id(self, id, userId, raiseFlag = True):
         userToken = self.get_token_by_id(id)
-        if (userToken == None):
+        if (userToken == None) & raiseFlag:
             return False
         userToken.userId = userId
         userToken.update = datetime.datetime.utcnow
         db.session.commit()
         return True
 
-    def update_token_token_by_id(self, id, token):
+    def update_token_token_by_id(self, id, token, raiseFlag = True):
         userToken = self.get_token_by_id(id)
-        if (userToken == None):
+        if (userToken == None) & raiseFlag:
             return False
         userToken.token = token
         userToken.update = datetime.datetime.utcnow
