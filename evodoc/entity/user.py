@@ -159,6 +159,44 @@ class User(db.Model):
         else:
             return False
 
+    def update_user_by_id_all(self, name=None, email=None, password=None, created=None, update=None, active=None, activated = None, raiseFlag = True):
+        usr = self.get_user_by_id(id, raiseFlag)
+        if (usr == None):
+            return False
+        changed = 0
+        
+        if (name!=None):
+            usr.name = name
+            changed = 1
+        if (email!=None):
+            usr.email = email
+            changed = 1
+        if (password!=None):
+            usr.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+            changed = 1
+        if (created!=None):
+            usr.created = created
+            changed = 1
+        if (active!=None):
+            usr.active = active
+            changed = 1
+        if (activated!=None):
+            usr.activated = activated
+            changed = 1
+        if ((changed == 1) && (update == None)):
+            db.session.commit()
+        if (activated!=None):
+            usr.activated = activated
+            db.session.commit()
+        return True 
+
+    def update_user_by_id_all_list(self, userList, raiseFlag = True)
+        failedUpdatesList = []
+        for i in userList:
+            if (self.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
+                failedUpdatesList.append(i)
+        return i
+
     def serialize(self):
         return {
             'id': self.id,
