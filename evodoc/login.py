@@ -9,6 +9,8 @@ from evodoc.entity import *
 def login(username, password_plain):
 	try:
 		user = User.get_user_by_username_or_email(User, username)
+		if user.activated == False:
+			raise DbException(304, "User is not activated yet")
 		if (user.confirm_password(password_plain)):
 			return authenticateUser(user.id, None)
 	except DbException as err:
@@ -34,3 +36,17 @@ def authenticateUser (id, token=None): #returns active token
 		return t
 	#otherwise createToken(id)
 	return createToken(id)
+
+def authenticate(token):
+	"""
+	Test if token exist, if not returns None, if its out of date, returns new token, else return old one
+		:param token: user token
+	"""
+	if token == None:
+		return None
+	userTokenEntity = UserToken.query.filter(UserToken.token == token).first()
+	if userTokenEntity == None:
+		return None
+	if userTokenEntity.user.active != 1:
+		return None
+	return UserToken
