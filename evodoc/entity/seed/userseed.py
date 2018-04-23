@@ -1,9 +1,16 @@
-from evodoc.entity.models import User, UserType, UserToken
+
+from evodoc.entity.user import User, UserType, UserToken
 from evodoc.app import db
+
+def initUserSeeds():
+    baseUserType()
+    userInsert()
 
 def userInsert():
     userList = []
-    userList.append(User("Admin", "admin@nimda.exp", "SuperSecret", None, None, True))
+    userAdmin = User("Admin", "admin@nimda.exp", "SuperSecret", None, None, True)
+    userAdmin.user_type_id = UserType.get_type_by_name(UserType,'ADMIN').id
+    userList.append(userAdmin)
 
     userEntities = User.query.all()
 
@@ -17,4 +24,22 @@ def userInsert():
         db.session.commit()
         print("Inserting: ")
         print(seedUser.name)
+
+def baseUserType():
+    user_types = []
+    user_types.append(UserType("ADMIN", 2))
+    user_types.append(UserType("GUEST", 0))
+    user_types.append(UserType("USER", 1))
+
+    user_type_db = UserType.query.all()
+
+    for user in user_type_db:
+        for seedUser in user_types:
+            if (user.name == seedUser.name):
+                user_types.remove(seedUser)
+
+
+    for user_type in user_types:
+        db.session.add(user_type)
+        db.session.commit()
 
