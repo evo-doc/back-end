@@ -1,5 +1,7 @@
 from flask import json
 from evodoc.app import app
+from evodoc.exception import ApiException
+from evodoc.login import authenticate
 
 def serialize_list(l):
     return [m.serialize() for m in l]
@@ -39,3 +41,15 @@ def response_err(data):
         mimetype='application/json'
     )
     return response
+
+def validate_token(token):
+    """
+    Validate token and return its instance
+        :param token:
+    """
+    if token == None:
+       raise ApiException(403, "Invalid token.")
+
+    userToken = authenticate(token)
+    if userToken == None:
+        raise ApiException(403, "Invalid token.")

@@ -17,6 +17,7 @@ class User(db.Model):
     created = Column(DateTime, default=datetime.datetime.utcnow)
     update = Column(DateTime, default=datetime.datetime.utcnow)
     active = Column(Boolean)
+    tokens = db.relationship('UserToken', backref='user', lazy=False)
 
     def __init__(self, name=None, email=None, password=None, created=None, update=None, active=True):
         self.name = name
@@ -31,13 +32,13 @@ class User(db.Model):
     def get_user_by_id(self, userId):
         user = self.query.filter_by(id=userId).get(1)
         if (user == None):
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(404, "User not found.")
         return user
         
     def get_user_by_name(self, userName):
         user = self.query.filter_by(name=userName).get(1)
         if (user == None):
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(404, "User not found.")
         return user
         
     def get_user_by_email(self, userEmail):
@@ -57,11 +58,11 @@ class User(db.Model):
         if (user == None):
             raise DbException(404, "No user found.")
         return user
- 
+
     def get_user_all_by_user_type_id(self, userType):
         user = self.query.filter_by(user_type_id=userType).all()
         if (user == None):
-            raise DbException(DbException, 404, "No user found.")
+            raise DbException(404, "No user found.")
         return user
 
     def update_user_type_by_id(self, id, userType):
@@ -151,6 +152,7 @@ class UserType(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
     permission_flag = Column(Integer)
+    users = db.relationship('User', backref='user_type', lazy=True)
 
     def __init__(self, name=None, permission_flag=0):
         self.name = name
@@ -162,7 +164,7 @@ class UserType(db.Model):
     def get_type_by_id(self, typeId):
         userType = self.query.filter_by(id=typeId).get(1)
         if (userType == None):
-            raise DbException(DbException, 404, "UserType not found.")
+            raise DbException(404, "UserType not found.")
         return userType
 
     def get_type_by_name(self, typeName):
@@ -204,7 +206,7 @@ class UserType(db.Model):
 class UserToken(db.Model):
     __tablename__ = "user_token"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey("user.id"))
     token = Column(String(47), unique=True)
     created = Column(DateTime, default=datetime.datetime.utcnow)
     update = Column(DateTime, default=datetime.datetime.utcnow)
@@ -221,7 +223,7 @@ class UserToken(db.Model):
     def get_token_by_id(self, tokenId):
         userToken = self.query.filter_by(id=tokenId).get(1)
         if (userToken == None):
-            raise DbException(DbException, 404, "UserToken not found.")
+            raise DbException(404, "UserToken not found.")
         return token
 
     def get_token_by_user_id(self, userId):         #returns newest token for user

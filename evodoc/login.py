@@ -34,3 +34,17 @@ def authenticateUser (id, token=None): #returns active token
 		return t
 	#otherwise createToken(id)
 	return createToken(id)
+
+def authenticate(token):
+	"""
+	Test if token exist, if not returns None, if its out of date, returns new token, else return old one
+		:param token: user token
+	"""
+	if token == None:
+		return None
+	userTokenEntity = UserToken.query.filter(UserToken.token == token).first()
+	if userTokenEntity == None:
+		return None
+	if userTokenEntity.user.active != 1:
+		return None
+	return UserToken
