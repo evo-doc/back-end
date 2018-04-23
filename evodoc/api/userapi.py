@@ -102,6 +102,7 @@ def registration_action():
             userEntity.save_entity()
             token = authenticateUser(userEntity.id)
             data = {
+                "user_id": userEntity.id,
                 "token": token
             }
             return response_ok(data)
