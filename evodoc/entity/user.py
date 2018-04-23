@@ -70,8 +70,8 @@ class User(db.Model):
 
 
     def update_user_type_by_id(self, id, userType, raiseFlag = True):
-        user = User.get_user_by_id(User, id)
-        if (user == None) & raiseFlag:
+        user = User.get_user_by_id(User, id, raiseFlag)
+        if (user == None):
             return False
         user.user_type_id = userType
         user.update = datetime.datetime.utcnow
@@ -79,8 +79,8 @@ class User(db.Model):
         return True
 
     def update_user_email_by_id(self, id, email, raiseFlag = True):
-        user = User.get_user_by_id(User, id)
-        if (user == None) & raiseFlag:
+        user = User.get_user_by_id(User, id, raiseFlag)
+        if (user == None):
             return False
         user.email = email
         user.update = datetime.datetime.utcnow
@@ -88,8 +88,8 @@ class User(db.Model):
         return True
 
     def update_user_password_by_id(self, id, password, raiseFlag = True):
-        user = User.get_user_by_id(User, id)
-        if (user == None) & raiseFlag:
+        user = User.get_user_by_id(User, id, raiseFlag)
+        if (user == None):
             return False
         user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
         user.update = datetime.datetime.utcnow
@@ -97,8 +97,8 @@ class User(db.Model):
         return True
 
     def update_user_name_by_id(self, id, name, raiseFlag = True):
-        user = User.get_user_by_id(User, id)
-        if (user == None) & raiseFlag:
+        user = User.get_user_by_id(User, id, raiseFlag)
+        if (user == None):
             return False
         user.name = name
         user.update = datetime.datetime.utcnow
@@ -106,8 +106,8 @@ class User(db.Model):
         return True
 
     def activate_user_by_id(self, id):
-        user = User.get_user_by_id(User, id)
-        if (user == None) & raiseFlag:
+        user = User.get_user_by_id(User, id, raiseFlag)
+        if (user == None):
             return False
         user.active = True
         user.update = datetime.datetime.utcnow
@@ -115,8 +115,8 @@ class User(db.Model):
         return True
 
     def deactivate_user_by_id(self, id, raiseFlag = True):
-        user = User.get_user_by_id(User, id)
-        if (user == None) & raiseFlag:
+        user = User.get_user_by_id(User, id, raiseFlag)
+        if (user == None):
             return False
         user.active = False
         user.update = datetime.datetime.utcnow
@@ -210,16 +210,16 @@ class UserType(db.Model):
         return userType
 
     def update_type_name_by_id(self, id, name, raiseFlag = True):
-        userType = self.get_type_by_id(User, id)
-        if (userType == None) & raiseFlag:
+        userType = self.get_type_by_id(User, id, raiseFlag)
+        if (userType == None):
             return False
         userType.name = name
         db.session.commit()
         return True
 
     def update_type_permisson_by_id(self, id, permission, raiseFlag = True):
-        userType = self.get_type_by_id(User, id)
-        if (userType == None) & raiseFlag:
+        userType = self.get_type_by_id(User, id, raiseFlag)
+        if (userType == None):
             return False
         userType.permission = permission
         db.session.commit()
@@ -287,8 +287,8 @@ class UserToken(db.Model):
         return token
 
     def update_token_user_id_by_id(self, id, userId, raiseFlag = True):
-        userToken = self.get_token_by_id(id)
-        if (userToken == None) & raiseFlag:
+        userToken = self.get_token_by_id(id, raiseFlag)
+        if (userToken == None):
             return False
         userToken.userId = userId
         userToken.update = datetime.datetime.utcnow
@@ -296,8 +296,8 @@ class UserToken(db.Model):
         return True
 
     def update_token_token_by_id(self, id, token, raiseFlag = True):
-        userToken = self.get_token_by_id(id)
-        if (userToken == None) & raiseFlag:
+        userToken = self.get_token_by_id(id, raiseFlag)
+        if (userToken == None):
             return False
         userToken.token = token
         userToken.update = datetime.datetime.utcnow
