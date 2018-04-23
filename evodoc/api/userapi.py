@@ -32,7 +32,10 @@ def delete_user(id):
         validate_token(token)
         user = User.get_user_by_id(User, id)
         User.deactivate_user_by_id(user, user.id)
-        return response_ok("Done")
+        data = {
+            "data": "done"
+        }
+        return response_ok(data)
     except DbException as err:
         return response_err(err)
     except ApiException as err:
@@ -71,7 +74,10 @@ def login_action():
         return response_err(err)
     try:
         token=login(data['username'], data['password'])
-        return response_ok(token)
+        data = {
+            "token": token
+        }
+        return response_ok(data)
     except DbException as err:
         return response_err(err)
 
@@ -95,7 +101,10 @@ def registration_action():
             userEntity = User(data['username'], data['email'], data['password'])
             userEntity.save_entity()
             token = authenticateUser(userEntity.id)
-            return response_ok(token)
+            data = {
+                "token": token
+            }
+            return response_ok(data)
     except ApiException as err:
         return response_err(err)
     except DbException as err:
@@ -108,13 +117,18 @@ def activation_action(id):
     """
     try:
         data = request.get_json()
+        if data == None:
+            raise ApiException(400, "Invalid data format")
         if (data['token'] == None):
             err = ApiException(403, "Invalid token")
             return response_err(err)
         user = User.get_user_by_id(User, id)
         user.activation = True
         db.session.commit()
-        return response_ok("Activated")
+        data = {
+            "data": "activated"
+        }
+        return response_ok(data)
     except ApiException as err:
         return response_err(err)
     except DbException as err:
