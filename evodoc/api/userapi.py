@@ -1,6 +1,6 @@
 from flask import json, request
 from evodoc.exception import DbException, ApiException
-from evodoc.app import app
+from evodoc.app import app, db
 from evodoc.login import login, authenticate, authenticateUser
 from evodoc.entity import *
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
@@ -61,6 +61,8 @@ def login_action():
     API login entry point
     """
     data = request.get_json()
+    if data == None:
+            raise ApiException(400, "Invalid data format")
     if (data['username'] == None):
         err = ApiException(400, "No username provided")
         return response_err(err)
@@ -80,13 +82,15 @@ def registration_action():
     """
     try:
         data = request.get_json()
-        if (data['username'] == None):
+        if data == None:
+            raise ApiException(400, "Invalid data format")
+        if data['username'] == None:
             raise ApiException(400, "No username provided")
         if (data['email'] == None):
             raise ApiException(400, "No email provided")
         if (data['password'] == None):
             raise ApiException(400, "No password provided")
-        if User.check_unique(data['username'], data['email']):
+        if User.check_unique(data['username'], data['email'], True):
             userEntity = User(User, data['username'], data['email'], data['password'])
             userEntity.save_entity()
             token = authenticateUser(userEntity.id)
