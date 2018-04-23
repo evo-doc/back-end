@@ -51,8 +51,8 @@ class Module(db.Model):
         return result
 
     def update_name_by_id(self,moduleId,moduleName, raiseFlag = True):
-        module = self.get_module_by_id(moduleId)
-        if (module == None) & raiseFlag:
+        module = self.get_module_by_id(moduleId, raiseFlag)
+        if (module == None):
             return False
         module.name = moduleName
         module.update = datetime.datetime.utcnow
@@ -60,8 +60,8 @@ class Module(db.Model):
         return True
 
     def update_module_data_by_id(self,moduleId,data, raiseFlag = True):
-        module = self.get_module_by_id(moduleId)
-        if (module == None) & raiseFlag:
+        module = self.get_module_by_id(moduleId, raiseFlag)
+        if (module == None):
             return False
         module.data = data
         module.update = datetime.datetime.utcnow
@@ -69,8 +69,8 @@ class Module(db.Model):
         return True
 
     def update_module_data_by_name(self,name,data, raiseFlag = True):
-        module = self.get_module_by_name(name)
-        if (module == None) & raiseFlag:
+        module = self.get_module_by_name(name, raiseFlag)
+        if (module == None):
             return False
         module.data = data
         module.update = datetime.datetime.utcnow
@@ -78,8 +78,8 @@ class Module(db.Model):
         return True
 
     def activate_module_by_id(self, id, raiseFlag = True):
-        module = self.get_module_by_id(id)
-        if (module == None) & raiseFlag:
+        module = self.get_module_by_id(id, raiseFlag)
+        if (module == None):
             return False
         module.active = True
         module.update = datetime.datetime.utcnow
@@ -87,8 +87,8 @@ class Module(db.Model):
         return True
 
     def deactivate_module_by_id(self, id, raiseFlag = True):
-        module = self.get_module_by_id(id)
-        if (module == None) & raiseFlag:
+        module = self.get_module_by_id(id, raiseFlag)
+        if (module == None):
             return False
         module.active = False
         module.update = datetime.datetime.utcnow
@@ -135,8 +135,8 @@ class Project(db.Model):
         return result
 
     def update_project_name_by_id(self,projectId,moduleName, raiseFlag = True):
-        project = self.get_project_by_id(projectId)
-        if (project == None) & raiseFlag:
+        project = self.get_project_by_id(projectId, raiseFlag)
+        if (project == None):
             return False
         project.name = moduleName
         project.update = datetime.datetime.utcnow
@@ -144,8 +144,8 @@ class Project(db.Model):
         return True
 
     def update_project_data_by_id(self,projectId,data, raiseFlag = True):
-        project = self.get_project_by_id(projectId)
-        if (project == None) & raiseFlag:
+        project = self.get_project_by_id(projectId, raiseFlag)
+        if (project == None):
             return False
         project.data = data
         project.update = datetime.datetime.utcnow
@@ -153,8 +153,8 @@ class Project(db.Model):
         return True
 
     def update_project_data_by_name(self,name,data, raiseFlag = True):
-        project = self.get_project_by_name(name)
-        if (project == None) & raiseFlag:
+        project = self.get_project_by_name(name, raiseFlag)
+        if (project == None):
             return False
         project.data = data
         project.update = datetime.datetime.utcnow
@@ -162,8 +162,8 @@ class Project(db.Model):
         return True
 
     def activate_project_by_id(self, id, raiseFlag = True):
-        project = self.get_project_by_id(id)
-        if (project == None) & raiseFlag:
+        project = self.get_project_by_id(id, raiseFlag)
+        if (project == None):
             return False
         project.active = True
         project.update = datetime.datetime.utcnow
@@ -171,8 +171,8 @@ class Project(db.Model):
         return True
 
     def deactivate_project_by_id(self, id, raiseFlag = True):
-        project = self.get_project_by_id(id)
-        if (project == None) & raiseFlag:
+        project = self.get_project_by_id(id, raiseFlag)
+        if (project == None):
             return False
         project.active = False
         project.update = datetime.datetime.utcnow
