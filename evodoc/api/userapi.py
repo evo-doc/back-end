@@ -19,6 +19,21 @@ def get_user_by_id_action(id):
     except DbException as err:
         return response_err(err)
 
+@app.route('/user/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    """
+    Get user data by it's id
+        :param id:
+    """
+    try:
+        token = request.args.get('token')
+        validate_token(token)
+        user = User.get_user_by_id(User, id)
+        User.deactivate_user_by_id(user, user.id)
+        return response_ok("Done")
+    except DbException as err:
+        return response_err(err)
+
 @app.route('/user/all/', methods=['GET'])
 def get_user_all_action():
     """
@@ -72,5 +87,26 @@ def registration_action():
             userEntity.save_entity()
             token = authenticateUser(userEntity.id)
             return response_ok(token)
-    except ApiException, DbException as err:
+    except ApiException as err:
+        return response_err(err)
+    except DbException as err:
+        return response_err(err)
+
+@app.route("/user/<int:id>/activation", methods=['POST'])
+def activation_action(id):
+    """
+    Acc activation
+    """
+    try:
+        data = request.get_json()
+        if (data['token'] == None):
+            err = ApiException(403, "Invalid token")
+            return response_err(err)
+        user = User.get_user_by_id(User, id)
+        user.activation = True
+        db.session.commit()
+        return response_ok("Activated")
+    except ApiException as err:
+        return response_err(err)
+    except DbException as err:
         return response_err(err)
