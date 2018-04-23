@@ -23,17 +23,15 @@ def createToken (userId) : #creates new token and adds it to the database
 	return t
 
 def authenticateUser (id, token=None): #returns active token
-	if (token==None) :
-		return createToken(id)
-	#make sure the token is active
-	for token in UserToken.query.filter(UserToken.user_id==id, UserToken.created +  timedelta(hours=24) > datetime.utcnow(), UserToken.update +  timedelta(hours=2) > datetime.utcnow()):
-		token.update=datetime.utcnow()#if token is active update it
-		t=token.token
-		db.session.commit()
-
-		return t
-	#otherwise createToken(id)
-	return createToken(id)
+    if (token==None) :
+        return createToken(id)
+    t = UserToken.query.filter(UserToken.user_id==id, UserToken.created +  timedelta(hours=24) > datetime.utcnow(), UserToken.update + timedelta(hours=2) > datetime.utcnow()).order_by(desc(UserToken.created)).first()
+    if (t == None):
+        return createToken(id)
+    t.update=datetime.utcnow()
+    t.token = token
+    db.session.commit()
+    return t
 
 def authenticate(token):
 	"""

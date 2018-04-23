@@ -324,7 +324,7 @@ class UserToken(db.Model):
         return userToken
 
     def get_token_by_user_id(self, userId):         #returns newest token for user
-        userToken = self.query.filter_by(user_id=userId).order_by(desc(table1.mycol)).first()
+        userToken = self.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()          
         if (userToken == None):
             raise DbException(404, "UserToken not found.")
         return userToken
