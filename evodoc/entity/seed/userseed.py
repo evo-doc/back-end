@@ -10,6 +10,7 @@ def userInsert():
     userList = []
     userAdmin = User("Admin", "admin@nimda.exp", "SuperSecret", None, None, True)
     userAdmin.user_type_id = UserType.get_type_by_name(UserType,'ADMIN').id
+    userAdmin.activated = True
     userList.append(userAdmin)
 
     userEntities = User.query.all()
