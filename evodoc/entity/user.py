@@ -128,6 +128,33 @@ class User(db.Model):
         db.session.commit()
         return True
 
+    def save_entity(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def check_unique(self, username, email, raiseFlag = False):
+        """
+        Check if username and email are not presented in database (check unique)
+            :param self:
+            :param username:
+            :param email:
+            :param raiseFlag=False: if its true this function raise exception if email or username are already presented
+        """
+        userEmail = self.get_user_by_email(email)
+        userName = self.get_user_by_name(username)
+        if raiseFlag:
+            if userEmail != None:
+                raise DbException(400, "This email is already registered.")
+            if userName != None:
+                raise DbException(400, "Username is taken :(")
+            return True
+        else:
+            if userEmail != None:
+                return False
+            if userName != None:
+                return False
+            return True
+
     def confirm_password(self, password_plain):
         return True
         if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):

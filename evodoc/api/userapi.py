@@ -1,28 +1,33 @@
 from flask import json, request
 from evodoc.exception import DbException, ApiException
 from evodoc.app import app
-from evodoc.login import login, authenticate
+from evodoc.login import login, authenticate, authenticateUser
 from evodoc.entity import *
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
 
 @app.route('/user/<int:id>', methods=['GET'])
-def get_user_by_id(id):
-
+def get_user_by_id_action(id):
+    """
+    Get user data by it's id
+        :param id:
+    """
     try:
+        token = request.args.get('token')
+        validate_token(token)
         data = User.get_user_by_id(User, id)
         return response_ok_obj(data)
     except DbException as err:
         return response_err(err)
 
 @app.route('/user/all/', methods=['GET'])
-def get_user_all():
+def get_user_all_action():
     """
     Get all user, only for logged users
     Token is taken from url param
     """
     try:
         token = request.args.get('token')
-        userToken = validate_token(token)
+        validate_token(token)
         data = User.get_user_all(User)
         return response_ok_list(data)
     except DbException as err:
@@ -32,19 +37,40 @@ def get_user_all():
 
 
 @app.route('/login', methods=['POST'])
-def loginR():
+def login_action():
     """
     API login entry point
     """
     data = request.get_json()
     if (data['username'] == None):
-        err = DbException(400, "No username provided")
+        err = ApiException(400, "No username provided")
         return response_err(err)
     if (data['password'] == None):
-        err = DbException(400, "No password provided")
+        err = ApiException(400, "No password provided")
         return response_err(err)
     try:
         token=login(data['username'], data['password'])
         return response_ok(token)
     except DbException as err:
+        return response_err(err)
+
+@app.route('/registration', methods=['POST'])
+def registration_action():
+    """
+    Registration
+    """
+    try:
+        data = request.get_json()
+        if (data['username'] == None):
+            raise ApiException(400, "No username provided")
+        if (data['email'] == None):
+            raise ApiException(400, "No email provided")
+        if (data['password'] == None):
+            raise ApiException(400, "No password provided")
+        if User.check_unique(data['username'], data['email']):
+            userEntity = User(User, data['username'], data['email'], data['password'])
+            userEntity.save_entity()
+            token = authenticateUser(userEntity.id)
+            return response_ok(token)
+    except ApiException, DbException as err:
         return response_err(err)

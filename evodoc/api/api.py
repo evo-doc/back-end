@@ -53,3 +53,4 @@ def validate_token(token):
     userToken = authenticate(token)
     if userToken == None:
         raise ApiException(403, "Invalid token.")
+    return userToken
