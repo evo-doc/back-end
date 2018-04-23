@@ -158,7 +158,7 @@ class UserType(db.Model):
 
     def __repr__(self):
         return "<UserType %r>" % (self.name)
-
+    
     def get_type_by_id(self, typeId):
         userType = self.query.filter_by(id=typeId).get(1)
         if (userType == None):
