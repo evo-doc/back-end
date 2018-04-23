@@ -90,8 +90,9 @@ def registration_action():
             raise ApiException(400, "No email provided")
         if (data['password'] == None):
             raise ApiException(400, "No password provided")
-        if User.check_unique(data['username'], data['email'], True):
-            userEntity = User(User, data['username'], data['email'], data['password'])
+
+        if User.check_unique(User, data['username'], data['email'], True):
+            userEntity = User(data['username'], data['email'], data['password'])
             userEntity.save_entity()
             token = authenticateUser(userEntity.id)
             return response_ok(token)
