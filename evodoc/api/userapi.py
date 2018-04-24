@@ -24,7 +24,7 @@ def get_user_by_id_action(id):
 @app.route('/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
     """
-    Get user data by it's id
+    Deletes user by it's id (only deactivation) 
         :param id:
     """
     try:
