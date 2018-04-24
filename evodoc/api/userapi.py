@@ -65,7 +65,7 @@ def login_action():
     """
     data = request.get_json()
     if data == None:
-            raise ApiException(400, "Invalid data format")
+        return response_err(ApiException(400, "Invalid data format"))
     if (data['username'] == None):
         err = ApiException(400, "No username provided")
         return response_err(err)

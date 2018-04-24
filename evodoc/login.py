@@ -7,14 +7,11 @@ from datetime import datetime, timedelta
 from evodoc.entity import *
 
 def login(username, password_plain):
-	try:
-		user = User.get_user_by_username_or_email(User, username)
-		if user.activated == False:
-			raise DbException(304, "User is not activated yet")
-		if (user.confirm_password(password_plain)):
-			return authenticateUser(user.id, None)
-	except DbException as err:
-			raise DbException(403, "Invalid username or password")
+	user = User.get_user_by_username_or_email(User, username)
+	if user.activated == False:
+		raise DbException(304, "User is not activated yet")
+	if (user.confirm_password(password_plain)):
+		return authenticateUser(user.id, None)
 
 def createToken (userId) : #creates new token and adds it to the database
 	t = str(userId).zfill(10) + str(uuid.uuid4())
