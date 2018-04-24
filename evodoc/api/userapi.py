@@ -1,7 +1,7 @@
 from flask import json, request
 from evodoc.exception import DbException, ApiException
 from evodoc.app import app, db
-from evodoc.login import login, authenticate, authenticateUser
+from evodoc.login import login, authenticate, authenticateUser, createToken
 from evodoc.entity import *
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
 
@@ -24,7 +24,7 @@ def get_user_by_id_action(id):
 @app.route('/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
     """
-    Get user data by it's id
+    Deletes user by it's id (only deactivation)
         :param id:
     """
     try:
