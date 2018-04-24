@@ -40,7 +40,7 @@ class ModulePerm (db.Model):
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_module_perm_by_id(self, permId, raiseFlag = True):
+    def get_module_perm_by_module_id(self, permId, raiseFlag = True):
         perm = self.query.filter_by(module_id=permId).first()
         if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
