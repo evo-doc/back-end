@@ -184,9 +184,10 @@ class User(db.Model):
             usr.activated = activated
             changed = 1
         if ((changed == 1) and (update == None)):
+            usr.update = datetime.datetime.utcnow
             db.session.commit()
-        if (activated!=None):
-            usr.activated = activated
+        if (update  !=None):
+            usr.update = update
             db.session.commit()
         return True 
 

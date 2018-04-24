@@ -71,6 +71,30 @@ def get_module_all_by_project_id_action(id):
     except ApiException as err:
         return response_err(err)
 
+@app.route("/module/id/<int:id>/update", methods=['POST'])
+def update_module_action(id):
+    """
+    Update or create module
+    """
+    try:
+        data = request.get_json()
+        if data == None:
+            raise ApiException(400, "Invalid data format")
+        if (data['token'] == None):
+            err = ApiException(403, "Invalid token")
+            return response_err(err)
+        validate_token(data['token'])
+        #check permissions in the future
+        Module.create_or_update_module_by_id_from_array(Module, id, data['data'])
+        data = {
+            "data": "activated"
+        }
+        return response_ok(data)
+    except ApiException as err:
+        return response_err(err)
+    except DbException as err:
+        return response_err(err)
+
 ###############################################################################
 
 @app.route('/project/<int:id>', methods=['GET'])
