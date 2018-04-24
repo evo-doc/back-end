@@ -197,6 +197,30 @@ class User(db.Model):
                 failedUpdatesList.append(i)
         return i
 
+    def update_user_by_id_from_array(self, id, dataArray)
+        userEntity = User.get_user_by_id(User, id)
+        # Name change
+        if dataArray["name"] != None:
+            userCheck = User.get_user_by_name(User, dataArray["name"], False)
+            if userCheck != None & userCheck.id != id:
+                raise DbException(400, "Name is already taken")
+            userEntity.username = dataArray["name"]
+
+        if dataArray["email"] != None:
+            userCheck = User.get_user_by_email(User, dataArray["email"], False)
+            if userCheck != None & userCheck.id != id:
+                raise DbException(400, "Email is already registered")
+            userEntity.username = dataArray["email"]
+
+        if dataArray["password"] != None:
+             userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt())
+        
+        if dataArray["user_type_id"] != None:
+            userType = UserType.get_type_by_id(UserType, dataArray["user_type_id"], False)
+            if userType == None:
+                raise DbException(400, "This type of user does not exist")
+            userEntity.user_type_id = dataArray["user_type_id"]
+
     def serialize(self):
         return {
             'id': self.id,
