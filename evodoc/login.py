@@ -46,4 +46,4 @@ def authenticate(token):
 		return None
 	if userTokenEntity.user.active != 1:
 		return None
-	return UserToken
+	return userTokenEntity
