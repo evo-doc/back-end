@@ -41,6 +41,25 @@ def delete_user(id):
     except ApiException as err:
         return response_err(err)
 
+@app.route('/user/<int:id>', methods=['POST'])
+def update_user(id):
+    """
+    Update user with suplied data, now works only for email, password, name and user type
+        :param id: integer user id
+    """
+    try:
+        data = request.get_json()
+        if data == None:
+            return response_err(ApiException(403, "No data suplied"))
+        token = data["token"]
+        validate_token(token)
+        user = User.update_user_by_id_from_array(User, id, data)
+        return response_ok_obj(user)
+    except DbException as err:
+        return response_err(err)
+    except ApiException as err:
+        return response_err(err)
+
 @app.route('/user/all/', methods=['GET'])
 def get_user_all_action():
     """

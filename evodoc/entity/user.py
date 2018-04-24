@@ -183,21 +183,21 @@ class User(db.Model):
         if (activated!=None):
             usr.activated = activated
             changed = 1
-        if ((changed == 1) && (update == None)):
+        if ((changed == 1) & (update == None)):
             db.session.commit()
         if (activated!=None):
             usr.activated = activated
             db.session.commit()
         return True 
 
-    def update_user_by_id_all_list(self, userList, raiseFlag = True)
+    def update_user_by_id_all_list(self, userList, raiseFlag = True):
         failedUpdatesList = []
         for i in userList:
             if (self.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
                 failedUpdatesList.append(i)
         return i
 
-    def update_user_by_id_from_array(self, id, dataArray)
+    def update_user_by_id_from_array(self, id, dataArray):
         userEntity = User.get_user_by_id(User, id)
         # Name change
         if dataArray["name"] != None:
@@ -214,12 +214,15 @@ class User(db.Model):
 
         if dataArray["password"] != None:
              userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt())
-        
+
         if dataArray["user_type_id"] != None:
             userType = UserType.get_type_by_id(UserType, dataArray["user_type_id"], False)
             if userType == None:
                 raise DbException(400, "This type of user does not exist")
             userEntity.user_type_id = dataArray["user_type_id"]
+
+        db.session.commit()
+        return userEntity
 
     def serialize(self):
         return {
