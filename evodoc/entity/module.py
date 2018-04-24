@@ -54,7 +54,7 @@ class Module(db.Model):
         module = self.get_module_by_id(moduleId, raiseFlag)
         if (module == None):
             return False
-        if (None != self.get_module_by_name(moduleName,false))
+        if (None != self.get_module_by_name(moduleName,false)):
             if raiseFlag:
                 raise DbException(400, "Name is already taken")
             return false
@@ -124,7 +124,7 @@ class Module(db.Model):
             return True
         changed = 0
         if (name != None):
-            if (self.get_module_by_name(name,false) != None)
+            if (self.get_module_by_name(name,false) != None):
                 if raiseFlag:
                     raise DbException(400, "Name is already taken")
                 return False
@@ -151,7 +151,7 @@ class Module(db.Model):
 
     def create_module(self, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
         
-        if (None != self.get_module_by_name(name,false))
+        if (None != self.get_module_by_name(name,false)):
             if raiseFlag:
                 raise DbException(400, "Name is already taken")
             return False
