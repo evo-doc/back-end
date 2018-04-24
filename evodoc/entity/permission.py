@@ -28,41 +28,66 @@ class ModulePerm (db.Model):
             'permissions': self.permissions
         }
 
-    def get_module_perm_by_id(self, permId):
-        perm = self.query.filter_by(id=permId).get(1)
-        if (perm == None):
+    def get_module_perm_by_id(self, permId, raiseFlag = True):
+        perm = self.query.filter_by(id=permId).first()
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_module_perm_by_user_id(self, permId):
-        perm = self.query.filter_by(user_id=permId).get(1)
-        if (perm == None):
+    def get_module_perm_by_user_id(self, permId, raiseFlag = True):
+        perm = self.query.filter_by(user_id=permId).first()
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_module_perm_by_id(self, permId):
-        perm = self.query.filter_by(module_id=permId).get(1)
-        if (perm == None):
+    def get_module_perm_by_id(self, permId, raiseFlag = True):
+        perm = self.query.filter_by(module_id=permId).first()
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_module_perm_all(self):
+    def get_module_perm_all(self, raiseFlag = True):
         perm = self.query.all()
-        if (perm == None):
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_module_perm_all_by_user_id(self, permId):
+    def get_module_perm_all_by_user_id(self, permId, raiseFlag = True):
         perm = self.query.filter_by(user_id=permId).all()
-        if (perm == None):
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_module_perm_all_by_module_id(self, permId):
+    def get_module_perm_all_by_module_id(self, permId, raiseFlag = True):
         perm = self.query.filter_by(module_id=permId).all()
-        if (perm == None):
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
+
+    def update_module_perm_by_id(self, id, perm, raiseFlag = True):
+        tmp = self.get_module_perm_all_by_id(id,raiseFlag)
+        if (tmp == None):
+            return False
+        tmp.permission = perm
+        tmp.update = datetime.datetime.utcnow
+        db.session.commit()
+        return True
+
+    def update_module_perm_by_user_id(self, id, perm, raiseFlag = True):
+        tmp = self.get_module_perm_all_by_user_id(id,raiseFlag)
+        if (tmp == None):
+            return False
+        tmp.permission = perm
+        db.session.commit()
+        return True
+
+    def update_module_perm_by_module_id(self, id, perm, raiseFlag = True):
+        tmp = self.get_module_perm_all_by_module_id(id,raiseFlag)
+        if (tmp == None):
+            return False
+        tmp.permission = perm
+        db.session.commit()
+        return True
 
 
 
@@ -89,39 +114,63 @@ class ProjectPerm (db.Model):
             'permissions': self.permissions
         }
 
-    def get_project_perm_by_id(self, permId):
-        perm = self.query.filter_by(id=permId).get(1)
-        if (perm == None):
+    def get_project_perm_by_id(self, permId, raiseFlag = True):
+        perm = self.query.filter_by(id=permId).first()
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_project_perm_by_user_id(self, permId):
-        perm = self.query.filter_by(user_id=permId).get(1)
-        if (perm == None):
+    def get_project_perm_by_user_id(self, permId, raiseFlag = True):
+        perm = self.query.filter_by(user_id=permId).first()
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_project_perm_by_id(self, permId):
-        perm = self.query.filter_by(project_id=permId).get(1)
-        if (perm == None):
+    def get_project_perm_by_project_id(self, permId, raiseFlag = True):
+        perm = self.query.filter_by(project_id=permId).first()
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_project_perm_all(self):
+    def get_project_perm_all(self, raiseFlag = True):
         perm = self.query.all()
-        if (perm == None):
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_project_perm_all_by_user_id(self, permId):
+    def get_project_perm_all_by_user_id(self, permId, raiseFlag = True):
         perm = self.query.filter_by(user_id=permId).all()
-        if (perm == None):
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
-    def get_project_perm_all_by_project_id(self, permId):
+    def get_project_perm_all_by_project_id(self, permId, raiseFlag = True):
         perm = self.query.filter_by(project_id=permId).all()
-        if (perm == None):
+        if (perm == None) & raiseFlag:
             raise DbException(DbException, 404, "Permission not found.")
         return perm
 
+    def update_project_perm_by_id(self, id, perm, raiseFlag = True):
+        tmp = self.get_project_perm_all_by_id(id,raiseFlag)
+        if (tmp == None):
+            return False
+        tmp.permission = perm
+        tmp.update = datetime.datetime.utcnow
+        db.session.commit()
+        return True
+
+    def update_project_perm_by_user_id(self, id, perm, raiseFlag = True):
+        tmp = self.get_project_perm_all_by_user_id(id,raiseFlag)
+        if (tmp == None):
+            return False
+        tmp.permission = perm
+        db.session.commit()
+        return True
+
+    def update_project_perm_by_project_id(self, id, perm, raiseFlag = True):
+        tmp = self.get_project_perm_all_by_project_id(id,raiseFlag)
+        if (tmp == None):
+            return False
+        tmp.permission = perm
+        db.session.commit()
+        return True
