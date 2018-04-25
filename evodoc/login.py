@@ -1,6 +1,6 @@
 import uuid
 from evodoc.app import db
-from evodoc.exception import DbException
+from evodoc.exception import DbException, ApiException
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy_session import flask_scoped_session
 from datetime import datetime, timedelta
@@ -8,9 +8,10 @@ from evodoc.entity import *
 
 def login(username, password_plain):
 	user = User.get_user_by_username_or_email(User, username)
-	if user.activated == False:
-		raise DbException(304, "User is not activated yet")
 	if (user.confirm_password(password_plain)):
+		if user.activated == False:
+			token = authenticateUser(user.id)
+			raise ApiException(200, {"data": "User not activated", "token": token})
 		return authenticateUser(user.id, None)
 
 def createToken (userId) : #creates new token and adds it to the database
@@ -41,9 +42,12 @@ def authenticate(token):
 	"""
 	if token == None:
 		return None
-	userTokenEntity = UserToken.query.filter(UserToken.token == token).first()
+	userTokenEntity = UserToken.query.filter((UserToken.token == token) or ((UserToken.created + timedelta(hours=24)) > datetime.now()) or ((UserToken.update +  timedelta(hours=2)) > datetime.now())).first()
 	if userTokenEntity == None:
 		return None
 	if userTokenEntity.user.active != 1:
 		return None
-	return UserToken
+	return userTokenEntity
+
+def check_token_exists(token):
+	return userToken.query.filter((UserToken.token == token)).first()

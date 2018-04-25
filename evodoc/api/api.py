@@ -1,7 +1,7 @@
 from flask import json
 from evodoc.app import app
 from evodoc.exception import ApiException
-from evodoc.login import authenticate
+from evodoc.login import authenticate, check_token_exists
 
 def serialize_list(l):
     return [m.serialize() for m in l]
@@ -52,5 +52,7 @@ def validate_token(token):
 
     userToken = authenticate(token)
     if userToken == None:
+        if check_token_exists(token):
+            raise ApiException(200, {"data": "User not activated", "token": token})
         raise ApiException(403, "Invalid token.")
-    return userToken
+    return userToken.token

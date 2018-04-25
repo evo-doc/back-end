@@ -41,6 +41,25 @@ def delete_user(id):
     except ApiException as err:
         return response_err(err)
 
+@app.route('/user/<int:id>', methods=['POST'])
+def update_user(id):
+    """
+    Update user with suplied data, now works only for email, password, name and user type
+        :param id: integer user id
+    """
+    try:
+        data = request.get_json()
+        if data == None:
+            return response_err(ApiException(403, "No data suplied"))
+        token = data["token"]
+        validate_token(token)
+        user = User.update_user_by_id_from_array(User, id, data)
+        return response_ok_obj(user)
+    except DbException as err:
+        return response_err(err)
+    except ApiException as err:
+        return response_err(err)
+
 @app.route('/user/all/', methods=['GET'])
 def get_user_all_action():
     """
@@ -78,6 +97,8 @@ def login_action():
             "token": token
         }
         return response_ok(data)
+    except ApiException as err:
+        return response_err(err)
     except DbException as err:
         return response_err(err)
 
@@ -121,8 +142,7 @@ def activation_action(id):
         if data == None:
             raise ApiException(400, "Invalid data format")
         if (data['token'] == None):
-            err = ApiException(403, "Invalid token")
-            return response_err(err)
+            raise ApiException(403, "Invalid token")
         user = User.get_user_by_id(User, id)
         user.activation = True
         db.session.commit()
@@ -130,6 +150,24 @@ def activation_action(id):
             "data": "activated"
         }
         return response_ok(data)
+    except ApiException as err:
+        return response_err(err)
+    except DbException as err:
+        return response_err(err)
+
+@app.route("/user-active", methods=['POST'])
+def is_user_active():
+    try:
+        data = request.get_json()
+        if data == None:
+            raise ApiException(400, "Invalid data format")
+        if (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = validate_token(data['token'])
+        tokenData = {
+            "token": token
+        }
+        return response_ok(tokenData)
     except ApiException as err:
         return response_err(err)
     except DbException as err:
