@@ -14,6 +14,8 @@ def login(username, password_plain):
 			token = authenticateUser(user.id)
 			raise ApiException(200, {"data": "User not activated", "token": token})
 		return authenticateUser(user.id, None)
+	else:
+		raise ApiException(400, "Invalid username or password.")
 
 def createToken (userId) : #creates new token and adds it to the database
 	t = str(userId).zfill(10) + str(uuid.uuid4())

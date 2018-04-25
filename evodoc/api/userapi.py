@@ -85,10 +85,10 @@ def login_action():
     data = request.get_json()
     if data == None:
         return response_err(ApiException(400, "Invalid data format"))
-    if (data['username'] == None):
+    if ('username' not in data) or (data['username'] == None):
         err = ApiException(400, "username")
         return response_err(err)
-    if (data['password'] == None):
+    if ('password' not in data) or (data['password'] == None):
         err = ApiException(400, "password")
         return response_err(err)
     try:
