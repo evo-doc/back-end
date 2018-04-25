@@ -97,6 +97,8 @@ def login_action():
             "token": token
         }
         return response_ok(data)
+    except ApiException as err:
+        return response_err(err)
     except DbException as err:
         return response_err(err)
 
