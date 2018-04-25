@@ -26,7 +26,8 @@ def createToken (userId) : #creates new token and adds it to the database
 def authenticateUser (id, token=None): #returns active token
     if (token==None) :
         return createToken(id)
-    t = UserToken.query.filter(UserToken.user_id==id, UserToken.created +  timedelta(hours=24) > datetime.utcnow(), UserToken.update + timedelta(hours=2) > datetime.utcnow()).order_by(desc(UserToken.created)).first()
+    t = UserToken.query.filter(UserToken.user_id==id, UserToken.created + timedelta(hours=24) > datetime.utcnow(), UserToken.update + timedelta(hours=2) > datetime.utcnow()).first()
+    #.order_by(db.desc(UserToken.created))
     if (t == None):
         return createToken(id)
     t.update=datetime.utcnow()
@@ -41,7 +42,7 @@ def authenticate(token):
 	"""
 	if token == None:
 		return None
-	userTokenEntity = UserToken.query.filter(UserToken.user_id==id, UserToken.created +  timedelta(hours=24) > datetime.utcnow(), UserToken.update + timedelta(hours=2) > datetime.utcnow()).order_by(desc(UserToken.created)).first()
+	userTokenEntity = UserToken.query.filter_by(token=token).filter(UserToken.created > datetime.utcnow() + timedelta(hours=-24)).filter(UserToken.update > datetime.utcnow() + timedelta(hours=-2)).first() #.order_by(db.desc(UserToken.created))
 	if userTokenEntity == None:
 		return None
 	if userTokenEntity.user.active != 1:
