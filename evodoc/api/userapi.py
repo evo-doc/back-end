@@ -50,7 +50,7 @@ def update_user(id):
     try:
         data = request.get_json()
         if data == None:
-            return response_err(ApiException(403, "No data suplied"))
+            return response_err(ApiException(404, "No data suplied"))
         token = data["token"]
         validate_token(token)
         user = User.update_user_by_id_from_array(User, id, data)
@@ -86,10 +86,10 @@ def login_action():
     if data == None:
         return response_err(ApiException(400, "Invalid data format"))
     if (data['username'] == None):
-        err = ApiException(400, "No username provided")
+        err = ApiException(400, "username")
         return response_err(err)
     if (data['password'] == None):
-        err = ApiException(400, "No password provided")
+        err = ApiException(400, "password")
         return response_err(err)
     try:
         token=login(data['username'], data['password'])
@@ -112,11 +112,11 @@ def registration_action():
         if data == None:
             raise ApiException(400, "Invalid data format")
         if data['username'] == None:
-            raise ApiException(400, "No username provided")
+            raise ApiException(400, "username")
         if (data['email'] == None):
-            raise ApiException(400, "No email provided")
+            raise ApiException(400, "email")
         if (data['password'] == None):
-            raise ApiException(400, "No password provided")
+            raise ApiException(400, "password   ")
 
         if User.check_unique(User, data['username'], data['email'], True):
             userEntity = User(data['username'], data['email'], data['password'])
@@ -144,6 +144,7 @@ def activation_action(id):
         if (data['token'] == None):
             raise ApiException(403, "Invalid token")
         user = User.get_user_by_id(User, id)
+        #check code somehow
         user.activation = True
         db.session.commit()
         data = {
