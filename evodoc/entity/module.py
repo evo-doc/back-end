@@ -104,12 +104,13 @@ class Module(db.Model):
         db.session.commit()
 
     def create_or_update_module_by_id_from_array(self,id,array, raiseFlag = True):
-        if (self.create_or_update_module_by_id(id, array['project_id'], array['name'], array['created'], array['update'], array['active'], array['data'], riseFlag) == False): 
+        if (self.create_or_update_module_by_id(id, array['project_id'], array['name'], array['created'], array['update'], array['active'], array['data'], raiseFlag) == False): 
             return False
         return True
 
     def create_or_update_module_by_id(self, id, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
-        module = self.get_module_by_id(self,  id)
+        print(self)
+        module = self.get_module_by_id(id)
         if (module == None):
             if (self.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
                 return False
@@ -124,7 +125,7 @@ class Module(db.Model):
             return True
         changed = 0
         if (name != None):
-            if (self.get_module_by_name(name,false) != None):
+            if (self.get_module_by_name(name,False) != None):
                 if raiseFlag:
                     raise DbException(400, "Name is already taken")
                 return False
