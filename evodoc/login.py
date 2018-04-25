@@ -8,10 +8,10 @@ from evodoc.entity import *
 
 def login(username, password_plain):
 	user = User.get_user_by_username_or_email(User, username)
-	if user.activated == False:
-		token = authenticateUser(user.id)
-		raise ApiException(200, {"data": "User not activated", "token": token})
 	if (user.confirm_password(password_plain)):
+		if user.activated == False:
+			token = authenticateUser(user.id)
+			raise ApiException(200, {"data": "User not activated", "token": token})
 		return authenticateUser(user.id, None)
 
 def createToken (userId) : #creates new token and adds it to the database
