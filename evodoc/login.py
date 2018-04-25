@@ -9,7 +9,8 @@ from evodoc.entity import *
 def login(username, password_plain):
 	user = User.get_user_by_username_or_email(User, username)
 	if user.activated == False:
-		raise DbException(304, "User is not activated yet")
+		token = authenticateUser(user.id)
+		raise ApiException(304, {"message": "User not logged", "token": token})
 	if (user.confirm_password(password_plain)):
 		return authenticateUser(user.id, None)
 
