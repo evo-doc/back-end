@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 from sqlalchemy.orm import sessionmaker
+import bcrypt
 
 
 app = Flask(__name__, instance_relative_config=True)

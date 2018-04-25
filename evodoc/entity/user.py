@@ -1,7 +1,7 @@
 """User: Contains all entities that are related to user
 """
 import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc, Binary
 from evodoc.app import db
 import bcrypt
 from evodoc.exception import DbException
@@ -13,7 +13,7 @@ class User(db.Model):
     user_type_id =Column(Integer, ForeignKey("user_type.id"))
     name = Column(String(50), unique=True)
     email = Column(String(120), unique=True)
-    password = Column(String(128))
+    password = Column(String(128), nullable=False)
     created = Column(DateTime, default=datetime.datetime.utcnow)
     update = Column(DateTime, default=datetime.datetime.utcnow)
     active = Column(Boolean)
@@ -23,7 +23,7 @@ class User(db.Model):
     def __init__(self, name=None, email=None, password=None, created=None, update=None, active=True, activated = False):
         self.name = name
         self.email = email
-        self.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+        self.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         self.created = created
         self.active = active
         self.activated = activated
@@ -91,7 +91,7 @@ class User(db.Model):
         user = User.get_user_by_id(User, id, raiseFlag)
         if (user == None):
             return False
-        user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+        user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         user.update = datetime.datetime.utcnow
         db.session.commit()
         return True
@@ -106,7 +106,7 @@ class User(db.Model):
         return True
 
     def activate_user_by_id(self, id):
-        user = User.get_user_by_id(User, id, raiseFlag)
+        user = User.get_user_by_id(User, id)
         if (user == None):
             return False
         user.active = True
@@ -141,9 +141,9 @@ class User(db.Model):
 
         if raiseFlag:
             if userEmail != None:
-                raise DbException(400, "This email is already registered.")
+                raise DbException(400, "email")
             if userName != None:
-                raise DbException(400, "Username is taken :(")
+                raise DbException(400, "username")
             return True
         else:
             if userEmail != None:
@@ -153,7 +153,6 @@ class User(db.Model):
             return True
 
     def confirm_password(self, password_plain):
-        return True
         if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):
             return True
         else:
@@ -172,7 +171,7 @@ class User(db.Model):
             usr.email = email
             changed = 1
         if (password!=None):
-            usr.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+            usr.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).encode("utf-8")
             changed = 1
         if (created!=None):
             usr.created = created
@@ -205,22 +204,22 @@ class User(db.Model):
         if dataArray["name"] != None:
             userCheck = User.get_user_by_name(User, dataArray["name"], False)
             if userCheck != None & userCheck.id != id:
-                raise DbException(400, "Name is already taken")
+                raise DbException(400, "username")
             userEntity.username = dataArray["name"]
 
         if dataArray["email"] != None:
             userCheck = User.get_user_by_email(User, dataArray["email"], False)
             if userCheck != None & userCheck.id != id:
-                raise DbException(400, "Email is already registered")
+                raise DbException(400, "email")
             userEntity.username = dataArray["email"]
 
         if dataArray["password"] != None:
-             userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt())
+             userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
         if dataArray["user_type_id"] != None:
             userType = UserType.get_type_by_id(UserType, dataArray["user_type_id"], False)
             if userType == None:
-                raise DbException(400, "This type of user does not exist")
+                raise DbException(400, "usertype")
             userEntity.user_type_id = dataArray["user_type_id"]
 
         db.session.commit()
