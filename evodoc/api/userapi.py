@@ -1,7 +1,7 @@
 from flask import json, request
 from evodoc.exception import DbException, ApiException
 from evodoc.app import app, db
-from evodoc.login import login, authenticate, authenticateUser, createToken
+from evodoc.login import login, authenticate, authenticateUser, createToken, check_token_exists
 from evodoc.entity import *
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
 
@@ -164,11 +164,31 @@ def is_user_active():
         data = request.get_json()
         if data == None:
             raise ApiException(400, "Invalid data format")
-        if (data['token'] == None):
+        if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
         token = validate_token(data['token'])
         tokenData = {
             "token": token
+        }
+        return response_ok(tokenData)
+    except ApiException as err:
+        return response_err(err)
+    except DbException as err:
+        return response_err(err)
+
+@app.route("/user/<int:id>/authorised", methods=['POST'])
+def is_user_authorised(id):
+    try:
+        data = request.get_json()
+        if data == None:
+            raise ApiException(400, "Invalid data format")
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = check_token_exists(data['token'])
+        if token == None or token.created < datetime.utcnow() + timedelta(hours=-24) or token.update < datetime.utcnow() + timedelta(hours=-2) or token.user.active == False:
+            raise ApiException(403, "user is not authorised")
+        tokenData = {
+            "token": token.token
         }
         return response_ok(tokenData)
     except ApiException as err:
