@@ -52,4 +52,4 @@ def authenticate(token):
 	return userTokenEntity
 
 def check_token_exists(token):
-	return userToken.query.filter((UserToken.token == token)).first()
+	return UserToken.query.filter((UserToken.token == token)).first()
