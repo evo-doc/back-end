@@ -53,6 +53,6 @@ def validate_token(token):
     userToken = authenticate(token)
     if userToken == None:
         if check_token_exists(token):
-            raise ApiException(304, {"message": "User not logged", "token": token})
+            raise ApiException(200, {"data": "User not logged", "token": token})
         raise ApiException(403, "Invalid token.")
     return userToken.token
