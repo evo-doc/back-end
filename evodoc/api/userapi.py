@@ -30,8 +30,15 @@ def delete_user():
         :param id:
     """
     try:
-        token = request.args.get('token')
-        user_id = request.args.get('user_id')
+        data = request.get_json()
+        if data == None:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        if ('user_id' not in data) or (data['user_id'] == None):
+            raise ApiException(400, "user")
+        token = data['token']
+        user_id = data['user_id']
         validate_token(token)
         user = User.get_user_by_id(User, user_id)
         User.deactivate_user_by_id(user, user.id)
