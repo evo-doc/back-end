@@ -34,21 +34,21 @@ class User(db.Model):
 
     @classmethod
     def get_user_by_id(cls, userId, raiseFlag = True):
-        user = cls.query.filter_by(id=userId).first()
+        user = User.query.filter_by(id=userId).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
     @classmethod
     def get_user_by_name(cls, userName, raiseFlag = True):
-        user = cls.query.filter_by(name=userName).first()
+        user = User.query.filter_by(name=userName).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
     @classmethod
     def get_user_by_email(cls, userEmail, raiseFlag = True):
-        user = cls.query.filter_by(email=userEmail).first()
+        user = User.query.filter_by(email=userEmail).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
@@ -62,21 +62,21 @@ class User(db.Model):
 
     @classmethod
     def get_user_all(cls, raiseFlag = True):
-        user = cls.query.all()
+        user = User.query.all()
         if (user == None) & raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
     @classmethod
     def get_user_all_by_user_type_id(cls, userType, raiseFlag = True):
-        user = cls.query.filter_by(user_type_id=userType).all()
+        user = User.query.filter_by(user_type_id=userType).all()
         if (user == None) & raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
     @classmethod
     def update_user_type_by_id(cls, id, userType, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.user_type_id = userType
@@ -85,8 +85,18 @@ class User(db.Model):
         return True
 
     @classmethod
+    def update_activation_by_id(cls, id, activated, raiseFlag = True):
+        user = User.get_user_by_id(id, raiseFlag)
+        if (user == None):
+            return False
+        user.activated = activated
+        user.update = datetime.datetime.utcnow()
+        db.session.commit()
+        return True
+
+    @classmethod
     def update_user_email_by_id(cls, id, email, raiseFlag = True):
-        user = cls.get_user_by_id(User, id, raiseFlag)
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.email = email
@@ -96,7 +106,7 @@ class User(db.Model):
 
     @classmethod
     def update_user_password_by_id(cls, id, password, raiseFlag = True):
-        user = cls.get_user_by_id(User, id, raiseFlag)
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -106,7 +116,7 @@ class User(db.Model):
 
     @classmethod
     def update_user_name_by_id(cls, id, name, raiseFlag = True):
-        user = cls.get_user_by_id(User, id, raiseFlag)
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.name = name
@@ -116,7 +126,7 @@ class User(db.Model):
 
     @classmethod
     def activate_user_by_id(cls, id):
-        user = cls.get_user_by_id(User, id)
+        user = User.get_user_by_id(id)
         if (user == None):
             return False
         user.active = True
@@ -126,7 +136,7 @@ class User(db.Model):
 
     @classmethod
     def deactivate_user_by_id(cls, id, raiseFlag = True):
-        user = cls.get_user_by_id(User, id, raiseFlag)
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.active = False
@@ -134,9 +144,8 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    @classmethod
-    def save_entity(cls):
-        db.session.add(cls)
+    def save_entity(self):
+        db.session.add(self)
         db.session.commit()
 
     @classmethod
@@ -149,8 +158,8 @@ class User(db.Model):
             :param raiseFlag=False: if its true this function raise exception if email or username are already presented
         """
 
-        userEmail = User.get_user_by_email(User, email, False)
-        userName = User.get_user_by_name(User, username, False)
+        userEmail = User.get_user_by_email(email, False)
+        userName = User.get_user_by_name(username, False)
 
         if raiseFlag:
             if userEmail != None:
@@ -165,9 +174,8 @@ class User(db.Model):
                 return False
             return True
 
-    @classmethod
-    def confirm_password(cls, password_plain):
-        if (bcrypt.checkpw(password_plain.encode("utf-8"), cls.password.encode("utf-8"))):
+    def confirm_password(self, password_plain):
+        if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):
             return True
         else:
             return False
@@ -216,16 +224,16 @@ class User(db.Model):
 
     @classmethod
     def update_user_by_id_from_array(cls, id, dataArray):
-        userEntity = User.get_user_by_id(User, id)
+        userEntity = User.get_user_by_id(id)
         # Name change
         if dataArray["name"] != None:
-            userCheck = User.get_user_by_name(User, dataArray["name"], False)
+            userCheck = User.get_user_by_name(dataArray["name"], False)
             if userCheck != None & userCheck.id != id:
                 raise DbException(400, "username")
             userEntity.username = dataArray["name"]
 
         if dataArray["email"] != None:
-            userCheck = User.get_user_by_email(User, dataArray["email"], False)
+            userCheck = User.get_user_by_email(dataArray["email"], False)
             if userCheck != None & userCheck.id != id:
                 raise DbException(400, "email")
             userEntity.username = dataArray["email"]

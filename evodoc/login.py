@@ -8,7 +8,7 @@ from evodoc.entity import *
 from sqlalchemy import desc
 
 def login(username, password_plain):
-	user = User.get_user_by_username_or_email(User, username)
+	user = User.get_user_by_username_or_email(username)
 	if (user.confirm_password(password_plain)):
 		if user.activated == False:
 			token = authenticateUser(user.id)
@@ -28,7 +28,7 @@ def createToken (userId) : #creates new token and adds it to the database
 def authenticateUser (id, token=None): #returns active token
     if (token==None) :
         return createToken(id)
-    t = UserToken.query.filter(UserToken.user_id==id, UserToken.created + timedelta(hours=24) > datetime.utcnow(), UserToken.update + timedelta(hours=2) > datetime.utcnow()).first()
+    t = UserToken.query.filter(UserToken.user_id==id, UserToken.created + timedelta(hours=24) > datetime.datetime.utcnow(), UserToken.update + timedelta(hours=2) > datetime.datetime.utcnow()).first()
     #.order_by(db.desc(UserToken.created))
     if (t == None):
         return createToken(id)

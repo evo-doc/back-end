@@ -16,7 +16,7 @@ def get_user_by_id_action():
         token = request.args.get('token')
         user_id = request.args.get('user_id')
         validate_token(token)
-        data = User.get_user_by_id(User, user_id)
+        data = User.get_user_by_id(user_id)
         return response_ok_obj(data)
     except DbException as err:
         return response_err(err)
@@ -31,7 +31,7 @@ def delete_user():
     """
     try:
         data = request.get_json()
-        if data == None:
+        if data == None or data == {}:
             return response_err(ApiException(404, "No data suplied"))
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
@@ -40,8 +40,8 @@ def delete_user():
         token = data['token']
         user_id = data['user_id']
         validate_token(token)
-        user = User.get_user_by_id(User, user_id)
-        User.deactivate_user_by_id(user, user.id)
+        user = User.get_user_by_id(user_id)
+        User.deactivate_user_by_id(user.id)
         data = {
             "data": "done"
         }
@@ -59,7 +59,7 @@ def update_user():
     """
     try:
         data = request.get_json()
-        if data == None:
+        if data == None or data == {}:
             return response_err(ApiException(404, "No data suplied"))
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
@@ -98,7 +98,7 @@ def login_action():
     API login entry point
     """
     data = request.get_json()
-    if data == None:
+    if data == None  or data == {}:
         return response_err(ApiException(400, "data"))
     if ('username' not in data) or (data['username'] == None):
         err = ApiException(400, "username")
@@ -125,7 +125,7 @@ def registration_action():
     """
     try:
         data = request.get_json()
-        if data == None:
+        if data is None or data == {}:
             raise ApiException(400, "data")
         if 'username' not in data or data['username'] == None:
             raise ApiException(400, "username")
@@ -134,7 +134,7 @@ def registration_action():
         if 'password' not in data or (data['password'] == None):
             raise ApiException(400, "password   ")
 
-        if User.check_unique(User, data['username'], data['email'], True):
+        if User.check_unique(data['username'], data['email'], True):
             userEntity = User(data['username'], data['email'], data['password'])
             userEntity.save_entity()
             token = authenticateUser(userEntity.id)
@@ -169,8 +169,7 @@ def activation_action():
         if user.activated:
             raise ApiException(401, "User has been already activated.")
         #check code somehow
-        user.activation = True
-        db.session.commit()
+        user.update_activation_by_id(user.id, True)
         data = {
             "data": "activated"
         }
