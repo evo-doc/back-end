@@ -2,7 +2,7 @@ from flask import json, request
 from evodoc.exception import DbException, ApiException
 from evodoc.app import app, db
 from evodoc.login import login, authenticate, authenticateUser, createToken, check_token_exists
-from evodoc.entity import *
+from evodoc.entity import User, UserToken, UserType
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
 from datetime import datetime, timedelta
 
@@ -162,7 +162,7 @@ def activation_action():
         if ('user_id' not in data) or (data['user_id'] == None):
             raise ApiException(400, "user")
         user_id = data['user_id']
-        user = User.get_user_by_id(User, user_id)
+        user = User.get_user_by_id(user_id)
         token = check_token_exists(data['token'])
         if token == None:
             raise ApiException(403, "Invalid token")

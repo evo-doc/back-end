@@ -32,44 +32,50 @@ class User(db.Model):
     def __repr__(self):
         return "<User %r>" % (self.name)
 
-    def get_user_by_id(self, userId, raiseFlag = True):
-        user = self.query.filter_by(id=userId).first()
+    @classmethod
+    def get_user_by_id(cls, userId, raiseFlag = True):
+        user = cls.query.filter_by(id=userId).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
-    def get_user_by_name(self, userName, raiseFlag = True):
-        user = self.query.filter_by(name=userName).first()
-        if (user == None) & raiseFlag:
-            raise DbException(404, "User not found.")
-        return user
-        
-    def get_user_by_email(self, userEmail, raiseFlag = True):
-        user = self.query.filter_by(email=userEmail).first()
+    @classmethod
+    def get_user_by_name(cls, userName, raiseFlag = True):
+        user = cls.query.filter_by(name=userName).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
-    def get_user_by_username_or_email(self, username, raiseFlag = True):
-        user = self.query.filter((User.email == username) | (User.name == username)).first()
+    @classmethod
+    def get_user_by_email(cls, userEmail, raiseFlag = True):
+        user = cls.query.filter_by(email=userEmail).first()
+        if (user == None) & raiseFlag:
+            raise DbException(404, "User not found.")
+        return user
+
+    @classmethod
+    def get_user_by_username_or_email(cls, username, raiseFlag = True):
+        user = cls.query.filter((User.email == username) | (User.name == username)).first()
         if (user == None)  & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
-    def get_user_all(self, raiseFlag = True):
-        user = self.query.all()
+    @classmethod
+    def get_user_all(cls, raiseFlag = True):
+        user = cls.query.all()
         if (user == None) & raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
-    def get_user_all_by_user_type_id(self, userType, raiseFlag = True):
-        user = self.query.filter_by(user_type_id=userType).all()
+    @classmethod
+    def get_user_all_by_user_type_id(cls, userType, raiseFlag = True):
+        user = cls.query.filter_by(user_type_id=userType).all()
         if (user == None) & raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
-
-    def update_user_type_by_id(self, id, userType, raiseFlag = True):
+    @classmethod
+    def update_user_type_by_id(cls, id, userType, raiseFlag = True):
         user = User.get_user_by_id(User, id, raiseFlag)
         if (user == None):
             return False
@@ -78,8 +84,9 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    def update_user_email_by_id(self, id, email, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_user_email_by_id(cls, id, email, raiseFlag = True):
+        user = cls.get_user_by_id(User, id, raiseFlag)
         if (user == None):
             return False
         user.email = email
@@ -87,8 +94,9 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    def update_user_password_by_id(self, id, password, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_user_password_by_id(cls, id, password, raiseFlag = True):
+        user = cls.get_user_by_id(User, id, raiseFlag)
         if (user == None):
             return False
         user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -96,8 +104,9 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    def update_user_name_by_id(self, id, name, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_user_name_by_id(cls, id, name, raiseFlag = True):
+        user = cls.get_user_by_id(User, id, raiseFlag)
         if (user == None):
             return False
         user.name = name
@@ -105,8 +114,9 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    def activate_user_by_id(self, id):
-        user = User.get_user_by_id(User, id)
+    @classmethod
+    def activate_user_by_id(cls, id):
+        user = cls.get_user_by_id(User, id)
         if (user == None):
             return False
         user.active = True
@@ -114,8 +124,9 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    def deactivate_user_by_id(self, id, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def deactivate_user_by_id(cls, id, raiseFlag = True):
+        user = cls.get_user_by_id(User, id, raiseFlag)
         if (user == None):
             return False
         user.active = False
@@ -123,11 +134,13 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    def save_entity(self):
-        db.session.add(self)
+    @classmethod
+    def save_entity(cls):
+        db.session.add(cls)
         db.session.commit()
 
-    def check_unique(self, username, email, raiseFlag = False):
+    @classmethod
+    def check_unique(cls, username, email, raiseFlag = False):
         """
         Check if username and email are not presented in database (check unique)
             :param self:
@@ -152,18 +165,20 @@ class User(db.Model):
                 return False
             return True
 
-    def confirm_password(self, password_plain):
-        if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):
+    @classmethod
+    def confirm_password(cls, password_plain):
+        if (bcrypt.checkpw(password_plain.encode("utf-8"), cls.password.encode("utf-8"))):
             return True
         else:
             return False
 
-    def update_user_by_id_all(self, name=None, email=None, password=None, created=None, update=None, active=None, activated = None, raiseFlag = True):
-        usr = self.get_user_by_id(id, raiseFlag)
+    @classmethod
+    def update_user_by_id_all(cls, name=None, email=None, password=None, created=None, update=None, active=None, activated = None, raiseFlag = True):
+        usr = cls.get_user_by_id(id, raiseFlag)
         if (usr == None):
             return False
         changed = 0
-        
+
         if (name!=None):
             usr.name = name
             changed = 1
@@ -189,16 +204,18 @@ class User(db.Model):
         if (update  !=None):
             usr.update = update
             db.session.commit()
-        return True 
+        return True
 
-    def update_user_by_id_all_list(self, userList, raiseFlag = True):
+    @classmethod
+    def update_user_by_id_all_list(cls, userList, raiseFlag = True):
         failedUpdatesList = []
         for i in userList:
-            if (self.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
+            if (cls.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
                 failedUpdatesList.append(i)
         return i
 
-    def update_user_by_id_from_array(self, id, dataArray):
+    @classmethod
+    def update_user_by_id_from_array(cls, id, dataArray):
         userEntity = User.get_user_by_id(User, id)
         # Name change
         if dataArray["name"] != None:
@@ -225,15 +242,16 @@ class User(db.Model):
         db.session.commit()
         return userEntity
 
-    def serialize(self):
+    @classmethod
+    def serialize(cls):
         return {
-            'id': self.id,
-            'user_type_id': self.user_type_id,
-            'name': self.name,
-            'email': self.email,
-            'created': self.created,
-            'update': self.update,
-            'active': self.active,
+            'id': cls.id,
+            'user_type_id': cls.user_type_id,
+            'name': cls.name,
+            'email': cls.email,
+            'created': cls.created,
+            'update': cls.update,
+            'active': cls.active,
         }
 
 ###################################################################################

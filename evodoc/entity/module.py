@@ -10,8 +10,8 @@ class Module(db.Model):
     id = Column(Integer, primary_key=True)
     project_id = Column(Integer)
     name = Column(String(50), unique=True)
-    created = Column(DateTime, default=datetime.datetime.utcnow)
-    update = Column(DateTime, default=datetime.datetime.utcnow)
+    created = Column(DateTime, default=datetime.datetime.utcnow())
+    update = Column(DateTime, default=datetime.datetime.utcnow())
     active = Column(Boolean)
     data = Column(JSON)
 
@@ -59,7 +59,7 @@ class Module(db.Model):
                 raise DbException(400, "Name is already taken")
             return false
         module.name = moduleName
-        module.update = datetime.datetime.utcnow
+        module.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -68,7 +68,7 @@ class Module(db.Model):
         if (module == None):
             return False
         module.data = data
-        module.update = datetime.datetime.utcnow
+        module.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -77,7 +77,7 @@ class Module(db.Model):
         if (module == None):
             return False
         module.data = data
-        module.update = datetime.datetime.utcnow
+        module.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -86,7 +86,7 @@ class Module(db.Model):
         if (module == None):
             return False
         module.active = True
-        module.update = datetime.datetime.utcnow
+        module.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -95,7 +95,7 @@ class Module(db.Model):
         if (module == None):
             return False
         module.active = False
-        module.update = datetime.datetime.utcnow
+        module.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -116,10 +116,8 @@ class Module(db.Model):
                 return False
             return True
         if (module.project_id != project_id and project_id != None):
-            
             if(data == None):
                 data = module.data
-            
             if (self.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
                 return False
             return True
@@ -146,27 +144,25 @@ class Module(db.Model):
             db.session.commit()
             return True
         if (changed == 1):
-            module.update = datetime.datetime.utcnow
+            module.update = datetime.datetime.utcnow()
             db.session.commit()
         return True
 
     def create_module(self, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
-        
-        if (None != self.get_module_by_name(name,false)):
+        if (None != self.get_module_by_name(name,False)):
             if raiseFlag:
                 raise DbException(400, "Name is already taken")
             return False
         entity = Module(project_id=project_id, name=name, created=created, update=update, active=active, data=data)
         entity.save_entity()
         return True
-        
 
 class Project(db.Model):
     __tablename__ = "project"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
-    created = Column(DateTime, default=datetime.datetime.utcnow)
-    update = Column(DateTime, default=datetime.datetime.utcnow)
+    created = Column(DateTime, default=datetime.datetime.utcnow())
+    update = Column(DateTime, default=datetime.datetime.utcnow())
     active = Column(Boolean)
     data = Column(JSON)
 
@@ -203,7 +199,7 @@ class Project(db.Model):
         if (project == None):
             return False
         project.name = moduleName
-        project.update = datetime.datetime.utcnow
+        project.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -212,7 +208,7 @@ class Project(db.Model):
         if (project == None):
             return False
         project.data = data
-        project.update = datetime.datetime.utcnow
+        project.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -221,7 +217,7 @@ class Project(db.Model):
         if (project == None):
             return False
         project.data = data
-        project.update = datetime.datetime.utcnow
+        project.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -230,7 +226,7 @@ class Project(db.Model):
         if (project == None):
             return False
         project.active = True
-        project.update = datetime.datetime.utcnow
+        project.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -239,7 +235,7 @@ class Project(db.Model):
         if (project == None):
             return False
         project.active = False
-        project.update = datetime.datetime.utcnow
+        project.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
