@@ -57,7 +57,7 @@ def update_user():
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
         if ('user_id' not in data) or (data['user_id'] == None):
-            raise ApiException(400, "No user specified")
+            raise ApiException(400, "user")
         user_id = data['user_id']
         token = data["token"]
         validate_token(token)
@@ -92,7 +92,7 @@ def login_action():
     """
     data = request.get_json()
     if data == None:
-        return response_err(ApiException(400, "Invalid data format"))
+        return response_err(ApiException(400, "data"))
     if ('username' not in data) or (data['username'] == None):
         err = ApiException(400, "username")
         return response_err(err)
@@ -118,12 +118,12 @@ def registration_action():
     try:
         data = request.get_json()
         if data == None:
-            raise ApiException(400, "Invalid data format")
-        if data['username'] == None:
+            raise ApiException(400, "data")
+        if 'username' not in data or data['username'] == None:
             raise ApiException(400, "username")
-        if (data['email'] == None):
+        if 'email' not in data or (data['email'] == None):
             raise ApiException(400, "email")
-        if (data['password'] == None):
+        if 'password' not in data or (data['password'] == None):
             raise ApiException(400, "password   ")
 
         if User.check_unique(User, data['username'], data['email'], True):
@@ -148,18 +148,18 @@ def activation_action():
     try:
         data = request.get_json()
         if data == None:
-            raise ApiException(400, "Invalid data format")
+            raise ApiException(400, "data")
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
         if ('user_id' not in data) or (data['user_id'] == None):
-            raise ApiException(400, "No user specified")
+            raise ApiException(400, "user")
         user_id = data['user_id']
         user = User.get_user_by_id(User, user_id)
         token = check_token_exists(data['token'])
         if token == None:
             raise ApiException(403, "Invalid token")
         if user.activated:
-            raise ApiException(400, "User has been already activated.")
+            raise ApiException(401, "User has been already activated.")
         #check code somehow
         user.activation = True
         db.session.commit()
@@ -177,7 +177,7 @@ def is_user_active():
     try:
         data = request.get_json()
         if data == None:
-            raise ApiException(400, "Invalid data format")
+            raise ApiException(400, "data")
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
         token = validate_token(data['token'])
@@ -195,14 +195,14 @@ def is_user_authorised():
     try:
         data = request.get_json()
         if data == None:
-            raise ApiException(400, "Invalid data format")
+            raise ApiException(400, "data")
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
         token = check_token_exists(data['token'])
         if token == None or token.created < datetime.utcnow() + timedelta(hours=-24) or token.update < datetime.utcnow() + timedelta(hours=-2) or token.user.active == False:
             raise ApiException(403, "user is not authorised")
         if ('user_id' not in data) or (data['user_id'] == None):
-            raise ApiException(400, "No user specified")
+            raise ApiException(400, "user")
         user_id = data['user_id']
         if (user_id != token.user_id):
             raise ApiException(403, "Invalid token")

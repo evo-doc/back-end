@@ -79,7 +79,7 @@ def update_module_action(id):
     try:
         data = request.get_json()
         if data == None:
-            raise ApiException(400, "Invalid data format")
+            raise ApiException(400, "data")
         if (data['token'] == None):
             err = ApiException(403, "Invalid token")
             return response_err(err)
