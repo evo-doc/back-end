@@ -109,7 +109,8 @@ def login_action():
     try:
         token=login(data['username'], data['password'])
         data = {
-            "token": token
+            "token": token,
+            "verified": "true"
         }
         return response_ok(data)
     except ApiException as err:

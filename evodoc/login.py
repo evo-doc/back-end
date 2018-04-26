@@ -12,7 +12,7 @@ def login(username, password_plain):
 	if (user.confirm_password(password_plain)):
 		if user.activated == False:
 			token = authenticateUser(user.id)
-			raise ApiException(200, {"data": "User not activated", "token": token})
+			raise ApiException(200, {"verified": "false", "token": token})
 		return authenticateUser(user.id, None)
 	else:
 		raise ApiException(403, "Invalid username or password.")
@@ -32,7 +32,7 @@ def authenticateUser (id, token=None): #returns active token
     #.order_by(db.desc(UserToken.created))
     if (t == None):
         return createToken(id)
-    t.update=datetime.utcnow()
+    t.update=datetime.datetime.utcnow()
     t.token = token
     db.session.commit()
     return t

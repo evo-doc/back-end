@@ -14,8 +14,8 @@ class User(db.Model):
     name = Column(String(50), unique=True)
     email = Column(String(120), unique=True)
     password = Column(String(128), nullable=False)
-    created = Column(DateTime, default=datetime.datetime.utcnow)
-    update = Column(DateTime, default=datetime.datetime.utcnow)
+    created = Column(DateTime, default=datetime.datetime.utcnow())
+    update = Column(DateTime, default=datetime.datetime.utcnow())
     active = Column(Boolean)
     activated = Column(Boolean)
     tokens = db.relationship('UserToken', backref='user', lazy=False)
@@ -74,7 +74,7 @@ class User(db.Model):
         if (user == None):
             return False
         user.user_type_id = userType
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -83,7 +83,7 @@ class User(db.Model):
         if (user == None):
             return False
         user.email = email
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -92,7 +92,7 @@ class User(db.Model):
         if (user == None):
             return False
         user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -101,7 +101,7 @@ class User(db.Model):
         if (user == None):
             return False
         user.name = name
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -110,7 +110,7 @@ class User(db.Model):
         if (user == None):
             return False
         user.active = True
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -119,7 +119,7 @@ class User(db.Model):
         if (user == None):
             return False
         user.active = False
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.utcnow()
         db.session.commit()
         return True
 
