@@ -119,7 +119,7 @@ class User(db.Model):
         if (user == None):
             return False
         user.active = False
-        user.update = datetime.utcnow()
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -304,8 +304,8 @@ class UserToken(db.Model):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"))
     token = Column(String(47), unique=True)
-    created = Column(DateTime, default=datetime.datetime.utcnow)
-    update = Column(DateTime, default=datetime.datetime.utcnow)
+    created = Column(DateTime, default=datetime.datetime.utcnow())
+    update = Column(DateTime, default=datetime.datetime.utcnow())
 
     def __init__(self, user_id=None, token=None, created=None, update=None):
         self.user_id=user_id
@@ -323,7 +323,7 @@ class UserToken(db.Model):
         return userToken
 
     def get_token_by_user_id(self, userId):         #returns newest token for user
-        userToken = self.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()          
+        userToken = self.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()
         if (userToken == None):
             raise DbException(404, "UserToken not found.")
         return userToken
@@ -345,7 +345,7 @@ class UserToken(db.Model):
         if (userToken == None):
             return False
         userToken.userId = userId
-        userToken.update = datetime.datetime.utcnow
+        userToken.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -354,7 +354,7 @@ class UserToken(db.Model):
         if (userToken == None):
             return False
         userToken.token = token
-        userToken.update = datetime.datetime.utcnow
+        userToken.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
