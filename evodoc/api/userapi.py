@@ -6,32 +6,34 @@ from evodoc.entity import *
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
 from datetime import datetime, timedelta
 
-@app.route('/user/<int:id>', methods=['GET'])
-def get_user_by_id_action(id):
+@app.route('/user', methods=['GET'])
+def get_user_by_id_action():
     """
     Get user data by it's id
         :param id:
     """
     try:
         token = request.args.get('token')
+        user_id = request.args.get('user_id')
         validate_token(token)
-        data = User.get_user_by_id(User, id)
+        data = User.get_user_by_id(User, user_id)
         return response_ok_obj(data)
     except DbException as err:
         return response_err(err)
     except ApiException as err:
         return response_err(err)
 
-@app.route('/user/<int:id>', methods=['DELETE'])
-def delete_user(id):
+@app.route('/user', methods=['DELETE'])
+def delete_user():
     """
     Deletes user by it's id (only deactivation)
         :param id:
     """
     try:
         token = request.args.get('token')
+        user_id = request.args.get('user_id')
         validate_token(token)
-        user = User.get_user_by_id(User, id)
+        user = User.get_user_by_id(User, user_id)
         User.deactivate_user_by_id(user, user.id)
         data = {
             "data": "done"
@@ -42,8 +44,8 @@ def delete_user(id):
     except ApiException as err:
         return response_err(err)
 
-@app.route('/user/<int:id>', methods=['POST'])
-def update_user(id):
+@app.route('/user', methods=['POST'])
+def update_user():
     """
     Update user with suplied data, now works only for email, password, name and user type
         :param id: integer user id
@@ -52,9 +54,14 @@ def update_user(id):
         data = request.get_json()
         if data == None:
             return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        if ('user_id' not in data) or (data['user_id'] == None):
+            raise ApiException(400, "No user specified")
+        user_id = data['user_id']
         token = data["token"]
         validate_token(token)
-        user = User.update_user_by_id_from_array(User, id, data)
+        user = User.update_user_by_id_from_array(User, user_id, data)
         return response_ok_obj(user)
     except DbException as err:
         return response_err(err)
@@ -133,8 +140,8 @@ def registration_action():
     except DbException as err:
         return response_err(err)
 
-@app.route("/user/<int:id>/activation", methods=['POST'])
-def activation_action(id):
+@app.route("/user/activation", methods=['POST'])
+def activation_action():
     """
     Acc activation
     """
@@ -142,9 +149,12 @@ def activation_action(id):
         data = request.get_json()
         if data == None:
             raise ApiException(400, "Invalid data format")
-        user = User.get_user_by_id(User, id)
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
+        if ('user_id' not in data) or (data['user_id'] == None):
+            raise ApiException(400, "No user specified")
+        user_id = data['user_id']
+        user = User.get_user_by_id(User, user_id)
         token = check_token_exists(data['token'])
         if token == None:
             raise ApiException(403, "Invalid token")
@@ -180,8 +190,8 @@ def is_user_active():
     except DbException as err:
         return response_err(err)
 
-@app.route("/user/<int:id>/authorised", methods=['POST'])
-def is_user_authorised(id):
+@app.route("/user/authorised", methods=['POST'])
+def is_user_authorised():
     try:
         data = request.get_json()
         if data == None:
@@ -191,6 +201,11 @@ def is_user_authorised(id):
         token = check_token_exists(data['token'])
         if token == None or token.created < datetime.utcnow() + timedelta(hours=-24) or token.update < datetime.utcnow() + timedelta(hours=-2) or token.user.active == False:
             raise ApiException(403, "user is not authorised")
+        if ('user_id' not in data) or (data['user_id'] == None):
+            raise ApiException(400, "No user specified")
+        user_id = data['user_id']
+        if (user_id != token.user_id):
+            raise ApiException(403, "Invalid token")
         tokenData = {
             "token": token.token
         }
