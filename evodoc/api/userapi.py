@@ -142,9 +142,12 @@ def activation_action(id):
         data = request.get_json()
         if data == None:
             raise ApiException(400, "Invalid data format")
+        user = User.get_user_by_id(User, id)
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
-        user = User.get_user_by_id(User, id)
+        token = check_token_exists(data['token'])
+        if token == None:
+            raise ApiException(403, "Invalid token")
         if user.activated:
             raise ApiException(400, "User has been already activated.")
         #check code somehow
