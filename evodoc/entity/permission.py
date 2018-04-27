@@ -8,8 +8,8 @@ from evodoc.app import db
 class ModulePerm (db.Model):
     __tablename__ = "module_perm"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
-    module_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    module_id = Column(Integer, ForeignKey("module.id"))
     permissions = Column(Integer) #8=owner, 4=write, 2=read -up for discussion
 
     def __init__(self, user_id=None, module_id=None, permissions=None):
@@ -103,8 +103,8 @@ class ModulePerm (db.Model):
 class ProjectPerm (db.Model):
     __tablename__ = "project_perm"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
-    project_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    project_id = Column(Integer, ForeignKey("project.id"))
     permissions = Column(Integer) #8=owner, 4=write, 2=read -up for discussion
 
     def __init__(self, user_id=None, project_id=None, permissions=None):
