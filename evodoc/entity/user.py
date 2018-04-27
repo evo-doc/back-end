@@ -224,16 +224,16 @@ class User(db.Model):
 
     @classmethod
     def update_user_by_id_from_array(cls, id, dataArray):
-        userEntity = User.get_user_by_id(id)
+        userEntity = cls.get_user_by_id(id)
         # Name change
         if dataArray["name"] != None:
-            userCheck = User.get_user_by_name(dataArray["name"], False)
+            userCheck = cls.get_user_by_name(dataArray["name"], False)
             if userCheck != None & userCheck.id != id:
                 raise DbException(400, "username")
             userEntity.username = dataArray["name"]
 
         if dataArray["email"] != None:
-            userCheck = User.get_user_by_email(dataArray["email"], False)
+            userCheck = cls.get_user_by_email(dataArray["email"], False)
             if userCheck != None & userCheck.id != id:
                 raise DbException(400, "email")
             userEntity.username = dataArray["email"]
@@ -277,8 +277,9 @@ class UserType(db.Model):
     def __repr__(self):
         return "<UserType %r>" % (self.name)
 
-    def get_type_by_id(self, typeId, raiseFlag = True):
-        userType = self.query.filter_by(id=typeId).first()
+    @classmethod
+    def get_type_by_id(cls, typeId, raiseFlag = True):
+        userType = cls.query.filter_by(id=typeId).first()
         if (userType == None) & raiseFlag:
             raise DbException(404, "UserType not found.")
         return userType
@@ -289,28 +290,32 @@ class UserType(db.Model):
 #            raise DbException(DbException, 404, "UserType not found.")
 #        return userType
 
-    def get_type_by_name(self, typeName, raiseFlag = True):
-        userType = self.query.filter_by(name=typeName).first()
+    @classmethod
+    def get_type_by_name(cls, typeName, raiseFlag = True):
+        userType = cls.query.filter_by(name=typeName).first()
         if (userType == None) & raiseFlag:
             raise DbException(404, "UserType not found.")
         return userType
 
-    def get_type_all(self, raiseFlag = True):
-        userType = self.query.all()
+    @classmethod
+    def get_type_all(cls, raiseFlag = True):
+        userType = cls.query.all()
         if (userType == None) & raiseFlag:
             raise DbException(404, "No userType found.")
         return userType
 
-    def update_type_name_by_id(self, id, name, raiseFlag = True):
-        userType = self.get_type_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_type_name_by_id(cls, id, name, raiseFlag = True):
+        userType = cls.get_type_by_id(User, id, raiseFlag)
         if (userType == None):
             return False
         userType.name = name
         db.session.commit()
         return True
 
-    def update_type_permisson_by_id(self, id, permission, raiseFlag = True):
-        userType = self.get_type_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_type_permisson_by_id(cls, id, permission, raiseFlag = True):
+        userType = cls.get_type_by_id(User, id, raiseFlag)
         if (userType == None):
             return False
         userType.permission = permission
@@ -342,32 +347,37 @@ class UserToken(db.Model):
     def __repr__(self):
         return "<UserToken %r>" % (self.token)
 
-    def get_token_by_id(self, tokenId, raiseFlag = True):
-        userToken = self.query.filter_by(id=tokenId).first()
+    @classmethod
+    def get_token_by_id(cls, tokenId, raiseFlag = True):
+        userToken = cls.query.filter_by(id=tokenId).first()
         if (userToken == None) & raiseFlag:
             raise DbException(404, "UserToken not found.")
         return userToken
 
-    def get_token_by_user_id(self, userId):         #returns newest token for user
-        userToken = self.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()
+    @classmethod
+    def get_token_by_user_id(cls, userId):         #returns newest token for user
+        userToken = cls.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()
         if (userToken == None):
             raise DbException(404, "UserToken not found.")
         return userToken
 
-    def get_token_all(self, raiseFlag = True):
-        userToken = self.query.all()
+    @classmethod
+    def get_token_all(cls, raiseFlag = True):
+        userToken = cls.query.all()
         if (userToken == None) & raiseFlag:
             raise DbException(404, "No userToken found.")
         return userToken
 
-    def get_token_all_by_user_id(self, userId, raiseFlag = True):
-        userToken = self.query.filter_by(user_id=userId).all()
+    @classmethod
+    def get_token_all_by_user_id(cls, userId, raiseFlag = True):
+        userToken = cls.query.filter_by(user_id=userId).all()
         if (userToken == None) & raiseFlag:
             raise DbException(404, "No userToken found.")
         return userToken
 
-    def update_token_user_id_by_id(self, id, userId, raiseFlag = True):
-        userToken = self.get_token_by_id(id, raiseFlag)
+    @classmethod
+    def update_token_user_id_by_id(cls, id, userId, raiseFlag = True):
+        userToken = cls.get_token_by_id(id, raiseFlag)
         if (userToken == None):
             return False
         userToken.userId = userId
@@ -375,8 +385,9 @@ class UserToken(db.Model):
         db.session.commit()
         return True
 
-    def update_token_token_by_id(self, id, token, raiseFlag = True):
-        userToken = self.get_token_by_id(id, raiseFlag)
+    @classmethod
+    def update_token_token_by_id(cls, id, token, raiseFlag = True):
+        userToken = cls.get_token_by_id(id, raiseFlag)
         if (userToken == None):
             return False
         userToken.token = token

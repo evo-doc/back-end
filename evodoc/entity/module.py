@@ -26,32 +26,37 @@ class Module(db.Model):
     def __repr__(self):
         return "<Module %r>" % (self.name)
 
-    def get_module_by_id(self, moduleId, raiseFlag = True):
-        result = self.query.filter_by(id=moduleId).first()
+    @classmethod
+    def get_module_by_id(cls, moduleId, raiseFlag = True):
+        result = cls.query.filter_by(id=moduleId).first()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_module_by_name(self, moduleName, raiseFlag = True):
-        result = self.query.filter_by(name=moduleId).first()
+    @classmethod
+    def get_module_by_name(cls, moduleName, raiseFlag = True):
+        result = cls.query.filter_by(name=moduleId).first()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_module_all(self, raiseFlag = True):
-        result = self.query.all()
+    @classmethod
+    def get_module_all(cls, raiseFlag = True):
+        result = cls.query.all()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_module_all_by_project_id(self, projectId, raiseFlag = True):
-        result = self.query.filter_by(project_id=projectId).all()
+    @classmethod
+    def get_module_all_by_project_id(cls, projectId, raiseFlag = True):
+        result = cls.query.filter_by(project_id=projectId).all()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def update_name_by_id(self,moduleId,moduleName, raiseFlag = True):
-        module = self.get_module_by_id(moduleId, raiseFlag)
+    @classmethod
+    def update_name_by_id(cls,moduleId,moduleName, raiseFlag = True):
+        module = cls.get_module_by_id(moduleId, raiseFlag)
         if (module == None):
             return False
         if (None != self.get_module_by_name(moduleName,false)):
@@ -63,8 +68,9 @@ class Module(db.Model):
         db.session.commit()
         return True
 
-    def update_module_data_by_id(self,moduleId,data, raiseFlag = True):
-        module = self.get_module_by_id(moduleId, raiseFlag)
+    @classmethod
+    def update_module_data_by_id(cls,moduleId,data, raiseFlag = True):
+        module = cls.get_module_by_id(moduleId, raiseFlag)
         if (module == None):
             return False
         module.data = data
@@ -72,8 +78,9 @@ class Module(db.Model):
         db.session.commit()
         return True
 
-    def update_module_data_by_name(self,name,data, raiseFlag = True):
-        module = self.get_module_by_name(name, raiseFlag)
+    @classmethod
+    def update_module_data_by_name(cls,name,data, raiseFlag = True):
+        module = cls.get_module_by_name(name, raiseFlag)
         if (module == None):
             return False
         module.data = data
@@ -81,8 +88,9 @@ class Module(db.Model):
         db.session.commit()
         return True
 
-    def activate_module_by_id(self, id, raiseFlag = True):
-        module = self.get_module_by_id(id, raiseFlag)
+    @classmethod
+    def activate_module_by_id(cls, id, raiseFlag = True):
+        module = cls.get_module_by_id(id, raiseFlag)
         if (module == None):
             return False
         module.active = True
@@ -90,8 +98,9 @@ class Module(db.Model):
         db.session.commit()
         return True
 
-    def deactivate_module_by_id(self, id, raiseFlag = True):
-        module = self.get_module_by_id(id, raiseFlag)
+    @classmethod
+    def deactivate_module_by_id(cls, id, raiseFlag = True):
+        module = cls.get_module_by_id(id, raiseFlag)
         if (module == None):
             return False
         module.active = False
@@ -103,27 +112,29 @@ class Module(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def create_or_update_module_by_id_from_array(self,id,array, raiseFlag = True):
-        if (self.create_or_update_module_by_id(id, array['project_id'], array['name'], array['created'], array['update'], array['active'], array['data'], raiseFlag) == False): 
+    @classmethod
+    def create_or_update_module_by_id_from_array(cls,id,array, raiseFlag = True):
+        if (cls.create_or_update_module_by_id(id, array['project_id'], array['name'], array['created'], array['update'], array['active'], array['data'], raiseFlag) == False): 
             return False
         return True
 
-    def create_or_update_module_by_id(self, id, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
-        print(self)
-        module = self.get_module_by_id(id)
+    @classmethod
+    def create_or_update_module_by_id(cls, id, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
+        
+        module = cls.get_module_by_id(id)
         if (module == None):
-            if (self.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
+            if (cls.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
                 return False
             return True
         if (module.project_id != project_id and project_id != None):
             if(data == None):
                 data = module.data
-            if (self.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
+            if (cls.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
                 return False
             return True
         changed = 0
         if (name != None):
-            if (self.get_module_by_name(name,False) != None):
+            if (cls.get_module_by_name(name,False) != None):
                 if raiseFlag:
                     raise DbException(400, "Name is already taken")
                 return False
@@ -148,8 +159,9 @@ class Module(db.Model):
             db.session.commit()
         return True
 
-    def create_module(self, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
-        if (None != self.get_module_by_name(name,False)):
+    @classmethod
+    def create_module(cls, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
+        if (None != cls.get_module_by_name(name,False)):
             if raiseFlag:
                 raise DbException(400, "Name is already taken")
             return False
@@ -176,26 +188,30 @@ class Project(db.Model):
     def __repr__(self):
         return "<Project %r>" % (self.name)
 
-    def get_project_by_id(self, projectId, raiseFlag = True):
-        result = self.query.filter_by(id=projectId).first()
+    @classmethod
+    def get_project_by_id(cls, projectId, raiseFlag = True):
+        result = cls.query.filter_by(id=projectId).first()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_project_by_name(self, moduleName, raiseFlag = True):
-        result = self.query.filter_by(name=moduleId).first()
+    @classmethod
+    def get_project_by_name(cls, moduleName, raiseFlag = True):
+        result = cls.query.filter_by(name=moduleId).first()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def get_project_all(self):
-        result = self.query.all()
+    @classmethod
+    def get_project_all(cls):
+        result = cls.query.all()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "User not found.")
         return result
 
-    def update_project_name_by_id(self,projectId,moduleName, raiseFlag = True):
-        project = self.get_project_by_id(projectId, raiseFlag)
+    @classmethod
+    def update_project_name_by_id(cls,projectId,moduleName, raiseFlag = True):
+        project = cls.get_project_by_id(projectId, raiseFlag)
         if (project == None):
             return False
         project.name = moduleName
@@ -203,8 +219,9 @@ class Project(db.Model):
         db.session.commit()
         return True
 
-    def update_project_data_by_id(self,projectId,data, raiseFlag = True):
-        project = self.get_project_by_id(projectId, raiseFlag)
+    @classmethod
+    def update_project_data_by_id(cls,projectId,data, raiseFlag = True):
+        project = cls.get_project_by_id(projectId, raiseFlag)
         if (project == None):
             return False
         project.data = data
@@ -212,8 +229,9 @@ class Project(db.Model):
         db.session.commit()
         return True
 
-    def update_project_data_by_name(self,name,data, raiseFlag = True):
-        project = self.get_project_by_name(name, raiseFlag)
+    @classmethod
+    def update_project_data_by_name(cls,name,data, raiseFlag = True):
+        project = cls.get_project_by_name(name, raiseFlag)
         if (project == None):
             return False
         project.data = data
@@ -221,8 +239,9 @@ class Project(db.Model):
         db.session.commit()
         return True
 
-    def activate_project_by_id(self, id, raiseFlag = True):
-        project = self.get_project_by_id(id, raiseFlag)
+    @classmethod
+    def activate_project_by_id(cls, id, raiseFlag = True):
+        project = cls.get_project_by_id(id, raiseFlag)
         if (project == None):
             return False
         project.active = True
@@ -230,8 +249,9 @@ class Project(db.Model):
         db.session.commit()
         return True
 
-    def deactivate_project_by_id(self, id, raiseFlag = True):
-        project = self.get_project_by_id(id, raiseFlag)
+    @classmethod
+    def deactivate_project_by_id(cls, id, raiseFlag = True):
+        project = cls.get_project_by_id(id, raiseFlag)
         if (project == None):
             return False
         project.active = False
