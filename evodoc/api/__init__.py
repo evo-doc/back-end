@@ -1,7 +1,8 @@
 from evodoc.api.api import *
 from evodoc.api.userapi import *
-from evodoc.api.permissionApi import *
-from evodoc.api.moduleApi import *
+from evodoc.api.permissionapi import *
+from evodoc.api.moduleapi import *
+from evodoc.api.projectapi import *
 
 __all__ = [
     'response_ok',
