@@ -71,7 +71,12 @@ def get_module_all_by_project_id_action(id):
         :param id: Project ID
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
         #check permissions in the future
         data = Module.get_module_all_by_project_id(Module, id)
@@ -81,8 +86,8 @@ def get_module_all_by_project_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@app.route("/module/id/update", methods=['POST'])
-def update_module_action():
+@app.route("/module/update_or_create", methods=['POST'])
+def update_or_create_module_action():
     """
     Update or create module
     """
@@ -99,11 +104,10 @@ def update_module_action():
             moduleId = data['module_id']
         validate_token(data['token'])
         #check permissions in the future
-        Module.create_or_update_module_by_id_from_array(moduleId, data['data'])
-        data = {
-            "data": "ok"
-        }
-        return response_ok(data)
+        data = Module.create_or_update_module_by_id_from_array(moduleId, data['data'])
+        if (data == None):
+            return response_err(ApiException(400, "Name already in use."))
+        return response_ok_obj(data)
     except ApiException as err:
         return response_err(err)
     except DbException as err:

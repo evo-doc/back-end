@@ -1,9 +1,10 @@
 """User: Contains all entities that are related to module
 """
 import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, JSON, desc
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import ForeignKey, Boolean, JSON
 from evodoc.app import db
-import bcrypt
+
 
 class Module(db.Model):
     __tablename__ = "module"
@@ -15,7 +16,8 @@ class Module(db.Model):
     active = Column(Boolean)
     data = Column(JSON)
 
-    def __init__(self, project_id=None, name=None, created=None, update=None, active=True, data=None):
+    def __init__(self, project_id=None, name=None, created=None,
+                       update=None, active=True, data=None):
         self.project_id = project_id
         self.name = name
         self.created = created
@@ -38,7 +40,7 @@ class Module(db.Model):
         return "<Module %r>" % (self.name)
 
     @classmethod
-    def get_module_by_id(cls, moduleId, raiseFlag = True):
+    def get_module_by_id(cls, moduleId, raiseFlag=True):
         result = cls.query.filter_by(id=moduleId).first()
         if (result == None) & raiseFlag:
             raise DbException(DbException, 404, "Module not found.")
@@ -155,9 +157,8 @@ class Module(db.Model):
         else:
             data = array['data']
         #######################################################################
-        if (cls.create_or_update_module_by_id(id, project_id, name, created, update, active, data, raiseFlag) == False): 
-            return False
-        return True
+        res = cls.create_or_update_module_by_id(id, project_id, name, created, update, active, data, raiseFlag)
+        return res
 
     @classmethod
     def create_or_update_module_by_id(cls, id, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
@@ -165,21 +166,20 @@ class Module(db.Model):
         if(id is not None):
             module = cls.get_module_by_id(id, False)
         if (module == None):
-            if (cls.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
-                return False
-            return True
+            res = cls.create_module(project_id, name, created, update, active, data, False)
+            return res
         if (module.project_id != project_id and project_id != None):
             if(data == None):
                 data = module.data
-            if (cls.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
-                return False
-            return True
+            res = cls.create_module(project_id, name, created, update, active, data, raiseFlag)
+            return res
         changed = 0
         if (name != None):
-            if (cls.get_module_by_name(name,False) != None):
-                if raiseFlag:
+            m = cls.get_module_by_name(name,False)
+            if (m != None):
+                if (m.id != id) and raiseFlag:
                     raise DbException(400, "Name is already taken")
-                return False
+                    return None
             changed = 1
             module.name = name
         if (created != None):
@@ -195,18 +195,19 @@ class Module(db.Model):
             changed = 0
             module.update = update
             db.session.commit()
-            return True
+            return module
         if (changed == 1):
             module.update = datetime.datetime.utcnow()
             db.session.commit()
-        return True
+            return module
+        return None
 
     @classmethod
     def create_module(cls, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
         if (None != cls.get_module_by_name(name,False)):
             if raiseFlag:
                 raise DbException(400, "Name is already taken")
-            return False
+            return None
         entity = Module(project_id=project_id, name=name, created=created, update=update, active=active, data=data)
         entity.save_entity()
-        return True
+        return entity

@@ -12,7 +12,12 @@ def get_project_by_id_action(id):
         :param id:
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
         #check permissions in the future
         data = Project.get_project_by_id(Project, id)
@@ -29,7 +34,12 @@ def get_project_by_name_action(name):
         :param name: Project name
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
         #check permissions in the future
         data = Project.get_project_by_name(Project, name)
@@ -45,12 +55,44 @@ def get_project_all_action():
     Get data for all projects
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
         #check permissions in the future
-        data = Project.get_project_all(Project)
-        return response_ok_obj(data)
+        data = Project.get_project_all()
+        return response_ok_list(data)
     except DbException as err:
         return response_err(err)
     except ApiException as err:
+        return response_err(err)
+
+@app.route("/poject/update_or_create", methods=['POST'])
+def update_or_create_poject_action():
+    """
+    Update or create poject
+    """
+    try:
+        data = request.get_json()
+        if data == None:
+            raise ApiException(400, "data")
+        if (data['token'] == None):
+            err = ApiException(403, "Invalid token")
+            return response_err(err)
+        if (('poject_id' not in data) or (data['poject_id'] == None)):
+            poject_id = None
+        else:
+            poject_id = data['poject_id']
+        validate_token(data['token'])
+        #check permissions in the future
+        data = Project.create_or_update_project_by_id_array(poject_id, data['data'], True)
+        if (data == None):
+            return response_err(ApiException(400, "Name already in use."))
+        return response_ok_obj(data)
+    except ApiException as err:
+        return response_err(err)
+    except DbException as err:
         return response_err(err)
