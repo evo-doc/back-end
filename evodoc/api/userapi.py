@@ -66,25 +66,30 @@ def update_user():
         if ('user_id' not in data) or (data['user_id'] == None):
             raise ApiException(400, "user")
         user_id = data['user_id']
-        token = data["token"]
+        token = data['token']
         validate_token(token)
-        user = User.update_user_by_id_from_array(User, user_id, data)
+        user = User.update_user_by_id_from_array(user_id, data)
         return response_ok_obj(user)
     except DbException as err:
         return response_err(err)
     except ApiException as err:
         return response_err(err)
 
-@app.route('/user/all/', methods=['GET'])
+@app.route('/user/all', methods=['GET'])
 def get_user_all_action():
     """
     Get all user, only for logged users
     Token is taken from url param
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
-        data = User.get_user_all(User)
+        data = User.get_user_all()
         return response_ok_list(data)
     except DbException as err:
         return response_err(err)

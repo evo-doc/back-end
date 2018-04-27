@@ -11,7 +11,12 @@ def get_module_by_id_action(id):
         :param id:
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
         #check permissions in the future
         data = Module.get_module_by_id(Module, id)
@@ -44,11 +49,16 @@ def get_module_all_action():
     Get data for all modules
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
         #check permissions in the future
-        data = Module.get_module_all(Module)
-        return response_ok_obj(data)
+        resp = Module.get_module_all()
+        return response_ok_list(resp)
     except DbException as err:
         return response_err(err)
     except ApiException as err:
@@ -61,7 +71,12 @@ def get_module_all_by_project_id_action(id):
         :param id: Project ID
     """
     try:
-        token = request.args.get('token')
+        data = request.get_json()
+        if data == None or data == {}:
+            return response_err(ApiException(404, "No data suplied"))
+        if ('token' not in data) or (data['token'] == None):
+            raise ApiException(403, "Invalid token")
+        token = data['token']
         validate_token(token)
         #check permissions in the future
         data = Module.get_module_all_by_project_id(Module, id)
@@ -71,8 +86,8 @@ def get_module_all_by_project_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@app.route("/module/id/<int:id>/update", methods=['POST'])
-def update_module_action(id):
+@app.route("/module/update_or_create", methods=['POST'])
+def update_or_create_module_action():
     """
     Update or create module
     """
@@ -83,66 +98,17 @@ def update_module_action(id):
         if (data['token'] == None):
             err = ApiException(403, "Invalid token")
             return response_err(err)
+        if (('module_id' not in data) or (data['module_id'] == None)):
+            moduleId = None
+        else:
+            moduleId = data['module_id']
         validate_token(data['token'])
         #check permissions in the future
-        Module.create_or_update_module_by_id_from_array(Module, id, data['data'])
-        data = {
-            "data": "activated"
-        }
-        return response_ok(data)
-    except ApiException as err:
-        return response_err(err)
-    except DbException as err:
-        return response_err(err)
-
-###############################################################################
-
-@app.route('/project/<int:id>', methods=['GET'])
-def get_project_by_id_action(id):
-    """
-    Get project data by it's id
-        :param id:
-    """
-    try:
-        token = request.args.get('token')
-        validate_token(token)
-        #check permissions in the future
-        data = Project.get_project_by_id(Project, id)
+        data = Module.create_or_update_module_by_id_from_array(moduleId, data['data'])
+        if (data == None):
+            return response_err(ApiException(400, "Name already in use."))
         return response_ok_obj(data)
-    except DbException as err:
-        return response_err(err)
     except ApiException as err:
         return response_err(err)
-
-@app.route('/project/name/<name>', methods=['GET'])
-def get_project_by_name_action(name):
-    """
-    Get project data by it's name
-        :param name: Project name
-    """
-    try:
-        token = request.args.get('token')
-        validate_token(token)
-        #check permissions in the future
-        data = Project.get_project_by_name(Project, name)
-        return response_ok_obj(data)
     except DbException as err:
-        return response_err(err)
-    except ApiException as err:
-        return response_err(err)
-
-@app.route('/project/all', methods=['GET'])
-def get_project_all_action():
-    """
-    Get data for all projects
-    """
-    try:
-        token = request.args.get('token')
-        validate_token(token)
-        #check permissions in the future
-        data = Project.get_project_all(Project)
-        return response_ok_obj(data)
-    except DbException as err:
-        return response_err(err)
-    except ApiException as err:
         return response_err(err)
