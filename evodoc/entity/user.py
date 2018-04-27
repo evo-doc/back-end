@@ -14,8 +14,8 @@ class User(db.Model):
     name = Column(String(50), unique=True)
     email = Column(String(120), unique=True)
     password = Column(String(128), nullable=False)
-    created = Column(DateTime, default=datetime.datetime.utcnow)
-    update = Column(DateTime, default=datetime.datetime.utcnow)
+    created = Column(DateTime, default=datetime.datetime.utcnow())
+    update = Column(DateTime, default=datetime.datetime.utcnow())
     active = Column(Boolean)
     activated = Column(Boolean)
     tokens = db.relationship('UserToken', backref='user', lazy=False)
@@ -32,94 +32,115 @@ class User(db.Model):
     def __repr__(self):
         return "<User %r>" % (self.name)
 
-    def get_user_by_id(self, userId, raiseFlag = True):
-        user = self.query.filter_by(id=userId).first()
+    @classmethod
+    def get_user_by_id(cls, userId, raiseFlag = True):
+        user = User.query.filter_by(id=userId).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
-    def get_user_by_name(self, userName, raiseFlag = True):
-        user = self.query.filter_by(name=userName).first()
-        if (user == None) & raiseFlag:
-            raise DbException(404, "User not found.")
-        return user
-        
-    def get_user_by_email(self, userEmail, raiseFlag = True):
-        user = self.query.filter_by(email=userEmail).first()
+    @classmethod
+    def get_user_by_name(cls, userName, raiseFlag = True):
+        user = User.query.filter_by(name=userName).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
-    def get_user_by_username_or_email(self, username, raiseFlag = True):
-        user = self.query.filter((User.email == username) | (User.name == username)).first()
+    @classmethod
+    def get_user_by_email(cls, userEmail, raiseFlag = True):
+        user = User.query.filter_by(email=userEmail).first()
+        if (user == None) & raiseFlag:
+            raise DbException(404, "User not found.")
+        return user
+
+    @classmethod
+    def get_user_by_username_or_email(cls, username, raiseFlag = True):
+        user = cls.query.filter((User.email == username) | (User.name == username)).first()
         if (user == None)  & raiseFlag:
             raise DbException(404, "User not found.")
         return user
 
-    def get_user_all(self, raiseFlag = True):
-        user = self.query.all()
+    @classmethod
+    def get_user_all(cls, raiseFlag = True):
+        user = User.query.all()
         if (user == None) & raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
-    def get_user_all_by_user_type_id(self, userType, raiseFlag = True):
-        user = self.query.filter_by(user_type_id=userType).all()
+    @classmethod
+    def get_user_all_by_user_type_id(cls, userType, raiseFlag = True):
+        user = User.query.filter_by(user_type_id=userType).all()
         if (user == None) & raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
-
-    def update_user_type_by_id(self, id, userType, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_user_type_by_id(cls, id, userType, raiseFlag = True):
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.user_type_id = userType
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
-    def update_user_email_by_id(self, id, email, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_activation_by_id(cls, id, activated, raiseFlag = True):
+        user = User.get_user_by_id(id, raiseFlag)
+        if (user == None):
+            return False
+        user.activated = activated
+        user.update = datetime.datetime.utcnow()
+        db.session.commit()
+        return True
+
+    @classmethod
+    def update_user_email_by_id(cls, id, email, raiseFlag = True):
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.email = email
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
-    def update_user_password_by_id(self, id, password, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_user_password_by_id(cls, id, password, raiseFlag = True):
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
-    def update_user_name_by_id(self, id, name, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def update_user_name_by_id(cls, id, name, raiseFlag = True):
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.name = name
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
-    def activate_user_by_id(self, id):
-        user = User.get_user_by_id(User, id)
+    @classmethod
+    def activate_user_by_id(cls, id):
+        user = User.get_user_by_id(id)
         if (user == None):
             return False
         user.active = True
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
-    def deactivate_user_by_id(self, id, raiseFlag = True):
-        user = User.get_user_by_id(User, id, raiseFlag)
+    @classmethod
+    def deactivate_user_by_id(cls, id, raiseFlag = True):
+        user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
         user.active = False
-        user.update = datetime.datetime.utcnow
+        user.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -127,7 +148,8 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def check_unique(self, username, email, raiseFlag = False):
+    @classmethod
+    def check_unique(cls, username, email, raiseFlag = False):
         """
         Check if username and email are not presented in database (check unique)
             :param self:
@@ -136,8 +158,8 @@ class User(db.Model):
             :param raiseFlag=False: if its true this function raise exception if email or username are already presented
         """
 
-        userEmail = User.get_user_by_email(User, email, False)
-        userName = User.get_user_by_name(User, username, False)
+        userEmail = User.get_user_by_email(email, False)
+        userName = User.get_user_by_name(username, False)
 
         if raiseFlag:
             if userEmail != None:
@@ -158,12 +180,13 @@ class User(db.Model):
         else:
             return False
 
-    def update_user_by_id_all(self, name=None, email=None, password=None, created=None, update=None, active=None, activated = None, raiseFlag = True):
-        usr = self.get_user_by_id(id, raiseFlag)
+    @classmethod
+    def update_user_by_id_all(cls, name=None, email=None, password=None, created=None, update=None, active=None, activated = None, raiseFlag = True):
+        usr = cls.get_user_by_id(id, raiseFlag)
         if (usr == None):
             return False
         changed = 0
-        
+
         if (name!=None):
             usr.name = name
             changed = 1
@@ -189,26 +212,28 @@ class User(db.Model):
         if (update  !=None):
             usr.update = update
             db.session.commit()
-        return True 
+        return True
 
-    def update_user_by_id_all_list(self, userList, raiseFlag = True):
+    @classmethod
+    def update_user_by_id_all_list(cls, userList, raiseFlag = True):
         failedUpdatesList = []
         for i in userList:
-            if (self.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
+            if (cls.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
                 failedUpdatesList.append(i)
         return i
 
-    def update_user_by_id_from_array(self, id, dataArray):
-        userEntity = User.get_user_by_id(User, id)
+    @classmethod
+    def update_user_by_id_from_array(cls, id, dataArray):
+        userEntity = User.get_user_by_id(id)
         # Name change
         if dataArray["name"] != None:
-            userCheck = User.get_user_by_name(User, dataArray["name"], False)
+            userCheck = User.get_user_by_name(dataArray["name"], False)
             if userCheck != None & userCheck.id != id:
                 raise DbException(400, "username")
             userEntity.username = dataArray["name"]
 
         if dataArray["email"] != None:
-            userCheck = User.get_user_by_email(User, dataArray["email"], False)
+            userCheck = User.get_user_by_email(dataArray["email"], False)
             if userCheck != None & userCheck.id != id:
                 raise DbException(400, "email")
             userEntity.username = dataArray["email"]
@@ -225,15 +250,16 @@ class User(db.Model):
         db.session.commit()
         return userEntity
 
-    def serialize(self):
+    @classmethod
+    def serialize(cls):
         return {
-            'id': self.id,
-            'user_type_id': self.user_type_id,
-            'name': self.name,
-            'email': self.email,
-            'created': self.created,
-            'update': self.update,
-            'active': self.active,
+            'id': cls.id,
+            'user_type_id': cls.user_type_id,
+            'name': cls.name,
+            'email': cls.email,
+            'created': cls.created,
+            'update': cls.update,
+            'active': cls.active,
         }
 
 ###################################################################################
@@ -304,8 +330,8 @@ class UserToken(db.Model):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"))
     token = Column(String(47), unique=True)
-    created = Column(DateTime, default=datetime.datetime.utcnow)
-    update = Column(DateTime, default=datetime.datetime.utcnow)
+    created = Column(DateTime, default=datetime.datetime.utcnow())
+    update = Column(DateTime, default=datetime.datetime.utcnow())
 
     def __init__(self, user_id=None, token=None, created=None, update=None):
         self.user_id=user_id
@@ -323,7 +349,7 @@ class UserToken(db.Model):
         return userToken
 
     def get_token_by_user_id(self, userId):         #returns newest token for user
-        userToken = self.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()          
+        userToken = self.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()
         if (userToken == None):
             raise DbException(404, "UserToken not found.")
         return userToken
@@ -345,7 +371,7 @@ class UserToken(db.Model):
         if (userToken == None):
             return False
         userToken.userId = userId
-        userToken.update = datetime.datetime.utcnow
+        userToken.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
@@ -354,7 +380,7 @@ class UserToken(db.Model):
         if (userToken == None):
             return False
         userToken.token = token
-        userToken.update = datetime.datetime.utcnow
+        userToken.update = datetime.datetime.utcnow()
         db.session.commit()
         return True
 
