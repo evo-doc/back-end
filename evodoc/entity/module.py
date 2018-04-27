@@ -23,6 +23,17 @@ class Module(db.Model):
         self.active = active
         self.data = data
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'project_id': self.project_id,
+            'name': self.name,
+            'created': self.created,
+            'update': self.update,
+            'active': self.active,
+            'data': self.data,
+        }
+
     def __repr__(self):
         return "<Module %r>" % (self.name)
 
@@ -30,28 +41,28 @@ class Module(db.Model):
     def get_module_by_id(cls, moduleId, raiseFlag = True):
         result = cls.query.filter_by(id=moduleId).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(DbException, 404, "Module not found.")
         return result
 
     @classmethod
     def get_module_by_name(cls, moduleName, raiseFlag = True):
-        result = cls.query.filter_by(name=moduleId).first()
+        result = cls.query.filter_by(name=moduleName).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(DbException, 404, "Module not found.")
         return result
 
     @classmethod
     def get_module_all(cls, raiseFlag = True):
         result = cls.query.all()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(DbException, 404, "Module not found.")
         return result
 
     @classmethod
     def get_module_all_by_project_id(cls, projectId, raiseFlag = True):
         result = cls.query.filter_by(project_id=projectId).all()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(DbException, 404, "Module not found.")
         return result
 
     @classmethod
@@ -114,14 +125,45 @@ class Module(db.Model):
 
     @classmethod
     def create_or_update_module_by_id_from_array(cls,id,array, raiseFlag = True):
-        if (cls.create_or_update_module_by_id(id, array['project_id'], array['name'], array['created'], array['update'], array['active'], array['data'], raiseFlag) == False): 
+        if (('project_id' not in array) or (array['project_id'] == None)):
+            project_id = None
+        else:
+            project_id = array['project_id']
+        #######################################################################
+        if (('name' not in array) or (array['name'] == None)):
+            name = None
+        else:
+            name = array['name']
+        #######################################################################
+        if (('created' not in array) or (array['created'] == None)):
+            created = None
+        else:
+            created = array['created']
+        #######################################################################
+        if (('update' not in array) or (array['update'] == None)):
+            update = None
+        else:
+            update = array['update']
+        #######################################################################
+        if (('active' not in array) or (array['active'] == None)):
+            active = None
+        else:
+            active = array['active']
+        #######################################################################
+        if (('data' not in array) or (array['data'] == None)):
+            data = None
+        else:
+            data = array['data']
+        #######################################################################
+        if (cls.create_or_update_module_by_id(id, project_id, name, created, update, active, data, raiseFlag) == False): 
             return False
         return True
 
     @classmethod
     def create_or_update_module_by_id(cls, id, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
-        
-        module = cls.get_module_by_id(id)
+        module = None
+        if(id is not None):
+            module = cls.get_module_by_id(id, False)
         if (module == None):
             if (cls.create_module(project_id, name, created, update, active, data, raiseFlag) == False):
                 return False
@@ -148,7 +190,7 @@ class Module(db.Model):
             module.active = active
         if (data != None):
             changed = 1
-            module.data = dataArray
+            module.data = data
         if (update != None):
             changed = 0
             module.update = update
@@ -192,21 +234,21 @@ class Project(db.Model):
     def get_project_by_id(cls, projectId, raiseFlag = True):
         result = cls.query.filter_by(id=projectId).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(DbException, 404, "Project not found.")
         return result
 
     @classmethod
     def get_project_by_name(cls, moduleName, raiseFlag = True):
         result = cls.query.filter_by(name=moduleId).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(DbException, 404, "Project not found.")
         return result
 
     @classmethod
     def get_project_all(cls):
         result = cls.query.all()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "User not found.")
+            raise DbException(DbException, 404, "Project not found.")
         return result
 
     @classmethod
