@@ -27,7 +27,7 @@ class User(db.Model):
         self.created = created
         self.active = active
         self.activated = activated
-        self.user_type_id = UserType.get_type_by_name(UserType,"GUEST").id
+        self.user_type_id = UserType.get_type_by_name("GUEST").id
 
     def __repr__(self):
         return "<User %r>" % (self.name)
@@ -62,8 +62,8 @@ class User(db.Model):
 
     @classmethod
     def get_user_all(cls, raiseFlag = True):
-        user = User.query.all()
-        if (user == None) & raiseFlag:
+        user = cls.query.all()
+        if (user == None) and raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
@@ -250,16 +250,15 @@ class User(db.Model):
         db.session.commit()
         return userEntity
 
-    @classmethod
-    def serialize(cls):
+    def serialize(self):
         return {
-            'id': cls.id,
-            'user_type_id': cls.user_type_id,
-            'name': cls.name,
-            'email': cls.email,
-            'created': cls.created,
-            'update': cls.update,
-            'active': cls.active,
+            'id': self.id,
+            'user_type_id': self.user_type_id,
+            'name': self.name,
+            'email': self.email,
+            'created': self.created,
+            'update': self.update,
+            'active': self.active,
         }
 
 ###################################################################################

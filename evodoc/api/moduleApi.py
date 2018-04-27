@@ -85,7 +85,7 @@ def update_module_action(id):
             return response_err(err)
         validate_token(data['token'])
         #check permissions in the future
-        Module.create_or_update_module_by_id_from_array(Module, id, data['data'])
+        Module.create_or_update_module_by_id_from_array(id, data['data'])
         data = {
             "data": "activated"
         }
