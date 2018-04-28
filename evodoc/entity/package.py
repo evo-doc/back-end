@@ -32,6 +32,12 @@ class Package(db.Model):
         return packages
 
     @classmethod
+    def delete_package(cls):
+        cls.active = False
+        cls.update = datetime.datetime.utcnow()
+        db.session.commit()
+
+    @classmethod
     def save_or_create(cls, data):
         package = None
         if 'package_id' in data or not data['package_id']:
@@ -55,6 +61,7 @@ class Package(db.Model):
 
     def serialize(self):
         return {
+            'id': self.id,
             'name': self.name,
             'url': self.url,
             'created': self.created,

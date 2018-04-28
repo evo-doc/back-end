@@ -177,7 +177,7 @@ def activation_action():
     except DbException as err:
         return response_err(err)
 
-@app.route("/user-active", methods=['POST'])
+@app.route("/user/active", methods=['POST'])
 def is_user_active():
     try:
         data = request.get_json()
@@ -204,7 +204,10 @@ def is_user_authorised():
         if ('token' not in data) or (data['token'] == None):
             raise ApiException(403, "Invalid token")
         token = check_token_exists(data['token'])
-        if token == None or token.created < datetime.utcnow() + timedelta(hours=-24) or token.update < datetime.utcnow() + timedelta(hours=-2) or token.user.active == False:
+        if token == None\
+            or token.created + timedelta(hours=24) < datetime.utcnow() \
+            or token.update + timedelta(hours=2) < datetime.utcnow()\
+            or token.user.active == False:
             raise ApiException(403, "user is not authorised")
         if ('user_id' not in data) or (data['user_id'] == None):
             raise ApiException(400, "user")

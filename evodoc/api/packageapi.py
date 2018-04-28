@@ -55,6 +55,11 @@ def delete_package():
         data = request.get_json()
         validate_data(data, {'token', 'package_id'})
         package = Package.get_package_by_id(data['package_id'])
+        package.delete_package()
+        data = {
+            "data": "done"
+        }
+        return response_ok(data)
     except DbException as err:
         return response_err(err)
     except ApiException as err:
