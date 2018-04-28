@@ -3,6 +3,7 @@ from evodoc.api.userapi import *
 from evodoc.api.permissionapi import *
 from evodoc.api.moduleapi import *
 from evodoc.api.projectapi import *
+from evodoc.api.miscapi import *
 
 __all__ = [
     'response_ok',
