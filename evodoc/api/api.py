@@ -2,6 +2,7 @@ from flask import json
 from evodoc.app import app
 from evodoc.exception import ApiException
 from evodoc.login import authenticate, check_token_exists
+from evodoc.entity import User, Module, Project
 
 def serialize_list(l):
     return [m.serialize() for m in l]
