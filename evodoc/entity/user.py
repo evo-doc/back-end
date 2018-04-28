@@ -1,7 +1,7 @@
 """User: Contains all entities that are related to user
 """
 import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc, Binary
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
 from evodoc.app import db
 import bcrypt
 from evodoc.exception import DbException
