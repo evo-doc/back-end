@@ -56,3 +56,13 @@ def validate_token(token):
             raise ApiException(200, {"data": "User not activated", "token": token})
         raise ApiException(403, "Invalid token.")
     return userToken.token
+
+def validate_data(data, expected_values):
+    """
+    validate data by given array of keys
+    """
+    if data == None or data == {}:
+        raise ApiException(400, "data")
+    for value in expected_values:
+        if value not in data or data[value] is None or data[value] == {}:
+            raise ApiException(400, value)

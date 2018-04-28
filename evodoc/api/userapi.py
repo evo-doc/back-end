@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 def get_user_by_id_action():
     """
     Get user data by it's id
-        :param id:
     """
     try:
         token = request.args.get('token')
@@ -27,7 +26,6 @@ def get_user_by_id_action():
 def delete_user():
     """
     Deletes user by it's id (only deactivation)
-        :param id:
     """
     try:
         data = request.get_json()
@@ -82,12 +80,7 @@ def get_user_all_action():
     Token is taken from url param
     """
     try:
-        data = request.get_json()
-        if data == None or data == {}:
-            return response_err(ApiException(404, "No data suplied"))
-        if ('token' not in data) or (data['token'] == None):
-            raise ApiException(403, "Invalid token")
-        token = data['token']
+        token = request.args.get('token')
         validate_token(token)
         data = User.get_user_all()
         return response_ok_list(data)
