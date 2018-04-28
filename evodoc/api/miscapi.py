@@ -71,8 +71,8 @@ def stats():
         module_count = Module.query.count()
         project_count = Project.query.count()
         data = {
-            'user_count': user_count
-            'module_count': module_count
+            'user_count': user_count,
+            'module_count': module_count,
             'project_count': project_count
         }
         return response_ok(data)

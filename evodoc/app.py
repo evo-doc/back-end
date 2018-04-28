@@ -4,10 +4,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 from sqlalchemy.orm import sessionmaker
+from flask_cors import CORS
 import bcrypt
 
 
 app = Flask(__name__, instance_relative_config=True)
+CORS(app)
 app.config.from_object('evodoc.appsettings.AppSettings')
 app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
 
