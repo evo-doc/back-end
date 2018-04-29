@@ -3,6 +3,8 @@
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, JSON, desc
 from evodoc.app import db
+from evodoc.entity import Module
+
 
 
 class ModulePerm (db.Model):
@@ -234,6 +236,18 @@ class ModulePerm (db.Model):
                 raise DbException(405, "Insufficient permission.")
             return False
         return ModulePerm.give_perm_own_user_module_id_raw(user_id, module_id, raiseFlag)
+
+    @classmethod
+    def check_perm_read_include_project_perm(cls, user_id, module_id, raiseFlag = False):
+        if ((not ModulePerm.check_perm_read_by_user_and_module_id(user_id, module_id)) or 
+            (not ProjectPerm.check_perm_read_by_user_and_project_id(
+                                    user_id,
+                                    Module.get_module_by_id(module_id).project_id
+                                    ))):
+            if raiseFlag:
+                raise DbException(405, "Insufficient permission.")
+            return False
+        return True
 
 ###############################################################################
 class ProjectPerm (db.Model):
