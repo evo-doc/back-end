@@ -61,12 +61,11 @@ def registration_action():
     except DbException as err:
         return response_err(err)
 
-@app.route('/stats')
+@app.route('/stats', methods=['GET'])
 def stats():
     try:
-        data = request.get_json()
-        validate_data(data, {'token'})
-        validate_token(data['token'])
+        token = request.args.get('token')
+        validate_token(token)
         user_count = User.query.count()
         module_count = Module.query.count()
         project_count = Project.query.count()

@@ -2,7 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from evodoc.app import db, git_path
 from evodoc.exception import DbException
-import git
+from git import Git
 
 class Package(db.Model):
     __tablename__ = "package"
@@ -62,7 +62,7 @@ class Package(db.Model):
 
     @classmethod
     def clone_repository(cls):
-        git.Git(git_path).clone(cls.url + '.git')
+        Git(git_path).clone(cls.url + '.git')
         return True
 
     def serialize(self):

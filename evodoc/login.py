@@ -44,8 +44,9 @@ def authenticate(token):
 	"""
 	if token == None:
 		return None
-	userTokenEntity = UserToken.query.filter_by(token=token).filter(UserToken.created > datetime.utcnow() + timedelta(hours=-24)).filter(UserToken.update > datetime.utcnow() + timedelta(hours=-2)).first()
-	if userTokenEntity == None:
+	userTokenEntity = UserToken.query.filter_by(token=token).first()
+	if userTokenEntity == None or (userTokenEntity.created + timedelta(hours=24) < datetime.utcnow() \
+        and userTokenEntity.update + timedelta(hours=2) < datetime.utcnow()):
 		return None
 	if userTokenEntity.user.active != 1:
 		return None
