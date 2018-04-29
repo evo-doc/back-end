@@ -261,6 +261,14 @@ class User(db.Model):
             'active': self.active,
         }
 
+    @classmethod
+    def get_user_type_perm_from_user_id(cls, id, raiseFlag = True):
+        usr = cls.get_user_by_id(id, raiseFlag)
+        if (usr == None): return 0
+        t = UserType.get_type_by_id(usr.user_type_id, raiseFlag)
+        if (t == None): return 0
+        return t.permission_flag
+
 ###################################################################################
 class UserType(db.Model):
     __tablename__ = "user_type"
