@@ -105,7 +105,7 @@ def activation_action():
         user_id = data['user_id']
         user = User.get_user_by_id(user_id)
         token = check_token_exists(data['token'])
-        if token == None:
+        if token == None or token.user_id != user_id:
             raise ApiException(403, "Invalid token")
         if user.activated:
             raise ApiException(401, "User has been already activated.")
