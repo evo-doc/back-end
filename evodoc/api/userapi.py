@@ -148,8 +148,8 @@ def is_user_authorised():
             raise ApiException(403, "Invalid token")
         token = check_token_exists(data['token'])
         if token == None\
-            or token.created + timedelta(hours=24) < datetime.utcnow() \
-            or token.update + timedelta(hours=2) < datetime.utcnow()\
+            or (token.created + timedelta(hours=24) < datetime.utcnow() \
+            and token.update + timedelta(hours=2) < datetime.utcnow())\
             or token.user.active == False:
             raise ApiException(403, "user is not authorised")
         if ('user_id' not in data) or (data['user_id'] == None):
