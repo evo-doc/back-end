@@ -132,8 +132,7 @@ setup(
         'bcrypt',
         'sqlalchemy',
         'psycopg2',
-        'flask_sqlalchemy_session',
-        'flask-cors'
+        'flask_sqlalchemy_session'
         ],  # Optional
 
     setup_requires=[

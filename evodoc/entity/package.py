@@ -1,7 +1,8 @@
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
-from evodoc.app import db
+from evodoc.app import db, git_path
 from evodoc.exception import DbException
+import git
 
 class Package(db.Model):
     __tablename__ = "package"
@@ -58,6 +59,11 @@ class Package(db.Model):
             db.session.add(package)
         db.session.commit()
         return package
+
+    @classmethod
+    def clone_repository(cls):
+        git.Git(git_path).clone(cls.url + '.git')
+        return True
 
     def serialize(self):
         return {
