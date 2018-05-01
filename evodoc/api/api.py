@@ -66,4 +66,4 @@ def validate_data(data, expected_values):
         raise ApiException(400, "data")
     for value in expected_values:
         if value not in data or data[value] is None or data[value] == {}:
-            raise ApiException(400, value)
+            raise ApiException(400, "data")
