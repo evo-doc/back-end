@@ -3,7 +3,7 @@ from evodoc.exception import DbException, ApiException
 from evodoc.app import app, db
 from evodoc.login import login, authenticate, authenticateUser, createToken, check_token_exists
 from evodoc.entity import User, UserToken, UserType
-from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
+from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token, validate_data
 from datetime import datetime, timedelta
 
 @app.route('/user', methods=['GET'])
@@ -29,12 +29,7 @@ def delete_user():
     """
     try:
         data = request.get_json()
-        if data == None or data == {}:
-            return response_err(ApiException(404, "No data suplied"))
-        if ('token' not in data) or (data['token'] == None):
-            raise ApiException(403, "Invalid token")
-        if ('user_id' not in data) or (data['user_id'] == None):
-            raise ApiException(400, "user")
+        validate_data(data, {'token', 'user_id'})
         token = data['token']
         user_id = data['user_id']
         validate_token(token)
@@ -57,12 +52,7 @@ def update_user():
     """
     try:
         data = request.get_json()
-        if data == None or data == {}:
-            return response_err(ApiException(404, "No data suplied"))
-        if ('token' not in data) or (data['token'] == None):
-            raise ApiException(403, "Invalid token")
-        if ('user_id' not in data) or (data['user_id'] == None):
-            raise ApiException(400, "user")
+        validate_data(data, {'token', 'user_id'})
         user_id = data['user_id']
         token = data['token']
         validate_token(token)
@@ -96,12 +86,7 @@ def activation_action():
     """
     try:
         data = request.get_json()
-        if data == None:
-            raise ApiException(400, "data")
-        if ('token' not in data) or (data['token'] == None):
-            raise ApiException(403, "Invalid token")
-        if ('user_id' not in data) or (data['user_id'] == None):
-            raise ApiException(400, "user")
+        validate_data(data, {'token', 'user_id'})
         user_id = data['user_id']
         user = User.get_user_by_id(user_id)
         token = check_token_exists(data['token'])
@@ -124,10 +109,7 @@ def activation_action():
 def is_user_active():
     try:
         data = request.get_json()
-        if data == None:
-            raise ApiException(400, "data")
-        if ('token' not in data) or (data['token'] == None):
-            raise ApiException(403, "Invalid token")
+        validate_data(data, {'token'})
         token = validate_token(data['token'])
         tokenData = {
             "token": token
@@ -142,18 +124,13 @@ def is_user_active():
 def is_user_authorised():
     try:
         data = request.get_json()
-        if data == None:
-            raise ApiException(400, "data")
-        if ('token' not in data) or (data['token'] == None):
-            raise ApiException(403, "Invalid token")
+        validate_data(data, {'token', 'user_id'})
         token = check_token_exists(data['token'])
         if token == None\
             or (token.created + timedelta(hours=24) < datetime.utcnow() \
             and token.update + timedelta(hours=2) < datetime.utcnow())\
             or token.user.active == False:
             raise ApiException(403, "user is not authorised")
-        if ('user_id' not in data) or (data['user_id'] == None):
-            raise ApiException(400, "user")
         user_id = data['user_id']
         if (user_id != token.user_id):
             raise ApiException(403, "Invalid token")
