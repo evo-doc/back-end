@@ -86,16 +86,14 @@ def activation_action():
     """
     try:
         data = request.get_json()
-        validate_data(data, {'token', 'user_id'})
-        user_id = data['user_id']
-        user = User.get_user_by_id(user_id)
+        validate_data(data, {'token'})
         token = check_token_exists(data['token'])
-        if token == None or token.user_id != user_id:
+        if token == None:
             raise ApiException(403, "Invalid token")
-        if user.activated:
+        if token.user.activated:
             raise ApiException(401, "User has been already activated.")
         #check code somehow
-        user.update_activation_by_id(user.id, True)
+        token.user.update_activation_by_id(token.user.id, True)
         data = {
             "data": "activated"
         }
