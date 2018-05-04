@@ -142,6 +142,7 @@ setup(
     ],
     tests_require=[
         'pytest',
+        'pytest-flask'
     ],
 
     # List additional groups of dependencies here (e.g. development

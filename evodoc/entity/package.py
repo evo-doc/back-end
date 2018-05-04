@@ -1,8 +1,11 @@
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
-from evodoc.app import db, git_path
-from evodoc.exception import DbException
+from flask import current_app
+from evodoc.entity import db
+from evodoc import DbException
 from git import Git
+
+git_path = ''
 
 class Package(db.Model):
     __tablename__ = "package"

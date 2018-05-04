@@ -2,7 +2,7 @@
 """
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
-from evodoc.app import db
+from evodoc.entity import db
 import bcrypt
 from evodoc.exception import DbException
 

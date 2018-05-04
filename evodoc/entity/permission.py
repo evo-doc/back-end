@@ -2,8 +2,7 @@
 """
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, JSON, desc
-from evodoc.app import db
-from evodoc.entity import module
+from evodoc.entity import module, db
 
 
 
