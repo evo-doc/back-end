@@ -12,8 +12,9 @@ def create_app(additional_config = {}):
     if os.path.isfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini'):
         app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
 
-    for key, value in additional_config.items():
-        app.config[key] = value
+    if additional_config != {}:
+        for key, value in additional_config.items():
+            app.config[key] = value
 
     from evodoc.entity import db
     db.init_app(app)
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         upgrade(os.path.dirname(__file__) + '/../migrations')
 
 
-    from evodoc.entity.seed.userseed import initUserSeeds
+    from evodoc.seed.userseed import initUserSeeds
     from evodoc.api import *
 
     initUserSeeds()

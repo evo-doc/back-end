@@ -1,5 +1,4 @@
 import uuid
-from evodoc.entity import db
 from evodoc.exception import DbException, ApiException
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta

@@ -1,4 +1,4 @@
-from evodoc.app import *
+from evodoc.application import *
 from evodoc.exception import *
 from evodoc.login  import *
 
