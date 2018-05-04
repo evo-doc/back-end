@@ -9,7 +9,8 @@ import bcrypt
 def create_app(additional_config = {}):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object('evodoc.appsettings.AppSettings')
-    app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
+    if os.path.isfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini'):
+        app.config.from_pyfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini')
 
     for key, value in additional_config.items():
         app.config[key] = value
