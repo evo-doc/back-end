@@ -1,8 +1,10 @@
 """User: Contains all entities that are related to project
 """
+import os
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, JSON, desc
 from evodoc.entity import db
+from evodoc import DbException, ApiException
 import bcrypt
 
 class Project(db.Model):
@@ -114,6 +116,7 @@ class Project(db.Model):
         p = Project(name, created, update, active, data)
         db.session.add(p)
         db.session.commit()
+        os.mkdir(os.path.dirname(__file__) + '/../../data/module/' + str(p.id))
         return p
 
     @classmethod

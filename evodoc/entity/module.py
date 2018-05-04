@@ -1,5 +1,6 @@
 """User: Contains all entities that are related to module
 """
+import os
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey, Boolean, JSON
@@ -17,13 +18,12 @@ class Module(db.Model):
     active = Column(Boolean)
 
     def __init__(self, project_id=None, name=None, created=None,
-                       update=None, active=True, data=None):
+                       update=None, active=True):
         self.project_id = project_id
         self.name = name
         self.created = created
         self.update = update
         self.active = active
-        self.data = data
 
     def serialize(self):
         return {
@@ -190,7 +190,10 @@ class Module(db.Model):
             module.active = active
         if (data != None):
             changed = 1
-            module.data = data
+            #save "data"
+            with open(os.path.dirname(__file__) + '/../../data/module/' + 
+                      str(module.project_id) + '/' + str(module.id) + '.md', 'w') as f:
+                f.write(data)
         if (update != None):
             changed = 0
             module.update = update
@@ -208,6 +211,10 @@ class Module(db.Model):
             if raiseFlag:
                 raise DbException(400, "Name is already taken")
             return None
-        entity = Module(project_id=project_id, name=name, created=created, update=update, active=active, data=data)
+        entity = Module(project_id=project_id, name=name, created=created, update=update, active=active)
         entity.save_entity()
+        #save "data"
+        with open(os.path.dirname(__file__) + '/../../data/module/' + 
+                  str(entity.project_id) + '/' + str(entity.id) + '.md', 'w') as f:
+            f.write(data)
         return entity
