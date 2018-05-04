@@ -18,10 +18,11 @@ def create_app(additional_config = {}):
     from evodoc.entity import db
     db.init_app(app)
 
-    from evodoc.api import miscapi, module, package, permission, user
+    from evodoc.api import miscapi, module, project, package, permission, user
 
     app.register_blueprint(miscapi)
     app.register_blueprint(module)
+    app.register_blueprint(project)
     app.register_blueprint(package)
     app.register_blueprint(permission)
     app.register_blueprint(user)
