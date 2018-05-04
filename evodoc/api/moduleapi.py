@@ -1,10 +1,11 @@
-from flask import json, request
+from flask import json, request, Blueprint
 from evodoc.exception import DbException, ApiException
-from evodoc.app import app, db
 from evodoc.entity import *
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
 
-@app.route('/module/<int:id>', methods=['GET'])
+module = Blueprint('module', __name__, url_prefix='/module')
+
+@module.route('/<int:id>', methods=['GET'])
 def get_module_by_id_action(id):
     """
     Get module data by it's id
@@ -26,7 +27,7 @@ def get_module_by_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@app.route('/module/name/<name>', methods=['GET'])
+@module.route('/name/<name>', methods=['GET'])
 def get_module_by_name_action(name):
     """
     Get module data by it's name
@@ -43,7 +44,7 @@ def get_module_by_name_action(name):
     except ApiException as err:
         return response_err(err)
 
-@app.route('/module/all', methods=['GET'])
+@module.route('/all', methods=['GET'])
 def get_module_all_action():
     """
     Get data for all modules
@@ -64,7 +65,7 @@ def get_module_all_action():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/module/project_id/<int:id>', methods=['GET'])
+@module.route('/project_id/<int:id>', methods=['GET'])
 def get_module_all_by_project_id_action(id):
     """
     Get data for all modules in project
@@ -86,7 +87,7 @@ def get_module_all_by_project_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@app.route("/module/update_or_create", methods=['POST'])
+@module.route("/update_or_create", methods=['POST'])
 def update_or_create_module_action():
     """
     Update or create module

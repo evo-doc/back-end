@@ -3,7 +3,8 @@
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey, Boolean, JSON
-from evodoc.app import db
+from evodoc.entity import db
+from evodoc import DbException, ApiException
 
 
 class Module(db.Model):

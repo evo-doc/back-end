@@ -1,10 +1,9 @@
-from evodoc.app import app, db
+from evodoc.app import *
 from evodoc.exception import *
 from evodoc.login  import *
 
 __all__ = [
-    'app',
-    'db',
+    'create_app',
     'authenticate',
     'DbException',
     'ApiException'

@@ -1,6 +1,5 @@
 
-from evodoc.entity.user import User, UserType, UserToken
-from evodoc.app import db
+from evodoc.entity import User, UserType, UserToken, db
 
 def initUserSeeds():
     baseUserType()
