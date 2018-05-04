@@ -137,8 +137,7 @@ setup(
         ],  # Optional
 
     setup_requires=[
-        'pytest-runner',
-        'flask'
+        'pytest-runner'
     ],
     tests_require=[
         'pytest',
