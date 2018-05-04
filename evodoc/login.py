@@ -2,7 +2,6 @@ import uuid
 from evodoc.entity import db
 from evodoc.exception import DbException, ApiException
 from sqlalchemy.orm import sessionmaker
-from flask_sqlalchemy_session import flask_scoped_session
 from datetime import datetime, timedelta
 from evodoc.entity import *
 from sqlalchemy import desc
