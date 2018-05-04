@@ -5,7 +5,7 @@ from evodoc.api import response_ok, response_err, response_ok_list, response_ok_
 
 project = Blueprint('project', __name__, url_prefix='/project')
 
-@project.route('/project/<int:id>', methods=['GET'])
+@project.route('/<int:id>', methods=['GET'])
 def get_project_by_id_action(id):
     """
     Get project data by it's id
@@ -27,7 +27,7 @@ def get_project_by_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@project.route('/project/name/<name>', methods=['GET'])
+@project.route('/name/<name>', methods=['GET'])
 def get_project_by_name_action(name):
     """
     Get project data by it's name
@@ -43,13 +43,15 @@ def get_project_by_name_action(name):
         validate_token(token)
         #check permissions in the future
         data = Project.get_project_by_name(Project, name)
+        if (data == None):
+            return response_err(ApiException(400, "Name already in use."))
         return response_ok_obj(data)
     except DbException as err:
         return response_err(err)
     except ApiException as err:
         return response_err(err)
 
-@project.route('/project/all', methods=['GET'])
+@project.route('/all', methods=['GET'])
 def get_project_all_action():
     """
     Get data for all projects
@@ -70,7 +72,7 @@ def get_project_all_action():
     except ApiException as err:
         return response_err(err)
 
-@project.route("/poject/update_or_create", methods=['POST'])
+@project.route("/update_or_create", methods=['POST'])
 def update_or_create_poject_action():
     """
     Update or create poject
