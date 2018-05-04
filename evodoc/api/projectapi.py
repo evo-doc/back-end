@@ -1,11 +1,11 @@
-from flask import json, request
+from flask import json, request, Blueprint
 from evodoc.exception import DbException, ApiException
-from evodoc.app import app, db
 from evodoc.entity import *
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
 
+project = Blueprint('project', __name__, url_prefix='/project')
 
-@app.route('/project/<int:id>', methods=['GET'])
+@project.route('/project/<int:id>', methods=['GET'])
 def get_project_by_id_action(id):
     """
     Get project data by it's id
@@ -27,7 +27,7 @@ def get_project_by_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@app.route('/project/name/<name>', methods=['GET'])
+@project.route('/project/name/<name>', methods=['GET'])
 def get_project_by_name_action(name):
     """
     Get project data by it's name
@@ -49,7 +49,7 @@ def get_project_by_name_action(name):
     except ApiException as err:
         return response_err(err)
 
-@app.route('/project/all', methods=['GET'])
+@project.route('/project/all', methods=['GET'])
 def get_project_all_action():
     """
     Get data for all projects
@@ -70,7 +70,7 @@ def get_project_all_action():
     except ApiException as err:
         return response_err(err)
 
-@app.route("/poject/update_or_create", methods=['POST'])
+@project.route("/poject/update_or_create", methods=['POST'])
 def update_or_create_poject_action():
     """
     Update or create poject

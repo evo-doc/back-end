@@ -1,12 +1,13 @@
-from flask import json, request
+from flask import json, request, Blueprint
 from evodoc.exception import DbException, ApiException
-from evodoc.app import app, db
 from evodoc.login import login, authenticate, authenticateUser, createToken, check_token_exists
 from evodoc.entity import User, UserToken, UserType
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token, validate_data
 from datetime import datetime, timedelta
 
-@app.route('/user', methods=['GET'])
+user = Blueprint('user', __name__, url_prefix='/user')
+
+@user.route('', methods=['GET'])
 def get_user_by_id_action():
     """
     Get user data by it's id
@@ -22,7 +23,7 @@ def get_user_by_id_action():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/user', methods=['DELETE'])
+@user.route('', methods=['DELETE'])
 def delete_user():
     """
     Deletes user by it's id (only deactivation)
@@ -44,7 +45,7 @@ def delete_user():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/user', methods=['POST'])
+@user.route('', methods=['POST'])
 def update_user():
     """
     Update user with suplied data, now works only for email, password, name and user type
@@ -63,7 +64,7 @@ def update_user():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/user/all', methods=['GET'])
+@user.route('/all', methods=['GET'])
 def get_user_all_action():
     """
     Get all user, only for logged users
@@ -79,7 +80,7 @@ def get_user_all_action():
     except ApiException as err:
         return response_err(err)
 
-@app.route("/user/activation", methods=['POST'])
+@user.route("/activation", methods=['POST'])
 def activation_action():
     """
     Acc activation
@@ -103,7 +104,7 @@ def activation_action():
     except DbException as err:
         return response_err(err)
 
-@app.route("/user/active", methods=['POST'])
+@user.route("/active", methods=['POST'])
 def is_user_active():
     try:
         data = request.get_json()
@@ -118,7 +119,7 @@ def is_user_active():
     except DbException as err:
         return response_err(err)
 
-@app.route("/user/authorised", methods=['POST'])
+@user.route("/authorised", methods=['POST'])
 def is_user_authorised():
     try:
         data = request.get_json()

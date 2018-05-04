@@ -1,11 +1,19 @@
-from flask import json, request
-from evodoc.app import app, db
+from flask import json, request, Blueprint
 from evodoc.login import login, authenticate, authenticateUser, createToken, check_token_exists
 from evodoc.exception import DbException, ApiException
 from evodoc.entity import User, UserToken, Module, Project, Package
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token, validate_data
 
-@app.route('/login', methods=['POST'])
+miscapi = Blueprint('miscapi', __name__)
+
+@miscapi.route('/')
+def home():
+    """
+    Some kind of homepage
+    """
+    return response_ok({"data": "This is evodoc backend api."})
+
+@miscapi.route('/login', methods=['POST'])
 def login_action():
     """
     API login entry point
@@ -24,7 +32,7 @@ def login_action():
     except DbException as err:
         return response_err(err)
 
-@app.route('/registration', methods=['POST'])
+@miscapi.route('/registration', methods=['POST'])
 def registration_action():
     """
     Registration
@@ -47,7 +55,7 @@ def registration_action():
     except DbException as err:
         return response_err(err)
 
-@app.route('/stats', methods=['GET'])
+@miscapi.route('/stats', methods=['GET'])
 def stats():
     try:
         token = request.args.get('token')

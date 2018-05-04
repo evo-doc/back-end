@@ -1,9 +1,11 @@
-from flask import request
-from evodoc import app, db, DbException, ApiException
+from flask import request, Blueprint
+from evodoc import DbException, ApiException
 from evodoc.entity import Package
 from evodoc.api import response_ok, response_ok_obj, response_ok_list, response_err, validate_token, validate_data
 
-@app.route('/package', methods=['GET'])
+package = Blueprint('package', __name__, url_prefix='/package')
+
+@package.route('', methods=['GET'])
 def get_package_by_id_action():
     """
     Get packge by id
@@ -19,7 +21,7 @@ def get_package_by_id_action():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/package/all', methods=['GET'])
+@package.route('/all', methods=['GET'])
 def get_all_packages():
     """
     Return all packages
@@ -33,7 +35,7 @@ def get_all_packages():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/package', methods=['POST'])
+@package.route('', methods=['POST'])
 def save_package():
     try:
         data = request.get_json()
@@ -46,7 +48,7 @@ def save_package():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/package/down', methods=['POST'])
+@package.route('/down', methods=['POST'])
 def download_package():
     try:
         data = request.get_json()
@@ -59,7 +61,7 @@ def download_package():
     except ApiException as err:
         return response_err(err)
 
-@app.route('/package', methods=['DELETE'])
+@package.route('', methods=['DELETE'])
 def delete_package():
     """
     Deletes package
