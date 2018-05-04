@@ -12,7 +12,7 @@ class Module(db.Model):
     __tablename__ = "module"
     id = Column(Integer, primary_key=True)
     project_id = Column(Integer, ForeignKey("project.id"))
-    name = Column(String(50), unique=True)
+    name = Column(String(100), unique=True)
     created = Column(DateTime, default=datetime.datetime.utcnow())
     update = Column(DateTime, default=datetime.datetime.utcnow())
     active = Column(Boolean)
