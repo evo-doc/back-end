@@ -16,7 +16,6 @@ class Module(db.Model):
     created = Column(DateTime, default=datetime.datetime.utcnow())
     update = Column(DateTime, default=datetime.datetime.utcnow())
     active = Column(Boolean)
-#    data = Column(JSON)
 
     def __init__(self, project_id=None, name=None, created=None,
                        update=None, active=True):
