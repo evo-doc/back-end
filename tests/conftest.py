@@ -39,9 +39,6 @@ def session(app, db, request):
     """
     Returns function-scoped session.
     """
-
-    #perform upgrade
-
     with app.app_context():
         conn = _db.engine.connect()
         txn = conn.begin()
