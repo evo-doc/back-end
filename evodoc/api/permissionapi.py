@@ -5,7 +5,7 @@ from evodoc.api import response_ok, response_err, response_ok_list, response_ok_
 
 permission = Blueprint('permission', __name__, url_prefix='/permission')
 
-@permission.route('/modulePermission/<int:id>', methods=['GET'])
+@permission.route('/module/<int:id>', methods=['GET'])
 def get_module_permission_by_id_action(id):
     """
     Get module permission by it's id
@@ -22,7 +22,7 @@ def get_module_permission_by_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@permission.route('/modulePermission/user_id/<int:id>', methods=['GET'])
+@permission.route('/module/user_id/<int:id>', methods=['GET'])
 def get_module_permission_by_user_id_action(id):
     """
     Get all module permissions for by user id
@@ -39,7 +39,7 @@ def get_module_permission_by_user_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@permission.route('/modulePermission/module_id/<int:id>', methods=['GET'])
+@permission.route('/module/module_id/<int:id>', methods=['GET'])
 def get_module_permission_by_modue_id_action(id):
     """
     Get all module permissions by module id
@@ -57,7 +57,7 @@ def get_module_permission_by_modue_id_action(id):
         return response_err(err)
 
 ###############################################################################
-@permission.route('/projectPermission/<int:id>', methods=['GET'])
+@permission.route('/project/<int:id>', methods=['GET'])
 def get_project_permission_by_id_action(id):
     """
     Get project permission by it's id
@@ -74,7 +74,7 @@ def get_project_permission_by_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@permission.route('/projectPermission/user_id/<int:id>', methods=['GET'])
+@permission.route('/project/user_id/<int:id>', methods=['GET'])
 def get_project_permission_by_user_id_action(id):
     """
     Get project permission by it's users id
@@ -91,7 +91,7 @@ def get_project_permission_by_user_id_action(id):
     except ApiException as err:
         return response_err(err)
 
-@permission.route('/projectPermission/project_id/<int:id>', methods=['GET'])
+@permission.route('/project/project_id/<int:id>', methods=['GET'])
 def get_project_permission_by_project_id_action(id):
     """
     Get project permission by it's projects id
