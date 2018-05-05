@@ -1,5 +1,5 @@
 from flask import jsonify
-from evodoc.exception import ApiException
+from evodoc.exception import ApiException, DbException
 from evodoc.login import authenticate, check_token_exists
 from evodoc.entity import User, Module, Project
 
@@ -17,7 +17,6 @@ def response_ok_list(data):
 
 def response_err(data):
     return jsonify(data.message), data.errorCode
-
 
 def validate_token(token):
     """

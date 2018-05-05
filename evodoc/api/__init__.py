@@ -1,6 +1,5 @@
 __all__ = [
     'response_ok',
-    'response_err',
     'response_ok_list',
     'response_ok_obj',
     'module',
