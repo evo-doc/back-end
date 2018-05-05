@@ -1,11 +1,17 @@
 import pytest
-from evodoc import DbException
-from evodoc.entity import User, UserType
+import unittest
+from evodoc import DbException, create_app
+from evodoc.entity import User, UserType, db as _db
 
-userList = []
+@pytest.mark.usefixture("session")
+class TestUser():
+    userList = []
 
-class TestUser:
-    def prepare_user_data(self, session):
+    @pytest.fixture(autouse = True)
+    def setup(self, session):
+        """
+        SETUP funcion for TestUser class, this function is executed for each function in this TestClass
+        """
         user_types = []
         user_types.append(UserType("ADMIN", 2))
         user_types.append(UserType("GUEST", 0))
@@ -28,18 +34,19 @@ class TestUser:
         user.activated = True
         session.add(user)
         session.commit()
-        userList.append(user)
+        self.userList.append(user)
 
-    def test_get_user_by_id(self, session):
+    def test_get_user_by_id(self):
         """Test method get_user_by_id in User"""
-        self.prepare_user_data(session)
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             User.get_user_by_id(0)
         assert str(err.value) == "(404, 'User not found.')"
 
-        user = User.get_user_by_id(userList[0].id)
+        user = User.get_user_by_id(self.userList[0].id)
+        assert user.id == self.userList[0].id
 
-        assert user.id == userList[0].id
+        user = User.get_user_by_id(0, False)
+        assert user is None
 
 

@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from pytest import fixture
 from flask_migrate import upgrade, Migrate
 
-@fixture(scope="session")
+@fixture(scope="class")
 def app(request):
     """
     Returns session-wide application.
@@ -21,9 +21,11 @@ def app(request):
 
     _app = create_app(test_settings)
 
-    return _app
+    _app.app_context().push()
 
-@fixture(scope="session")
+    yield _app
+
+@fixture(scope="class")
 def db(app, request):
     """
     Returns session-wide initialised database.
@@ -32,9 +34,10 @@ def db(app, request):
     with app.app_context():
         _db.drop_all()
         _db.create_all()
+        yield _db
 
 
-@fixture(scope="function", autouse=True)
+@fixture(scope="class", autouse=True)
 def session(app, db, request):
     """
     Returns function-scoped session.
@@ -53,4 +56,3 @@ def session(app, db, request):
         sess.remove()
         # This instruction rollsback any commit that were executed in the tests.
         txn.rollback()
-        conn.close()
