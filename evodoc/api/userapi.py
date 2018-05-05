@@ -1,6 +1,6 @@
 from flask import json, request, Blueprint
 from evodoc.exception import DbException, ApiException
-from evodoc.login import login, authenticate, authenticateUser, createToken, check_token_exists
+from evodoc.login import login, authenticate, check_token_exists
 from evodoc.entity import User, UserToken, UserType
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token, validate_data
 from datetime import datetime, timedelta

@@ -2,46 +2,46 @@ import uuid
 from evodoc.exception import DbException, ApiException
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
-from evodoc.entity import *
+from evodoc.entity import db, UserToken, User
 from sqlalchemy import desc
 
 def login(username, password_plain):
+	"""
+	Login user, return his token as entity
+		:param username:
+		:param password_plain:
+	"""
 	user = User.get_user_by_username_or_email(username)
 	if (user.confirm_password(password_plain)):
 		if user.activated == False:
-			token = authenticateUser(user.id)
-			raise ApiException(200, {"verified": "false", "token": token})
-		return authenticateUser(user.id, None)
+			token = authenticate(None, True, user.id)
+			raise ApiException(200, {"verified": "false", "token": token.token})
+		return authenticate(None, True, user.id)
 	else:
 		raise ApiException(403, "Invalid username or password.")
 
-def createToken (userId) : #creates new token and adds it to the database
-	t = str(userId).zfill(10) + str(uuid.uuid4())
-	while (UserToken.query.filter_by(token=t).count() != 0) :
-		t = str(userId).zfill(10) + str(uuid.uuid4())
-	db.session.add(UserToken(user_id=userId,token=t))
-	db.session.commit()
-	return t
-
-def authenticateUser (id, token=None): #returns active token
-    if (token==None) :
-        return createToken(id)
-    t = UserToken.query.filter(UserToken.user_id==id, UserToken.created + timedelta(hours=24) > datetime.datetime.utcnow(), UserToken.update + timedelta(hours=2) > datetime.datetime.utcnow()).first()
-    #.order_by(db.desc(UserToken.created))
-    if (t == None):
-        return createToken(id)
-    t.update=datetime.datetime.utcnow()
-    t.token = token
-    db.session.commit()
-    return t
-
-def authenticate(token):
+def authenticate(token = None, create_token = False, user_id = 0):
 	"""
-	Test if token exist, if not returns None, if its out of date, returns new token, else return old one
-		:param token: user token
+	Authenticate token, if token is not submited, it can be created, also if token is outdate, new one is returned
+		:param token:
+		:param create_token=False:
+		:param user_id=0:
 	"""
-	if token == None:
+	if token == None and create_token == False:
 		return None
+	elif create_token == True:
+		User.get_user_by_id(user_id)
+		new_token = str(user_id).zfill(10) + str(uuid.uuid4())
+		#Check if token is unique
+		while (UserToken.query.filter_by(token=new_token).count() != 0) :
+			new_token = str(user_id).zfill(10) + str(uuid.uuid4())
+
+		new_token = UserToken(user_id=user_id,token=new_token)
+		db.session.add(new_token)
+		db.session.commit()
+
+		return new_token
+
 	userTokenEntity = UserToken.query.filter_by(token=token).first()
 	if userTokenEntity == None or (userTokenEntity.created + timedelta(hours=24) < datetime.utcnow() \
         and userTokenEntity.update + timedelta(hours=2) < datetime.utcnow()):
