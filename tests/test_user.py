@@ -39,7 +39,7 @@ class TestUser():
         session.query(User).delete()
         session.query(UserType).delete()
         session.commit()
-        self.userList = []
+        self.userList[:] = []
 
     def test_get_user_by_id(self):
         """Test method get_user_by_id in User"""
@@ -55,7 +55,7 @@ class TestUser():
         assert user is None
 
     def test_get_user_by_name(self):
-        """Test method get_user_by_id in User"""
+        """Test method get_user_by_name in User"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             User.get_user_by_name('@')
@@ -69,7 +69,7 @@ class TestUser():
         assert user is None
 
     def test_get_user_by_email(self):
-        """Test method get_user_by_id in User"""
+        """Test method get_user_by_email in User"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             User.get_user_by_email('@')
@@ -83,7 +83,7 @@ class TestUser():
         assert user is None
 
     def test_get_user_by_username_or_email(self):
-        """Test method get_user_by_id in User"""
+        """Test method get_user_by_username_or_email in User"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             User.get_user_by_email('@')
@@ -99,5 +99,71 @@ class TestUser():
         assert user.name == self.userList[0].name
         assert user.email == self.userList[0].email
 
-        user = User.get_user_by_email('@', False)
+        user = User.get_user_by_email('@', False)   
         assert user is None
+
+    def test_get_user_all(self, session):
+        """Test method get_user_all in User"""
+
+        users = User.get_user_all()
+        assert len(users) == len(self.userList)
+        assert users[0].id==self.userList[0].id
+        assert users[0].name==self.userList[0].name
+        assert users[0].email==self.userList[0].email
+        assert users[0].password==self.userList[0].password
+
+        user = User("DUMMY", "dummy@dummy.dummy", "hackPr00f", None, None, True)
+        user.user_type_id = UserType.get_type_by_name('USER').id
+        user.activated = True
+        session.add(user)
+        session.commit()
+        self.userList.append(user)
+
+        users = User.get_user_all()
+        assert len(users) == len(self.userList)
+
+        
+        session.query(User).delete()
+        session.commit()
+
+        users = User.get_user_all(False)
+        assert users == []
+
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            User.get_user_all()
+        assert str(err.value) == "(404, 'No user found.')"
+
+    def test_get_user_all_by_user_type_id(self, session):
+        """Test method get_user_all_by_user_type_id in User"""
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            User.get_user_all_by_user_type_id(UserType.get_type_by_name('USER').id)
+        assert str(err.value) == "(404, 'No user found.')"
+
+        with pytest.raises(DbException) as err:
+            User.get_user_all_by_user_type_id(123)
+        assert str(err.value) == "(404, 'No user found.')"
+
+        users = User.get_user_all_by_user_type_id(UserType.get_type_by_name('ADMIN').id)
+        assert len(users) == len(self.userList)
+        assert users[0].id==self.userList[0].id
+        assert users[0].name==self.userList[0].name
+        assert users[0].email==self.userList[0].email
+        assert users[0].password==self.userList[0].password
+
+        user = User("DUMMY", "dummy@dummy.dummy", "hackPr00f", None, None, True)
+        user.user_type_id = UserType.get_type_by_name('GUEST').id
+        user.activated = True
+        session.add(user)
+        session.commit()
+        self.userList.append(user)
+
+        users = User.get_user_all_by_user_type_id(UserType.get_type_by_name('GUEST').id)
+        assert users[0].id==self.userList[1].id
+        assert users[0].name==self.userList[1].name
+        assert users[0].email==self.userList[1].email
+        assert users[0].password==self.userList[1].password
+
+        users = User.get_user_all_by_user_type_id(UserType.get_type_by_name('USER').id, False)
+        assert users == []
