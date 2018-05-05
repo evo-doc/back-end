@@ -1,5 +1,5 @@
 from flask import json, request, Blueprint
-from evodoc.login import login, authenticate, authenticateUser, createToken, check_token_exists
+from evodoc.login import login, authenticate, check_token_exists
 from evodoc.exception import DbException, ApiException
 from evodoc.entity import User, UserToken, Module, Project, Package
 from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token, validate_data
@@ -23,7 +23,7 @@ def login_action():
         validate_data(data, {'username', 'password'})
         token=login(data['username'], data['password'])
         data = {
-            "token": token,
+            "token": token.token,
             "verified": "true"
         }
         return response_ok(data)
@@ -44,10 +44,10 @@ def registration_action():
         if User.check_unique(data['username'], data['email'], True):
             userEntity = User(data['username'], data['email'], data['password'])
             userEntity.save_entity()
-            token = authenticateUser(userEntity.id)
+            token = authenticate(None, True, userEntity.id)
             data = {
                 "user_id": userEntity.id,
-                "token": token
+                "token": token.token
             }
             return response_ok(data)
     except ApiException as err:
