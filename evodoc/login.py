@@ -27,7 +27,7 @@ def authenticate(token = None, create_token = False, user_id = 0):
 		:param create_token=False:
 		:param user_id=0:
 	"""
-	if token == None and create_token == False:
+	if (token == None or token == {}) and create_token == False:
 		return None
 	elif create_token == True:
 		User.get_user_by_id(user_id)
@@ -46,7 +46,7 @@ def authenticate(token = None, create_token = False, user_id = 0):
 	if userTokenEntity == None or (userTokenEntity.created + timedelta(hours=24) < datetime.utcnow() \
         and userTokenEntity.update + timedelta(hours=2) < datetime.utcnow()):
 		return None
-	if userTokenEntity.user.active != 1:
+	if userTokenEntity.user.active != 1 or userTokenEntity.user.activated != 1:
 		return None
 	return userTokenEntity
 
