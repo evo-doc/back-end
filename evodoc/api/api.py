@@ -24,17 +24,18 @@ def validate_token(token):
     Validate token and return its instance
         :param token:
     """
-    if token == None:
-       raise ApiException(403, "Invalid token.")
-
     userToken = authenticate(token)
     if userToken == None:
-        if check_token_exists(token):
-            raise ApiException(200, {"data": "User not activated", "token": token})
-        raise ApiException(403, "Invalid token.")
+        token = check_token_exists(token)
+        if token is None:
+            raise ApiException(403, "Invalid token.")
+        if token.user.activated == False:
+            raise ApiException(200, {"data": "User not activated", "token": authenticate(None, True, token.user_id).token})
+        else:
+            raise ApiException(403, "Invalid token.")
     return userToken.token
 
-def validate_data(data, expected_values):
+def validate_data(data, expected_values = []):
     """
     validate data by given array of keys
     """
