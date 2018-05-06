@@ -227,37 +227,39 @@ class User(db.Model):
         changed = 0
         userEntity = cls.get_user_by_id(id)
         # Name change
-        if dataArray["name"] != None:
+        if 'name' in dataArray and dataArray["name"] != None:
             userCheck = cls.get_user_by_name(dataArray["name"], False)
             if userCheck != None and userCheck.id != id:
                 raise DbException(400, "username")
-            userEntity.username = dataArray["name"]
-            print(dataArray["name"])
+                print("WTF")
+                return None
+            userEntity.name = dataArray["name"]
             changed = 1
 
-        if dataArray["email"] != None:
+        if 'email' in dataArray and dataArray["email"] != None:
             userCheck = cls.get_user_by_email(dataArray["email"], False)
             if userCheck != None and userCheck.id != id:
                 raise DbException(400, "email")
-            userEntity.username = dataArray["email"]
+                return None
+            userEntity.email = dataArray["email"]
             changed = 1
 
-        if dataArray["password"] != None:
-            userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-            changed = 1
-
-        if dataArray["user_type_id"] != None:
+        if 'user_type_id' in dataArray and dataArray["user_type_id"] != None:
             userType = UserType.get_type_by_id(dataArray["user_type_id"], False)
             if userType == None:
                 raise DbException(400, "usertype")
+                return None
             userEntity.user_type_id = dataArray["user_type_id"]
+            changed = 1
+
+        if 'password' in dataArray and dataArray["password"] != None:
+            userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
             changed = 1
 
         if (changed == 1):
             userEntity.update = datetime.datetime.utcnow()
 
-        db.session.commit()
-        print("committed")
+        db.session.commit() 
         return userEntity
 
     def serialize(self):
@@ -272,12 +274,10 @@ class User(db.Model):
         }
 
     @classmethod
-    def get_user_type_perm_from_user_id(cls, id, raiseFlag = True):
+    def get_user_type_from_user_id(cls, id, raiseFlag = True):
         usr = cls.get_user_by_id(id, raiseFlag)
-        if (usr == None): return 0
-        t = UserType.get_type_by_id(usr.user_type_id, raiseFlag)
-        if (t == None): return 0
-        return t.permission_flag
+        if (usr == None): return Non
+        return UserType.get_type_by_id(usr.user_type_id, raiseFlag)
 
 ###################################################################################
 class UserType(db.Model):
