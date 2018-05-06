@@ -67,39 +67,39 @@ class Module(db.Model):
             raise DbException(DbException, 404, "Module not found.")
         return result
 
-    @classmethod
-    def update_name_by_id(cls,moduleId,moduleName, raiseFlag = True):
-        module = cls.get_module_by_id(moduleId, raiseFlag)
-        if (module == None):
-            return False
-        if (None != self.get_module_by_name(moduleName,false)):
-            if raiseFlag:
-                raise DbException(400, "Name is already taken")
-            return false
-        module.name = moduleName
-        module.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_name_by_id(cls,moduleId,moduleName, raiseFlag = True):
+#        module = cls.get_module_by_id(moduleId, raiseFlag)
+#        if (module == None):
+#            return False
+#        if (None != self.get_module_by_name(moduleName,false)):
+#            if raiseFlag:
+#                raise DbException(400, "Name is already taken")
+#            return false
+#        module.name = moduleName
+#        module.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
-    @classmethod
-    def update_module_data_by_id(cls,moduleId,data, raiseFlag = True):
-        module = cls.get_module_by_id(moduleId, raiseFlag)
-        if (module == None):
-            return False
-        module.data = data
-        module.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_module_data_by_id(cls,moduleId,data, raiseFlag = True):
+#        module = cls.get_module_by_id(moduleId, raiseFlag)
+#        if (module == None):
+#            return False
+#        module.data = data
+#        module.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
-    @classmethod
-    def update_module_data_by_name(cls,name,data, raiseFlag = True):
-        module = cls.get_module_by_name(name, raiseFlag)
-        if (module == None):
-            return False
-        module.data = data
-        module.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_module_data_by_name(cls,name,data, raiseFlag = True):
+#        module = cls.get_module_by_name(name, raiseFlag)
+#        if (module == None):
+#            return False
+#        module.data = data
+#        module.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
     @classmethod
     def activate_module_by_id(cls, id, raiseFlag = True):
@@ -124,6 +124,17 @@ class Module(db.Model):
     def save_entity(self):
         db.session.add(self)
         db.session.commit()
+
+    def get_data(self, raiseFlag = True):
+        try:
+            with open(os.path.dirname(__file__) + '/../../data/module/' + 
+                      str(self.project_id) + '/' + str(self.id) + '.md', 'r') as f:
+                data = f.read()
+            return data
+        except FileNotFoundError:
+            if raiseFlag:
+                raise DbException(DbException, 404, "Module data not found.")
+            return None
 
     @classmethod
     def create_or_update_module_by_id_from_array(cls,id,array, raiseFlag = True):
