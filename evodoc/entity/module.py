@@ -2,9 +2,10 @@
 """
 import os
 import datetime
+from evodoc.entity.project import Project
+from evodoc.entity import db
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey, Boolean, JSON
-from evodoc.entity import db
 from evodoc import DbException, ApiException
 
 
@@ -33,7 +34,7 @@ class Module(db.Model):
             'created': self.created,
             'update': self.update,
             'active': self.active,
-            'data': self.data,
+            'data': self.get_data(),
         }
 
     def __repr__(self):
@@ -133,7 +134,7 @@ class Module(db.Model):
             return data
         except FileNotFoundError:
             if raiseFlag:
-                raise DbException(DbException, 404, "Module data not found.")
+                raise DbException(404, "Module data not found.")
             return None
 
     @classmethod
@@ -177,11 +178,11 @@ class Module(db.Model):
         if(id is not None):
             module = cls.get_module_by_id(id, False)
         if (module == None):
-            res = cls.create_module(project_id, name, created, update, active, data, False)
+            res = cls.create_module(project_id, name, created, update, active, data, raiseFlag)
             return res
         if (module.project_id != project_id and project_id != None):
             if(data == None):
-                data = module.data
+                data = module.get_data()
             res = cls.create_module(project_id, name, created, update, active, data, raiseFlag)
             return res
         changed = 0
@@ -201,18 +202,24 @@ class Module(db.Model):
             module.active = active
         if (data != None):
             changed = 1
-            #save "data"
-            with open(os.path.dirname(__file__) + '/../../data/module/' + 
-                      str(module.project_id) + '/' + str(module.id) + '.md', 'w') as f:
-                f.write(data)
         if (update != None):
             changed = 0
             module.update = update
             db.session.commit()
+            if (data != None):
+                #save "data"
+                with open(os.path.dirname(__file__) + '/../../data/module/' + 
+                          str(module.project_id) + '/' + str(module.id) + '.md', 'w') as f:
+                    f.write(data)
             return module
         if (changed == 1):
             module.update = datetime.datetime.utcnow()
             db.session.commit()
+            if (data != None):
+                #save "data"
+                with open(os.path.dirname(__file__) + '/../../data/module/' + 
+                          str(module.project_id) + '/' + str(module.id) + '.md', 'w') as f:
+                    f.write(data)
             return module
         return None
 
@@ -220,12 +227,17 @@ class Module(db.Model):
     def create_module(cls, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
         if (None != cls.get_module_by_name(name,False)):
             if raiseFlag:
-                raise DbException(400, "Name is already taken")
+                raise DbException(400, "Name is already taken.")
+            return None
+        if (None == Project.get_project_by_id(project_id, False)):
+            if raiseFlag:
+                raise DbException(404, "Project not found.")
             return None
         entity = Module(project_id=project_id, name=name, created=created, update=update, active=active)
         entity.save_entity()
         #save "data"
-        with open(os.path.dirname(__file__) + '/../../data/module/' + 
-                  str(entity.project_id) + '/' + str(entity.id) + '.md', 'w') as f:
-            f.write(data)
+        if data != None:
+            with open(os.path.dirname(__file__) + '/../../data/module/' + 
+                      str(entity.project_id) + '/' + str(entity.id) + '.md', 'w') as f:
+                f.write(data)
         return entity
