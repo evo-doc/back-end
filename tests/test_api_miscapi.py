@@ -68,15 +68,15 @@ class TestMiscapi:
         data["username"] = "ThisDoesNotExist"
         result = client.post(url_for('miscapi.login_action'), json = data)
         result_data = result.get_json()
-        assert result.status == "404 NOT FOUND"
-        assert result_data == "User not found."
+        assert result.status == "400 BAD REQUEST"
+        assert result_data == "userpass"
 
         data["username"] = "Admin"
         data["password"] = "YouShallNotPass"
         result = client.post(url_for('miscapi.login_action'), json = data)
         result_data = result.get_json()
-        assert result.status == "403 FORBIDDEN"
-        assert result_data == "Invalid username or password."
+        assert result.status == "400 BAD REQUEST"
+        assert result_data == "userpass"
 
         result = client.post(url_for('miscapi.login_action'), json = {})
         result_data = result.get_json()
