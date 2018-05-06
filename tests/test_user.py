@@ -1,7 +1,7 @@
 import pytest
 import unittest
 from evodoc import DbException, create_app
-from evodoc.entity import User, UserType, db as _db
+from evodoc.entity import User, UserType, UserToken, db as _db
 
 @pytest.mark.usefixture("session")
 class TestUser():
@@ -441,4 +441,90 @@ class TestUserType():
             TOKEN
 """
 ###############################################################################
+
+@pytest.mark.usefixture("session")
+class TestUserToken():
+    userList = []
+    tokenList = []
+
+    @pytest.fixture(autouse = True)
+    def setup(self, session):
+        """
+        SETUP funcion for TestUser class, this function is executed for each function in this TestClass
+        """
+        user_types = []
+        user_types.append(UserType("ADMIN", 2))
+        user_types.append(UserType("GUEST", 0))
+        user_types.append(UserType("USER", 1))
+
+        user_type_db = UserType.query.all()
+
+        for user in user_type_db:
+            for seedUser in user_types:
+                if (user.name == seedUser.name):
+                    user_types.remove(seedUser)
+
+
+        for user_type in user_types:
+            session.add(user_type)
+            session.commit()
+
+        user = User("Admin", "admin@nimda.exp", "SuperSecret", None, None, True)
+        user.user_type_id = UserType.get_type_by_name('ADMIN').id
+        user.activated = True
+        session.add(user)
+        session.commit()
+        self.userList.append(user)
+        token = UserToken(self.userList[0].id, 'token_placeholder')
+        session.add(token)
+        session.commit()
+        self.tokenList.append(token)
+        yield
+        session.query(UserToken).delete()
+        session.query(User).delete()
+        session.query(UserType).delete()
+        session.commit()
+        self.tokenList[:] = []
+        self.userList[:] = []
+
+    def test_get_token_by_id(self):
+        """Test method get_token_by_id in UserToken"""
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            UserToken.get_token_by_id(0)
+        assert str(err.value) == "(404, 'UserToken not found.')"
+
+        token = UserToken.get_token_by_id(self.tokenList[0].id)
+        assert token.token == self.tokenList[0].token
+        assert token.id == self.tokenList[0].id
+
+        assert UserToken.get_token_by_id(0,False) == None
+
+    def test_get_token_all(self, session):
+        """Test method get_token_all in UserToken"""
+        assert len(UserToken.get_token_all()) == 1
+        token = UserToken(self.userList[0].id, 'token_placeholder2')
+        session.add(token)
+        session.commit()
+        self.tokenList.append(token)
+        assert len(UserToken.get_token_all()) == 2
+        session.query(UserToken).delete()
+        session.commit()
+        self.tokenList[:] = []
+        assert len(UserToken.get_token_all()) == 0
+
+    def test_get_token_all_by_user_id(self, session):
+        """Test method get_token_all_by_user_id in UserToken"""
+        assert len(UserToken.get_token_all_by_user_id(self.userList[0].id)) == 1
+        token = UserToken(self.userList[0].id, 'token_placeholder2')
+        session.add(token)
+        session.commit()
+        self.tokenList.append(token)
+        assert len(UserToken.get_token_all_by_user_id(self.userList[0].id)) == 2
+        session.query(UserToken).delete()
+        session.commit()
+        self.tokenList[:] = []
+        assert len(UserToken.get_token_all_by_user_id(self.userList[0].id)) == 0
+
+
 
