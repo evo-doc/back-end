@@ -54,19 +54,19 @@ class TestLogin:
         """
         username = ""
         password = ""
-        with pytest.raises(DbException) as err:
+        with pytest.raises(ApiException) as err:
             login(username, password)
-        assert str(err.value) == "(404, 'User not found.')"
+        assert str(err.value) == "(400, 'userpass')"
 
         username = "NotAnUser"
-        with pytest.raises(DbException) as err:
+        with pytest.raises(ApiException) as err:
             login(username, password)
-        assert str(err.value) == "(404, 'User not found.')"
+        assert str(err.value) == "(400, 'userpass')"
 
         username = "Admin"
         with pytest.raises(ApiException) as err:
             login(username, password)
-        assert str(err.value) == "(403, 'Invalid username or password.')"
+        assert str(err.value) == "(400, 'userpass')"
 
         password = "SuperSecret"
         result = login(username, password)

@@ -35,16 +35,16 @@ class TestApi:
         user.user_type_id = UserType.get_type_by_name('ADMIN').id
         user.activated = True
         session.add(user)
-        old_token = str(user.id).zfill(10) + str(uuid.uuid4())
+        ttoken = str(user.id).zfill(10) + str(uuid.uuid4())
         #Check if token is unique
-        while (UserToken.query.filter_by(token=old_token).count() != 0) :
-            old_token = str(user.id).zfill(10) + str(uuid.uuid4())
+        while (UserToken.query.filter_by(token=ttoken).count() != 0) :
+            ttoken = str(user.id).zfill(10) + str(uuid.uuid4())
 
-        old_token = UserToken(user_id=user.id,token=old_token)
-        old_token.update = datetime.utcnow() - timedelta(hours=4)
-        old_token.created = datetime.utcnow() - timedelta(hours=48)
-        session.add(old_token)
-        self.token_list.append(old_token)
+        ttoken = UserToken(user_id=user.id,token=ttoken)
+        ttoken.update = datetime.utcnow() - timedelta(hours=4)
+        ttoken.created = datetime.utcnow() - timedelta(hours=48)
+        session.add(ttoken)
+        self.token_list.append(ttoken)
         self.user_list.append(user)
         session.commit()
 
@@ -52,16 +52,16 @@ class TestApi:
         session.add(user)
         self.user_list.append(user)
 
-        old_token = str(user.id).zfill(10) + str(uuid.uuid4())
+        ttoken = str(user.id).zfill(10) + str(uuid.uuid4())
         #Check if token is unique
-        while (UserToken.query.filter_by(token=old_token).count() != 0) :
-            old_token = str(user.id).zfill(10) + str(uuid.uuid4())
+        while (UserToken.query.filter_by(token=ttoken).count() != 0) :
+            ttoken = str(user.id).zfill(10) + str(uuid.uuid4())
 
-        old_token = UserToken(user_id=user.id,token=old_token)
-        old_token.update = datetime.utcnow()
-        old_token.created = datetime.utcnow()
-        session.add(old_token)
-        self.token_list.append(old_token)
+        ttoken = UserToken(user_id=user.id,token=ttoken)
+        ttoken.update = datetime.utcnow()
+        ttoken.created = datetime.utcnow()
+        session.add(ttoken)
+        self.token_list.append(ttoken)
         session.commit()
 
         yield

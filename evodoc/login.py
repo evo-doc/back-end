@@ -11,14 +11,16 @@ def login(username, password_plain):
 		:param username:
 		:param password_plain:
 	"""
-	user = User.get_user_by_username_or_email(username)
+	user = User.get_user_by_username_or_email(username, False)
+	if user is None:
+		raise ApiException(400, 'userpass')
 	if (user.confirm_password(password_plain)):
 		if user.activated == False:
 			token = authenticate(None, True, user.id)
 			raise ApiException(200, {"verified": "false", "token": token.token})
 		return authenticate(None, True, user.id)
 	else:
-		raise ApiException(403, "Invalid username or password.")
+		raise ApiException(400, 'userpass')
 
 def authenticate(token = None, create_token = False, user_id = 0):
 	"""
