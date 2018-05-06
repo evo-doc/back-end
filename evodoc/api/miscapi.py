@@ -1,6 +1,5 @@
 from flask import json, request, Blueprint, jsonify
-from evodoc.login import login, authenticate, check_token_exists
-from evodoc.exception import DbException, ApiException
+from evodoc import DbException, ApiException, login, authenticate, check_token_exists, validate_email, validate_password, validate_username
 from evodoc.entity import User, UserToken, Module, Project, Package
 from evodoc.api import response_ok, response_ok_list, response_ok_obj, validate_token, validate_data
 
@@ -34,7 +33,12 @@ def registration_action():
     """
     data = request.get_json()
     validate_data(data, {'username', 'password', 'email'})
-
+    if not validate_email(data['email']):
+        raise ApiException(400, "email")
+    if not validate_username(data['username']):
+        raise ApiException(400, "username")
+    if not validate_password(data['password']):
+        raise ApiException(400, "password")
     if User.check_unique(data['username'], data['email'], True):
         userEntity = User(data['username'], data['email'], data['password'])
         userEntity.save_entity()
