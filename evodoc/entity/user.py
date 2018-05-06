@@ -367,12 +367,12 @@ class UserToken(db.Model):
             raise DbException(404, "UserToken not found.")
         return userToken
 
-    @classmethod
-    def get_token_by_user_id(cls, userId):         #returns newest token for user
-        userToken = cls.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()
-        if (userToken == None):
-            raise DbException(404, "UserToken not found.")
-        return userToken
+#    @classmethod
+#    def get_token_by_user_id(cls, userId):         #returns newest token for user
+#        userToken = cls.query.filter_by(user_id=userId).order_by(desc(UserToken.created)).first()
+#        if (userToken == None):
+#            raise DbException(404, "UserToken not found.")
+#        return userToken
 
     @classmethod
     def get_token_all(cls, raiseFlag = True):
@@ -388,25 +388,25 @@ class UserToken(db.Model):
             raise DbException(404, "No userToken found.")
         return userToken
 
-    @classmethod
-    def update_token_user_id_by_id(cls, id, userId, raiseFlag = True):
-        userToken = cls.get_token_by_id(id, raiseFlag)
-        if (userToken == None):
-            return False
-        userToken.userId = userId
-        userToken.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_token_user_id_by_id(cls, id, userId, raiseFlag = True):
+#        userToken = cls.get_token_by_id(id, raiseFlag)
+#        if (userToken == None):
+#            return False
+#        userToken.userId = userId
+#        userToken.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
-    @classmethod
-    def update_token_token_by_id(cls, id, token, raiseFlag = True):
-        userToken = cls.get_token_by_id(id, raiseFlag)
-        if (userToken == None):
-            return False
-        userToken.token = token
-        userToken.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_token_token_by_id(cls, id, token, raiseFlag = True):
+#        userToken = cls.get_token_by_id(id, raiseFlag)
+#        if (userToken == None):
+#            return False
+#        userToken.token = token
+#        userToken.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
     def serialize(self):
         return {
