@@ -330,4 +330,65 @@ class TestUser():
         user = User.get_user_by_id(self.userList[0].id)
         assert not user.confirm_password('passwd')
 
+    def test_get_user_type_from_user_id(self, session):
+        """Test method get_user_type_from_user_id in User"""
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            User.get_user_type_from_user_id(0)
+        assert str(err.value) == "(404, 'User not found.')"
+
+        assert User.get_user_type_from_user_id(self.userList[0].id).id == self.userList[0].user_type_id
+###############################################################################
+"""
+            USER TYPE
+"""
+###############################################################################
+@pytest.mark.usefixture("session")
+class TestUserType():
+    typeList = []
+
+    @pytest.fixture(autouse = True)
+    def setup(self, session):
+        """
+        SETUP funcion for TestUserType class, this function is executed for each function in this TestClass
+        """
+        self.typeList.append(UserType("ADMIN", 2))
+        self.typeList.append(UserType("GUEST", 0))
+        self.typeList.append(UserType("USER", 1))
+
+        user_type_db = UserType.query.all()
+
+        for user in user_type_db:
+            for seedUser in self.typeList:
+                if (user.name == seedUser.name):
+                    self.typeList.remove(seedUser)
+
+
+        for user_type in self.typeList:
+            session.add(user_type)
+            session.commit()
+        yield
+        session.query(User).delete()
+        session.query(UserType).delete()
+        session.commit()
+        self.typeList[:] = []
+
+    def test_get_type_by_id(self):
+        """Test method get_type_by_id in UserType"""
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            UserType.get_type_by_id(0)
+        assert str(err.value) == "(404, 'UserType not found.')"
+
+        userType = UserType.get_type_by_id(self.typeList[0].id)
+        assert userType.id == self.typeList[0].id
+
+        userType = UserType.get_type_by_id(0, False)
+        assert userType is None
+
+###############################################################################
+"""
+            TOKEN
+"""
+###############################################################################
 
