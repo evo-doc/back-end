@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from pytest import fixture
 from flask_migrate import upgrade, Migrate
 
-@fixture(scope="class")
+@fixture(scope="session")
 def app(request):
     """
     Returns session-wide application.
@@ -25,7 +25,7 @@ def app(request):
 
     yield _app
 
-@fixture(scope="class")
+@fixture(scope="session")
 def db(app, request):
     """
     Returns session-wide initialised database.

@@ -19,6 +19,12 @@ def create_app(additional_config = {}):
     from evodoc.entity import db
     db.init_app(app)
 
+    migrate = Migrate(app, db)
+    #perform upgrade
+    with app.app_context():
+        upgrade(os.path.dirname(__file__) + '/../migrations')
+
+
     from evodoc.api import miscapi, module, project, package, permission, user
 
     app.register_blueprint(miscapi)
@@ -43,11 +49,6 @@ if __name__ == '__main__':
     git_path = os.path.dirname(__file__) + '/' + app.config['GIT_PATH']
 
     from evodoc.entity import db
-
-    migrate = Migrate(app, db)
-    #perform upgrade
-    with app.app_context():
-        upgrade(os.path.dirname(__file__) + '/../migrations')
 
 
     from evodoc.seed.userseed import initUserSeeds
