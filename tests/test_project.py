@@ -25,7 +25,7 @@ class TestProject():
         self.projectList[:] = []
 
     def test_get_project_by_id(self):
-        """Test method get_project_by_id in User"""
+        """Test method get_project_by_id in Project"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             Project.get_project_by_id(0)
@@ -38,7 +38,7 @@ class TestProject():
         assert Project.get_project_by_id(0, False) == None
 
     def test_get_project_by_name(self):
-        """Test method get_project_by_name in User"""
+        """Test method get_project_by_name in Project"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             Project.get_project_by_name('@')
@@ -51,7 +51,7 @@ class TestProject():
         assert Project.get_project_by_name('@', False) == None
 
     def test_get_project_all(self, session):
-        """Test method get_project_all in User"""
+        """Test method get_project_all in Project"""
 
         projects = Project.get_project_all()
         assert len(projects) == len(self.projectList)
@@ -74,7 +74,7 @@ class TestProject():
         assert projects == []
 
     def test_activate_project_by_id(self):
-        """Test method activate_project_by_id & deactivate_project_by_id in User"""
+        """Test method activate_project_by_id & deactivate_project_by_id in Project"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             Project.activate_project_by_id(0)
@@ -95,7 +95,7 @@ class TestProject():
         assert not Project.activate_project_by_id(0, False)
 
     def test_create_project(self):
-        """Test method create_project in User"""
+        """Test method create_project in Project"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             Project.create_project('DummyProject_01')
@@ -109,7 +109,7 @@ class TestProject():
         assert Project.create_project('DummyProject_02', raiseFlag = False) == None
 
     def test_create_project(self):
-        """Test method update_project_by_id in User"""
+        """Test method update_project_by_id in Project"""
         #Test something that really shouldn't be there
         with pytest.raises(DbException) as err:
             Project.update_project_by_id(0)
@@ -144,7 +144,7 @@ class TestProject():
         assert Project.update_project_by_id(0, raiseFlag = False) == None
 
     def test_create_or_update_project_by_id(self):
-        """Test method create_or_update_project_by_id in User"""
+        """Test method create_or_update_project_by_id in Project"""
         project1 = Project.create_or_update_project_by_id(None ,'DummyProject_02')
         with pytest.raises(DbException) as err:
             Project.create_or_update_project_by_id(self.projectList[0].id, 'DummyProject_02')
@@ -173,7 +173,7 @@ class TestProject():
         assert Project.create_or_update_project_by_id(0,'dummy', raiseFlag = False) == None
 
     def test_create_or_update_project_by_id_array(self):
-        """Test method create_or_update_project_by_id_array in User"""
+        """Test method create_or_update_project_by_id_array in Project"""
         array = {'name':'DummyProject_02'}
         
         project1 = Project.create_or_update_project_by_id_array(None ,array)
@@ -219,10 +219,4 @@ class TestProject():
 
         array = {'name':'dummy2'}
         assert Project.create_or_update_project_by_id_array(0, array, raiseFlag=False)==None
-
-
-
-
-
-
 
