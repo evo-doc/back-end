@@ -386,6 +386,56 @@ class TestUserType():
         userType = UserType.get_type_by_id(0, False)
         assert userType is None
 
+    def test_get_type_by_name(self):
+        """Test method get_type_by_name in UserType"""
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            UserType.get_type_by_name('@')
+        assert str(err.value) == "(404, 'UserType not found.')"
+
+        userType = UserType.get_type_by_name(self.typeList[0].name)
+        assert userType.name == self.typeList[0].name
+        userType = UserType.get_type_by_name(self.typeList[1].name)
+        assert userType.name == self.typeList[1].name
+        userType = UserType.get_type_by_name(self.typeList[2].name)
+        assert userType.name == self.typeList[2].name
+
+        userType = UserType.get_type_by_name('@', False)
+        assert userType is None
+
+    def test_get_type_all(self, session):
+        """Test method get_type_all in UserType"""
+        assert len(UserType.get_type_all())==3
+        session.add(UserType("dummy", 3))
+        session.commit()
+        assert len(UserType.get_type_all())==4
+
+    def test_update_type_name_by_id(self, session):
+        """Test method update_type_name_by_id in UserType"""
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            UserType.update_type_name_by_id(0, 'DUMMY')
+        assert str(err.value) == "(404, 'UserType not found.')"
+
+        assert UserType.update_type_name_by_id(self.typeList[0].id, 'DUMMY')
+        userType = UserType.get_type_by_id(self.typeList[0].id)
+        assert userType.name == 'DUMMY'
+
+        assert not UserType.update_type_name_by_id(0, 'DUMMY', False)
+
+    def test_update_type_permisson_by_id(self, session):
+        """Test method update_type_permisson_by_id in UserType"""
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            UserType.update_type_permisson_by_id(0,3)
+        assert str(err.value) == "(404, 'UserType not found.')"
+
+        assert UserType.update_type_permisson_by_id(self.typeList[0].id, 3)
+        userType = UserType.get_type_by_id(self.typeList[0].id)
+        assert userType.permission_flag == 3
+
+        assert not UserType.update_type_permisson_by_id(0, 3, False)
+
 ###############################################################################
 """
             TOKEN
