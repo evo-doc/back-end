@@ -15,12 +15,11 @@ class Project(db.Model):
     update = Column(DateTime, default=datetime.datetime.utcnow())
     active = Column(Boolean)
 
-    def __init__(self, name=None, created=None, update=None, active=True, data=None):
+    def __init__(self, name=None, created=None, update=None, active=True):
         self.name = name
         self.created = created
         self.update = update
         self.active = active
-        self.data = data
 
     def __repr__(self):
         return "<Project %r>" % (self.name)
@@ -32,59 +31,58 @@ class Project(db.Model):
             'created': self.created,
             'update': self.update,
             'active': self.active,
-            'data': self.data,
         }
 
     @classmethod
     def get_project_by_id(cls, projectId, raiseFlag = True):
         result = cls.query.filter_by(id=projectId).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "Project not found.")
+            raise DbException(404, "Project not found.")
         return result
 
     @classmethod
     def get_project_by_name(cls, projectName, raiseFlag = True):
         result = cls.query.filter_by(name=projectName).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "Project not found.")
+            raise DbException(404, "Project not found.")
         return result
 
     @classmethod
     def get_project_all(cls, raiseFlag = True):
         result = cls.query.all()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "Project not found.")
+            raise DbException(404, "Project not found.")
         return result
 
-    @classmethod
-    def update_project_name_by_id(cls,projectId,projectName, raiseFlag = True):
-        project = cls.get_project_by_id(projectId, raiseFlag)
-        if (project == None):
-            return False
-        project.name = projectName
-        project.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_project_name_by_id(cls,projectId,projectName, raiseFlag = True):
+#        project = cls.get_project_by_id(projectId, raiseFlag)
+#        if (project == None):
+#            return False
+#        project.name = projectName
+#        project.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
-    @classmethod
-    def update_project_data_by_id(cls,projectId,data, raiseFlag = True):
-        project = cls.get_project_by_id(projectId, raiseFlag)
-        if (project == None):
-            return False
-        project.data = data
-        project.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_project_data_by_id(cls,projectId,data, raiseFlag = True):
+#        project = cls.get_project_by_id(projectId, raiseFlag)
+#        if (project == None):
+#            return False
+#        project.data = data
+#        project.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
-    @classmethod
-    def update_project_data_by_name(cls,name,data, raiseFlag = True):
-        project = cls.get_project_by_name(name, raiseFlag)
-        if (project == None):
-            return False
-        project.data = data
-        project.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_project_data_by_name(cls,name,data, raiseFlag = True):
+#        project = cls.get_project_by_name(name, raiseFlag)
+#        if (project == None):
+#            return False
+#        project.data = data
+#        project.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
     @classmethod
     def activate_project_by_id(cls, id, raiseFlag = True):
@@ -107,24 +105,34 @@ class Project(db.Model):
         return True
 
     @classmethod
-    def create_project(cls, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
+    def create_project(cls, name=None, created=None, update=None, active=True, raiseFlag = True):
         p = None
         if (cls.get_project_by_name(name,False) != None):
             if(raiseFlag):
-                DbException(400, "Name is already taken")
+                raise DbException(400, "Name is already taken.")
             return p
-        p = Project(name, created, update, active, data)
+        p = Project(name, created, update, active)
         db.session.add(p)
         db.session.commit()
-        os.mkdir(os.path.dirname(__file__) + '/../../data/module/' + str(p.id))
+        try:
+            os.mkdir(os.path.dirname(__file__) + '/../../data/module/' + str(p.id))
+        except FileExistsError:
+            return p
         return p
 
     @classmethod
     def update_project_by_id(cls, id, name=None, created=None, update=None,
-                                 active=True, data=None, raiseFlag = True):
+                                 active=None, raiseFlag = True):
         p = cls.get_project_by_id(id,raiseFlag)
+        if p==None:
+            return p
         changed = 0
         if (name != None):
+            checkName = cls.get_project_by_name(name,False)
+            if (checkName != None and checkName.id!=p.id):
+                if(raiseFlag):
+                    raise DbException(400, "Name is already taken.")
+                return None
             p.name = name
             changed = 1
         if (created != None):
@@ -132,9 +140,6 @@ class Project(db.Model):
             changed = 1
         if (active != None):
             p.active = active
-            changed = 1
-        if (data != None):
-            p.data = data
             changed = 1
         if (update != None):
             p.update = update
@@ -147,18 +152,21 @@ class Project(db.Model):
 
     @classmethod
     def create_or_update_project_by_id(cls, id, name=None, created=None, update=None,
-                                       active=True, data=None, raiseFlag = True):
+                                       active=None, raiseFlag = True):
+        """
+        Tries to find project if it fails creates new one.
+        """
         p = None
         if (id is not None):
             p = cls.get_project_by_id(id,False)
         if (p == None):
-            p = cls.create_project(name, created, update, active, data, raiseFlag)
+            p = cls.create_project(name, created, update, active, raiseFlag)
             return p
-        p = cls.update_project_by_id(id, name, created, update, active, data, raiseFlag)
+        p = cls.update_project_by_id(id, name, created, update, active, raiseFlag)
         return p
 
     @classmethod
-    def create_or_update_project_by_id_array(cls, id, array, raiseFlag = True):
+    def create_or_update_project_by_id_array(cls, project_id, array, raiseFlag = True):
         #######################################################################
         if (('name' not in array) or (array['name'] == None)):
             name = None
@@ -180,9 +188,5 @@ class Project(db.Model):
         else:
             active = array['active']
         #######################################################################
-        if (('data' not in array) or (array['data'] == None)):
-            data = None
-        else:
-            data = array['data']
-        p = cls.create_or_update_project_by_id(id, name, created, update, active, data, raiseFlag)
+        p = cls.create_or_update_project_by_id(project_id, name, created, update, active, raiseFlag)
         return p
