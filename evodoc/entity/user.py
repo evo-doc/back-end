@@ -63,14 +63,14 @@ class User(db.Model):
     @classmethod
     def get_user_all(cls, raiseFlag = True):
         user = cls.query.all()
-        if (user == None) and raiseFlag:
+        if (user == None or user == []) and raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
     @classmethod
     def get_user_all_by_user_type_id(cls, userType, raiseFlag = True):
         user = User.query.filter_by(user_type_id=userType).all()
-        if (user == None) & raiseFlag:
+        if (user == None or user == []) & raiseFlag:
             raise DbException(404, "No user found.")
         return user
 
