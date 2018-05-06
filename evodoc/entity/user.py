@@ -74,15 +74,15 @@ class User(db.Model):
             raise DbException(404, "No user found.")
         return user
 
-    @classmethod
-    def update_user_type_by_id(cls, id, userType, raiseFlag = True):
-        user = User.get_user_by_id(id, raiseFlag)
-        if (user == None):
-            return False
-        user.user_type_id = userType
-        user.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_user_type_by_id(cls, id, userType, raiseFlag = True):
+#        user = User.get_user_by_id(id, raiseFlag)
+#        if (user == None):
+#            return False
+#        user.user_type_id = userType
+#        user.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
     @classmethod
     def update_activation_by_id(cls, id, activated, raiseFlag = True):
@@ -94,39 +94,39 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    @classmethod
-    def update_user_email_by_id(cls, id, email, raiseFlag = True):
-        user = User.get_user_by_id(id, raiseFlag)
-        if (user == None):
-            return False
-        user.email = email
-        user.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_user_email_by_id(cls, id, email, raiseFlag = True):
+#        user = User.get_user_by_id(id, raiseFlag)
+#        if (user == None):
+#            return False
+#        user.email = email
+#        user.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
+
+#    @classmethod
+#    def update_user_password_by_id(cls, id, password, raiseFlag = True):
+#        user = User.get_user_by_id(id, raiseFlag)
+#        if (user == None):
+#            return False
+#        user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+#        user.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
+
+#    @classmethod
+#    def update_user_name_by_id(cls, id, name, raiseFlag = True):
+#        user = User.get_user_by_id(id, raiseFlag)
+#        if (user == None):
+#            return False
+#        user.name = name
+#        user.update = datetime.datetime.utcnow()
+#        db.session.commit()
+#        return True
 
     @classmethod
-    def update_user_password_by_id(cls, id, password, raiseFlag = True):
+    def activate_user_by_id(cls, id, raiseFlag = True):
         user = User.get_user_by_id(id, raiseFlag)
-        if (user == None):
-            return False
-        user.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-        user.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
-
-    @classmethod
-    def update_user_name_by_id(cls, id, name, raiseFlag = True):
-        user = User.get_user_by_id(id, raiseFlag)
-        if (user == None):
-            return False
-        user.name = name
-        user.update = datetime.datetime.utcnow()
-        db.session.commit()
-        return True
-
-    @classmethod
-    def activate_user_by_id(cls, id):
-        user = User.get_user_by_id(id)
         if (user == None):
             return False
         user.active = True
@@ -180,74 +180,84 @@ class User(db.Model):
         else:
             return False
 
-    @classmethod
-    def update_user_by_id_all(cls, name=None, email=None, password=None, created=None, update=None, active=None, activated = None, raiseFlag = True):
-        usr = cls.get_user_by_id(id, raiseFlag)
-        if (usr == None):
-            return False
-        changed = 0
+#    @classmethod
+#    def update_user_by_id_all(cls, name=None, email=None, password=None, created=None, update=None, active=None, activated = None, raiseFlag = True):
+#        usr = cls.get_user_by_id(id, raiseFlag)
+#        if (usr == None):
+#            return False
+#        changed = 0
 
-        if (name!=None):
-            usr.name = name
-            changed = 1
-        if (email!=None):
-            usr.email = email
-            changed = 1
-        if (password!=None):
-            usr.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).encode("utf-8")
-            changed = 1
-        if (created!=None):
-            usr.created = created
-            changed = 1
-        if (active!=None):
-            usr.active = active
-            changed = 1
-        if (activated!=None):
-            usr.activated = activated
-            changed = 1
+#        if (name!=None):
+#            usr.name = name
+#            changed = 1
+#        if (email!=None):
+#            usr.email = email
+#            changed = 1
+#        if (password!=None):
+#            usr.password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).encode("utf-8")
+#            changed = 1
+#        if (created!=None):
+#            usr.created = created
+#            changed = 1
+#        if (active!=None):
+#            usr.active = active
+#            changed = 1
+#        if (activated!=None):
+#            usr.activated = activated
+#            changed = 1
 
-        if ((changed == 1) and (update == None)):
-            usr.update = datetime.datetime.utcnow
-            db.session.commit()
-        if (update  !=None):
-            usr.update = update
-            db.session.commit()
-        return True
+#        if ((changed == 1) and (update == None)):
+#            usr.update = datetime.datetime.utcnow
+#            db.session.commit()
+#        if (update  !=None):
+#            usr.update = update
+#            db.session.commit()
+#        return True
 
-    @classmethod
-    def update_user_by_id_all_list(cls, userList, raiseFlag = True):
-        failedUpdatesList = []
-        for i in userList:
-            if (cls.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
-                failedUpdatesList.append(i)
-        return i
+#    @classmethod
+#    def update_user_by_id_all_list(cls, userList, raiseFlag = True):
+#        failedUpdatesList = []
+#        for i in userList:
+#            if (cls.update_user_by_id_all(name=i.name, email=i.email, password=i.password, created=i.created, update=i.update, active=i.active, activated=i.activated, raiseFlag=raiseFlag) == False):
+#                failedUpdatesList.append(i)
+#        return i
 
     @classmethod
     def update_user_by_id_from_array(cls, id, dataArray):
+        changed = 0
         userEntity = cls.get_user_by_id(id)
         # Name change
         if dataArray["name"] != None:
             userCheck = cls.get_user_by_name(dataArray["name"], False)
-            if userCheck != None & userCheck.id != id:
+            if userCheck != None and userCheck.id != id:
                 raise DbException(400, "username")
             userEntity.username = dataArray["name"]
+            print(dataArray["name"])
+            changed = 1
 
         if dataArray["email"] != None:
             userCheck = cls.get_user_by_email(dataArray["email"], False)
-            if userCheck != None & userCheck.id != id:
+            if userCheck != None and userCheck.id != id:
                 raise DbException(400, "email")
             userEntity.username = dataArray["email"]
+            changed = 1
 
         if dataArray["password"] != None:
-             userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            userEntity.password = bcrypt.hashpw(dataArray["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            changed = 1
 
         if dataArray["user_type_id"] != None:
-            userType = UserType.get_type_by_id(UserType, dataArray["user_type_id"], False)
+            userType = UserType.get_type_by_id(dataArray["user_type_id"], False)
             if userType == None:
                 raise DbException(400, "usertype")
             userEntity.user_type_id = dataArray["user_type_id"]
+            changed = 1
+
+        if (changed == 1):
+            userEntity.update = datetime.datetime.utcnow()
 
         db.session.commit()
+        print("committed")
         return userEntity
 
     def serialize(self):
