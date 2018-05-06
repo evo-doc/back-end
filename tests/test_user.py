@@ -301,7 +301,7 @@ class TestUser():
             User.update_user_by_id_from_array(self.userList[0].id, array)
         assert str(err.value) == "(400, 'email')"
 
-        array = {'user_type_id':2}
+        array = {'user_type_id':200}
         with pytest.raises(DbException) as err:
             User.update_user_by_id_from_array(self.userList[0].id, array)
         assert str(err.value) == "(400, 'usertype')"
@@ -311,6 +311,7 @@ class TestUser():
         with pytest.raises(DbException) as err:
             User.update_user_by_id_from_array(self.userList[0].id, array)
         assert str(err.value) == "(400, 'username')"
+        user = User.get_user_by_id(self.userList[0].id)
         assert not user.confirm_password('passwd')
 
         array = {'email':'kektimusMaximusPrime@kek.top',
@@ -318,13 +319,15 @@ class TestUser():
         with pytest.raises(DbException) as err:
             User.update_user_by_id_from_array(self.userList[0].id, array)
         assert str(err.value) == "(400, 'email')"
+        user = User.get_user_by_id(self.userList[0].id)
         assert not user.confirm_password('passwd')
 
-        array = {'user_type_id':2,
+        array = {'user_type_id':200,
                  'password':'passwd'}
         with pytest.raises(DbException) as err:
             User.update_user_by_id_from_array(self.userList[0].id, array)
         assert str(err.value) == "(400, 'usertype')"
+        user = User.get_user_by_id(self.userList[0].id)
         assert not user.confirm_password('passwd')
 
 
