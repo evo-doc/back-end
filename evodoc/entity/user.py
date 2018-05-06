@@ -231,8 +231,6 @@ class User(db.Model):
             userCheck = cls.get_user_by_name(dataArray["name"], False)
             if userCheck != None and userCheck.id != id:
                 raise DbException(400, "username")
-                print("WTF")
-                return None
             userEntity.name = dataArray["name"]
             changed = 1
 
@@ -240,7 +238,6 @@ class User(db.Model):
             userCheck = cls.get_user_by_email(dataArray["email"], False)
             if userCheck != None and userCheck.id != id:
                 raise DbException(400, "email")
-                return None
             userEntity.email = dataArray["email"]
             changed = 1
 
@@ -248,7 +245,6 @@ class User(db.Model):
             userType = UserType.get_type_by_id(dataArray["user_type_id"], False)
             if userType == None:
                 raise DbException(400, "usertype")
-                return None
             userEntity.user_type_id = dataArray["user_type_id"]
             changed = 1
 
@@ -323,7 +319,7 @@ class UserType(db.Model):
 
     @classmethod
     def update_type_name_by_id(cls, id, name, raiseFlag = True):
-        userType = cls.get_type_by_id(User, id, raiseFlag)
+        userType = cls.get_type_by_id(id, raiseFlag)
         if (userType == None):
             return False
         userType.name = name
@@ -332,10 +328,10 @@ class UserType(db.Model):
 
     @classmethod
     def update_type_permisson_by_id(cls, id, permission, raiseFlag = True):
-        userType = cls.get_type_by_id(User, id, raiseFlag)
+        userType = cls.get_type_by_id(id, raiseFlag)
         if (userType == None):
             return False
-        userType.permission = permission
+        userType.permission_flag = permission
         db.session.commit()
         return True
 
