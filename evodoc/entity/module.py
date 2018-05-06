@@ -43,28 +43,28 @@ class Module(db.Model):
     def get_module_by_id(cls, moduleId, raiseFlag=True):
         result = cls.query.filter_by(id=moduleId).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "Module not found.")
+            raise DbException(404, "Module not found.")
         return result
 
     @classmethod
     def get_module_by_name(cls, moduleName, raiseFlag = True):
         result = cls.query.filter_by(name=moduleName).first()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "Module not found.")
+            raise DbException(404, "Module not found.")
         return result
 
     @classmethod
     def get_module_all(cls, raiseFlag = True):
         result = cls.query.all()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "Module not found.")
+            raise DbException(404, "Module not found.")
         return result
 
     @classmethod
     def get_module_all_by_project_id(cls, projectId, raiseFlag = True):
         result = cls.query.filter_by(project_id=projectId).all()
         if (result == None) & raiseFlag:
-            raise DbException(DbException, 404, "Module not found.")
+            raise DbException(404, "Module not found.")
         return result
 
 #    @classmethod
