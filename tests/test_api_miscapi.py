@@ -97,8 +97,91 @@ class TestMiscapi:
         data = {
             "username": "newTestUser",
             "email": "example@test.com",
-            "password": "JustATest"
+            "password": "Just&1Test"
         }
         result = client.post(url_for('miscapi.registration_action'), json = data)
         result_data = result.get_json()
+        assert result_data != None
         assert result_data['user_id'] != 0
+        user_id = result_data['user_id']
+        token_from_db = UserToken.query.filter_by(user_id = user_id).order_by(UserToken.id.desc()).first()
+        assert result_data['token'] == token_from_db.token
+
+        result = client.post(url_for('miscapi.registration_action'), json = data)
+        result_data = result.get_json()
+        assert result_data != None
+        assert result.status == "400 BAD REQUEST"
+        assert result_data == "email"
+
+        data = {
+            "username": "newTestUser",
+            "email": "exampletest.com",
+            "password": "Just&1Test"
+        }
+
+        result = client.post(url_for('miscapi.registration_action'), json = data)
+        result_data = result.get_json()
+        assert result_data != None
+        assert result.status == "400 BAD REQUEST"
+        assert result_data == "email"
+
+        data = {
+            "username": "newTestUser",
+            "email": "example@4test.com",
+            "password": "Just"
+        }
+
+        result = client.post(url_for('miscapi.registration_action'), json = data)
+        result_data = result.get_json()
+        assert result_data != None
+        assert result.status == "400 BAD REQUEST"
+        assert result_data == "password"
+
+        data = {
+            "username": "lk",
+            "email": "example@est.com",
+            "password": "Just&1Test"
+        }
+
+        result = client.post(url_for('miscapi.registration_action'), json = data)
+        result_data = result.get_json()
+        assert result_data != None
+        assert result.status == "400 BAD REQUEST"
+        assert result_data == "username"
+
+    def test_stats(self, session, client):
+        """
+        Tests stats in miscapi.py
+        """
+        #create valid token
+        user_id = self.user_list[0]
+        token = str(user_id).zfill(10) + str(uuid.uuid4())
+        #Check if token is unique
+        while (UserToken.query.filter_by(token=token).count() != 0) :
+            token = str(user_id).zfill(10) + str(uuid.uuid4())
+
+        token = UserToken(user_id=user_id,token=token)
+        token.update = datetime.utcnow()
+        token.created = datetime.utcnow()
+        session.add(token)
+        session.commit()
+
+        result = client.get(url_for('miscapi.stats') + '?token=' + token.token)
+        result_data = result.get_json()
+        assert result_data is not None
+        assert 'user_count' in result_data
+        assert 'module_count' in result_data
+        assert 'project_count' in result_data
+        assert 'package_count' in result_data
+
+        result = client.get(url_for('miscapi.stats') + '?token=bladfjoagsag')
+        result_data = result.get_json()
+        assert result_data is not None
+        assert result.status == "403 FORBIDDEN"
+        assert result_data == "Invalid token."
+
+        result = client.get(url_for('miscapi.stats'))
+        result_data = result.get_json()
+        assert result_data is not None
+        assert result.status == "403 FORBIDDEN"
+        assert result_data == "Invalid token."
