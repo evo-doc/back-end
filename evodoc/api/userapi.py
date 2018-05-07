@@ -68,9 +68,9 @@ def activation_action():
     validate_data(data, {'token'})
     token = check_token_exists(data['token'])
     if token == None:
-        raise ApiException(403, "Invalid token")
+        raise ApiException(403, "Invalid token.")
     if token.user.activated:
-        raise ApiException(401, "User has been already activated.")
+        raise ApiException(400, "User has been already activated.")
     #check code somehow
     token.user.update_activation_by_id(token.user.id, True)
     data = {
@@ -84,18 +84,15 @@ def is_user_authorised():
     Information about users token, whenever its valid token or not
     """
     data = request.get_json()
-    validate_data(data, {'token', 'user_id'})
+    validate_data(data, {'token'})
     token = check_token_exists(data['token'])
     if token == None\
         or (token.created + timedelta(hours=24) < datetime.utcnow() \
         and token.update + timedelta(hours=2) < datetime.utcnow())\
         or token.user.active == False:
-        raise ApiException(403, "user is not authorised")
-    user_id = data['user_id']
-    if (user_id != token.user_id):
-        raise ApiException(403, "Invalid token")
+        raise ApiException(403, "Invalid token.")
     tokenData = {
-        "token": token.token
+        "verified": "true" if token.user.activated else "false"
     }
     return response_ok(tokenData)
 

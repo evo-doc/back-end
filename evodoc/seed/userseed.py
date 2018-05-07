@@ -42,4 +42,3 @@ def baseUserType():
     for user_type in user_types:
         db.session.add(user_type)
         db.session.commit()
-

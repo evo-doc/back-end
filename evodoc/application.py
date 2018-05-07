@@ -33,9 +33,12 @@ def create_app(additional_config = {}):
     app.register_blueprint(permission)
     app.register_blueprint(user)
 
+    from evodoc.seed.userseed import initUserSeeds
+
     with app.app_context():
         from evodoc.entity.package import git_path
         git_path = app.config.get('GIT_PATH')
+        initUserSeeds()
 
     return app
 
