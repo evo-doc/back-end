@@ -1,7 +1,7 @@
 from flask import jsonify
 from evodoc.exception import ApiException, DbException
 from evodoc.login import authenticate, check_token_exists
-from evodoc.entity import User, Module, Project
+from evodoc.entity import User, Module, Project, UserToken
 
 def serialize_list(l):
     return [m.serialize() for m in l]
@@ -25,12 +25,15 @@ def validate_token(token):
     """
     userToken = authenticate(token)
     if userToken == None:
+        print(token)
         token = check_token_exists(token)
         if token is None:
+            print(UserToken.query.filter_by(user_id = 1).first())
             raise ApiException(403, "Invalid token.")
         if token.user.activated == False:
             raise ApiException(200, {"data": "User not activated", "token": authenticate(None, True, token.user_id).token})
         else:
+            print("Wierd")
             raise ApiException(403, "Invalid token.")
     return userToken.token
 
