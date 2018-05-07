@@ -264,15 +264,15 @@ class User(db.Model):
             'user_type_id': self.user_type_id,
             'name': self.name,
             'email': self.email,
-            'created': self.created,
-            'update': self.update,
+            'created': self.created.strftime("%Y-%m-%d %H:%M:%S"),
+            'update': self.update.strftime("%Y-%m-%d %H:%M:%S"),
             'active': self.active,
         }
 
     @classmethod
     def get_user_type_from_user_id(cls, id, raiseFlag = True):
         usr = cls.get_user_by_id(id, raiseFlag)
-        if (usr == None): return Non
+        if (usr == None): return None
         return UserType.get_type_by_id(usr.user_type_id, raiseFlag)
 
 ###################################################################################
@@ -413,7 +413,7 @@ class UserToken(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'token': self.token,
-            'created': self.create,
+            'created': self.created,
             'update': self.update
         }
 

@@ -53,4 +53,8 @@ def authenticate(token = None, create_token = False, user_id = 0):
 	return userTokenEntity
 
 def check_token_exists(token):
+	"""
+	Check token against database, return UserToken if it is in DB
+		:param token:
+	"""
 	return UserToken.query.filter((UserToken.token == token)).first()
