@@ -1,7 +1,7 @@
 from flask import json, request, Blueprint, jsonify
 from evodoc.exception import DbException, ApiException
 from evodoc.entity import *
-from evodoc.api import response_ok, response_err, response_ok_list, response_ok_obj, validate_token
+from evodoc.api import response_ok, response_ok_list, response_ok_obj, validate_token
 
 permission = Blueprint('permission', __name__, url_prefix='/permission')
 
