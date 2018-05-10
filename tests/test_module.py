@@ -174,7 +174,7 @@ class TestModule():
 
         created = datetime.datetime.utcnow() + datetime.timedelta(hours=-2)
         update = datetime.datetime.utcnow() + datetime.timedelta(hours=-1)
-        module = Module.create_or_update_module_by_id(Project.get_project_by_name('DummyProject_01').id,
+        module = Module.create_or_update_module_by_id(None, Project.get_project_by_name('DummyProject_01').id,
                              name='M14', created=created, update=update, active=True,   
                              data='kektimusMaximusPrime', raiseFlag = True)
 
@@ -184,7 +184,7 @@ class TestModule():
         assert module.update == update
         assert module.active == True
 
-        module = Module.create_or_update_module_by_id(Project.get_project_by_name('DummyProject_01').id,
+        module = Module.create_or_update_module_by_id(module.id, Project.get_project_by_name('DummyProject_01').id,
                              name='M15', active=False, data='kektimusMaximusPrime',
                              raiseFlag = True)
 
@@ -201,14 +201,68 @@ class TestModule():
     def test_get_data(self):
         """Test method get_data in Module"""
         
-        module = Module.create_module(Project.get_project_by_name('DummyProject_01').id,
-                             name='M15', active=False, data='kektimusMaximusPrime',
-                             raiseFlag = True)
+        module = Module.create_or_update_module_by_id(Project.get_project_by_name('DummyProject_01').id, name='M15', active=False, data='kektimusMaximusPrime', raiseFlag = True)
         assert module.get_data() == 'kektimusMaximusPrime'
 
 
+    def test_create_or_update_module_by_id_from_array(self):
+        """Test method create_or_update_module_by_id_from_array in Module"""
 
+        array = {'project_id': 0,
+                 'name':'M1111'}
 
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            Module.create_or_update_module_by_id_from_array(0, array)
+        assert str(err.value) == "(404, 'Project not found.')"
+
+        array = {'project_id': Project.get_project_by_name('DummyProject_01').id,
+                 'name':'M11'}
+
+        with pytest.raises(DbException) as err:
+            Module.create_or_update_module_by_id_from_array(0, array)
+        assert str(err.value) == "(400, 'Name is already taken.')"
+
+        created = datetime.datetime.utcnow() + datetime.timedelta(hours=-2)
+        update = datetime.datetime.utcnow() + datetime.timedelta(hours=-1)
+
+        array = {'project_id': Project.get_project_by_name('DummyProject_01').id,
+                 'name':'M14',
+                 'created': created,
+                 'update': update,
+                 'active': True,
+                 'data': 'kektimusMaximusPrime'}
+
+        module = Module.create_or_update_module_by_id_from_array(None, array)
+
+        assert module.project_id == Project.get_project_by_name('DummyProject_01').id
+        assert module.name == 'M14'
+        assert module.created == created
+        assert module.update == update
+        assert module.active == True
+
+        array = {'project_id': Project.get_project_by_name('DummyProject_01').id,
+                 'name':'M15',
+                 'active': False,
+                 'data': 'kektimusMaximusPrime'}
+
+        module2 = Module.create_or_update_module_by_id_from_array(module.id, array)
+
+        assert module2.project_id == Project.get_project_by_name('DummyProject_01').id
+        assert module2.name == 'M15'
+        assert module2.created == created
+        assert module2.update > update
+        assert module2.active == False
+
+        array = {'project_id': 0,
+                 'name':'M1111'}
+
+        assert Module.create_or_update_module_by_id_from_array(0, array, raiseFlag=False) == None
+
+        array = {'project_id': Project.get_project_by_name('DummyProject_01').id,
+                 'name':'M15'}
+
+        assert Module.create_or_update_module_by_id_from_array(0, array, raiseFlag=False) == None
 
 
 
