@@ -2,12 +2,20 @@
 """
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
+from flask_sqlalchemy import BaseQuery
 from evodoc.entity import db
 import bcrypt
 from evodoc.exception import DbException
+from sqlalchemy_searchable import SearchQueryMixin
+from sqlalchemy_utils.types import TSVectorType
+from sqlalchemy_searchable import make_searchable
 
 ###################################################################################
+class UserQuery (BaseQuery, SearchQueryMixin):
+    pass
+
 class User(db.Model):
+    query_class = UserQuery
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     user_type_id =Column(Integer, ForeignKey("user_type.id"))
@@ -19,6 +27,7 @@ class User(db.Model):
     active = Column(Boolean)
     activated = Column(Boolean)
     tokens = db.relationship('UserToken', backref='user', lazy=False)
+    search_vector = Column(TSVectorType('name', 'email'))
 
     def __init__(self, name=None, email=None, password=None, created=None, update=None, active=True, activated = False):
         self.name = name
@@ -343,13 +352,18 @@ class UserType(db.Model):
         }
 
 ###################################################################################
+class UserTokenQuery (BaseQuery, SearchQueryMixin):
+    pass
+
 class UserToken(db.Model):
+    query_class = UserTokenQuery
     __tablename__ = "user_token"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"))
     token = Column(String(47), unique=True)
     created = Column(DateTime, default=datetime.datetime.utcnow())
     update = Column(DateTime, default=datetime.datetime.utcnow())
+    search_vector = Column(TSVectorType('token'))
 
     def __init__(self, user_id=None, token=None, created=None, update=None):
         self.user_id=user_id

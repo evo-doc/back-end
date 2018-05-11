@@ -6,6 +6,7 @@ Create Date: 2018-05-05 00:11:58.546491
 
 """
 from alembic import op
+from sqlalchemy_utils.types import TSVectorType
 import sqlalchemy as sa
 
 

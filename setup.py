@@ -125,14 +125,16 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'flask',
+        'Flask>=1.0',
         'flask-sqlalchemy',
         'flask-migrate',
         'flask_script',
         'bcrypt',
         'sqlalchemy',
         'psycopg2',
-        'gitpython'
+        'gitpython',
+        'sqlalchemy_searchable',
+        'sqlalchemy_utils'
         ],  # Optional
 
     setup_requires=[

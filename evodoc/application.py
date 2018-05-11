@@ -1,9 +1,12 @@
 import os
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, BaseQuery
 from flask_migrate import Migrate, upgrade
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_searchable import SearchQueryMixin
+from sqlalchemy_utils.types import TSVectorType
+from sqlalchemy_searchable import make_searchable
 import bcrypt
 
 def create_app(additional_config = {}):
@@ -17,7 +20,9 @@ def create_app(additional_config = {}):
             app.config[key] = value
 
     from evodoc.entity import db
+
     db.init_app(app)
+    make_searchable(db.metadata)
 
     migrate = Migrate(app, db)
     #perform upgrade

@@ -3,8 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 __all__ = [
+    'UserQuery',
     'User',
     'UserType',
+    'UserTokenQuery',
     'UserToken',
     'Module',
     'Project',
