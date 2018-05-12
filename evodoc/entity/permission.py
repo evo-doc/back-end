@@ -2,8 +2,10 @@
 """
 import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, JSON, desc
-from evodoc.entity import module, db
-
+from evodoc.entity import db
+from evodoc.entity.module import Module
+from evodoc.entity.user import User
+from evodoc import DbException
 
 
 class ModulePerm (db.Model):
@@ -39,78 +41,92 @@ class ModulePerm (db.Model):
     def get_module_perm_by_id(cls, permId, raiseFlag = True):
         perm = cls.query.filter_by(id=permId).first()
         if (perm == None) & raiseFlag:
-            raise DbException(DbException, 404, "Permission not found.")
+            raise DbException(404, "Permission not found.")
         return perm
 
-    @classmethod
-    def get_module_perm_by_user_id(cls, permId, raiseFlag = True):
-        perm = cls.query.filter_by(user_id=permId).first()
-        if (perm == None) & raiseFlag:
-            raise DbException(DbException, 404, "Permission not found.")
-        return perm
+#    @classmethod
+#    def get_module_perm_by_user_id(cls, permId, raiseFlag = True):
+#        perm = cls.query.filter_by(user_id=permId).first()
+#        if (perm == None) & raiseFlag:
+#            raise DbException(DbException, 404, "Permission not found.")
+#        return perm
 
-    @classmethod
-    def get_module_perm_by_module_id(cls, permId, raiseFlag = True):
-        perm = cls.query.filter_by(module_id=permId).first()
-        if (perm == None) & raiseFlag:
-            raise DbException(DbException, 404, "Permission not found.")
-        return perm
+#    @classmethod
+#    def get_module_perm_by_module_id(cls, permId, raiseFlag = True):
+#        perm = cls.query.filter_by(module_id=permId).first()
+#        if (perm == None) & raiseFlag:
+#            raise DbException(DbException, 404, "Permission not found.")
+#        return perm
 
     @classmethod
     def get_module_perm_by_user_and_module_id(cls, user_id, module_id, raiseFlag = True):
+        """Get permission for combination of module and user"""
         perm = cls.query.filter_by(module_id=module_id).filter_by(user_id=user_id).first()
         if (perm == None) & raiseFlag:
-            raise DbException(DbException, 404, "Permission not found.")
+            raise DbException(404, "Permission not found.")
         return perm
 
     @classmethod
     def get_module_perm_all(cls, raiseFlag = True):
+        """Get all permissions for all modules and all users"""
         perm = cls.query.all()
-        if (perm == None) & raiseFlag:
-            raise DbException(DbException, 404, "Permission not found.")
+        if (perm == None or perm == []) & raiseFlag:
+            raise DbException(404, "Permission not found.")
         return perm
 
     @classmethod
     def get_module_perm_all_by_user_id(cls, permId, raiseFlag = True):
+        """Get all permissions for one user"""
         perm = cls.query.filter_by(user_id=permId).all()
-        if (perm == None) & raiseFlag:
-            raise DbException(DbException, 404, "Permission not found.")
+        if (perm == None or perm == []) & raiseFlag:
+            raise DbException(404, "Permission not found.")
         return perm
 
     @classmethod
     def get_module_perm_all_by_module_id(cls, permId, raiseFlag = True):
+        """Get all permissions for one module"""
         perm = cls.query.filter_by(module_id=permId).all()
-        if (perm == None) & raiseFlag:
-            raise DbException(DbException, 404, "Permission not found.")
+        if (perm == None or perm == []) & raiseFlag:
+            raise DbException(404, "Permission not found.")
         return perm
 
     @classmethod
     def update_module_perm_by_id(cls, id, perm, raiseFlag = True):
-        tmp = cls.get_module_perm_all_by_id(id,raiseFlag)
+        """Updates permission of one ModulePermission by ModulePermission id"""
+        tmp = cls.get_module_perm_by_id(id,raiseFlag)
         if (tmp == None):
             return False
-        tmp.permission = perm
-        tmp.update = datetime.datetime.utcnow
+        tmp.permissions = perm
         db.session.commit()
         return True
 
     @classmethod
-    def update_module_perm_by_user_id(cls, id, perm, raiseFlag = True):
-        tmp = cls.get_module_perm_all_by_user_id(id,raiseFlag)
+    def update_module_perm_by_user_and_module_id(cls,user_id,module_id,perm,raiseFlag=True):
+        """Updates permission from combination of user and module id"""
+        tmp = cls.get_module_perm_by_user_and_module_id(user_id,module_id,raiseFlag)
         if (tmp == None):
             return False
-        tmp.permission = perm
+        tmp.permissions = perm
         db.session.commit()
         return True
 
-    @classmethod
-    def update_module_perm_by_module_id(cls, id, perm, raiseFlag = True):
-        tmp = cls.get_module_perm_all_by_module_id(id,raiseFlag)
-        if (tmp == None):
-            return False
-        tmp.permission = perm
-        db.session.commit()
-        return True
+#    @classmethod
+#    def update_module_perm_by_user_id(cls, id, perm, raiseFlag = True):
+#        tmp = cls.get_module_perm_all_by_user_id(id,raiseFlag)
+#        if (tmp == None):
+#            return False
+#        tmp.permission = perm
+#        db.session.commit()
+#        return True
+
+#    @classmethod
+#    def update_module_perm_by_module_id(cls, id, perm, raiseFlag = True):
+#        tmp = cls.get_module_perm_all_by_module_id(id,raiseFlag)
+#        if (tmp == None):
+#            return False
+#        tmp.permission = perm
+#        db.session.commit()
+#        return True
 
     def check_perm_read_raw(self):
         if ((self.permissions & 1) is 1): return True
@@ -129,28 +145,28 @@ class ModulePerm (db.Model):
         return False
 
     @classmethod
-    def check_perm_read_by_user_and_module_id(cls, user_id, module_id, raiseFlag = False):
+    def check_perm_read_by_user_and_module_id(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, raiseFlag)
         if (perm != None):
             return perm.check_perm_read_raw()
         return False
 
     @classmethod
-    def check_perm_write_by_user_and_module_id(cls, user_id, module_id, raiseFlag = False):
+    def check_perm_write_by_user_and_module_id(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, raiseFlag)
         if (perm != None):
             return perm.check_perm_write_raw()
         return False
 
     @classmethod
-    def check_perm_share_by_user_and_module_id(cls, user_id, module_id, raiseFlag = False):
+    def check_perm_share_by_user_and_module_id(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, raiseFlag)
         if (perm != None):
             return perm.check_perm_share_raw()
         return False
 
     @classmethod
-    def check_perm_own_by_user_and_module_id(cls, user_id, module_id, raiseFlag = False):
+    def check_perm_own_by_user_and_module_id(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, raiseFlag)
         if (perm != None):
             return perm.check_perm_own_raw()
@@ -164,9 +180,12 @@ class ModulePerm (db.Model):
     def give_perm_read_user_module_id_raw(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, False)
         if (perm != None):
-            perm.permissions = perm.permissions & 1
+            perm.permissions = perm.permissions | 1
             db.session.commit()
             return True
+        if (User.get_user_by_id(user_id, raiseFlag) == None): return False
+        if (Module.get_module_by_id(module_id, raiseFlag) == None): return False
+        
         perm = ModulePerm(user_id, module_id, 1)
         perm.save_entity()
         return True
@@ -175,20 +194,26 @@ class ModulePerm (db.Model):
     def give_perm_write_user_module_id_raw(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, False)
         if (perm != None):
-            perm.permissions = perm.permissions & 2
+            perm.permissions = perm.permissions | 2
             db.session.commit()
             return True
+        if (User.get_user_by_id(user_id, raiseFlag) == None): return False
+        if (Module.get_module_by_id(module_id, raiseFlag) == None): return False
+        
         perm = ModulePerm(user_id, module_id, 2)
         perm.save_entity()
-        return True
+        return True 
 
     @classmethod
     def give_perm_share_user_module_id_raw(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, False)
         if (perm != None):
-            perm.permissions = perm.permissions & 4
+            perm.permissions = perm.permissions | 4
             db.session.commit()
             return True
+        if (User.get_user_by_id(user_id, raiseFlag) == None): return False
+        if (Module.get_module_by_id(module_id, raiseFlag) == None): return False
+        
         perm = ModulePerm(user_id, module_id, 4)
         perm.save_entity()
         return True
@@ -197,9 +222,12 @@ class ModulePerm (db.Model):
     def give_perm_own_user_module_id_raw(cls, user_id, module_id, raiseFlag = True):
         perm = cls.get_module_perm_by_user_and_module_id(user_id, module_id, False)
         if (perm != None):
-            perm.permissions = perm.permissions & 8
+            perm.permissions = perm.permissions | 8
             db.session.commit()
             return True
+        if (User.get_user_by_id(user_id, raiseFlag) == None): return False
+        if (Module.get_module_by_id(module_id, raiseFlag) == None): return False
+        
         perm = ModulePerm(user_id, module_id, 8)
         perm.save_entity()
         return True
