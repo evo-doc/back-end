@@ -88,6 +88,26 @@ def update_or_create_module_action():
         raise ApiException(400, "Name already in use.")
     return response_ok_obj(data)
 
+@module.route("/build", methods=['POST'])
+def build_module_action():
+    """
+    Update or create module
+    """
+    data = request.get_json()
+    if data == None:
+        raise ApiException(400, "data")
+    if (data['token'] == None):
+        raise ApiException(403, "Invalid token")
+    if (('module_id' not in data) or (data['module_id'] == None)):
+        raise ApiException(403, "Invalid module_id")
+    else:
+        moduleId = data['module_id']
+    validate_token(data['token'])
+    #check permissions in the future
+    
+    data = Module.get_module_by_id(moduleId).build_module()
+
+    return response_ok(data)
 
 @module.errorhandler(ApiException)
 @module.errorhandler(DbException)

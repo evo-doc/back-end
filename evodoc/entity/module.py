@@ -189,8 +189,9 @@ class Module(db.Model):
         if (name != None):
             m = cls.get_module_by_name(name,False)
             if (m != None):
-                if (m.id != id) and raiseFlag:
-                    raise DbException(400, "Name is already taken")
+                if (m.id != id):
+                    if raiseFlag:
+                        raise DbException(400, "Name is already taken")
                     return None
             changed = 1
             module.name = name
@@ -241,3 +242,49 @@ class Module(db.Model):
                       str(entity.project_id) + '/' + str(entity.id) + '.md', 'w') as f:
                 f.write(data)
         return entity
+
+    @staticmethod
+    def find_str(text, loking_for):
+        i = 0
+
+        if loking_for in text:
+            c = loking_for[0]
+            for ch in text:
+                if ch == c:
+                    if text[i:i+len(loking_for)] == loking_for:
+                        return i
+
+                i += 1
+
+        return -1
+
+    def build_module(self, passed_files = [], raiseFlag = True):
+        module_id = self.id
+        
+        if module_id in passed_files:
+            if raiseFlag:
+                raise DbException(400, 'Module ' + module_id + ' is in cycle.')
+            return ''
+        
+        passed_files.append(module_id)
+        with open(os.path.dirname(__file__) + '/../../data/module/' +
+                  str(self.project_id) + '/' + str(module_id) + '.md' , 'r') as f:
+            data = f.read()
+        out_string = ''
+        index1=0
+        index2=0
+        while (True):
+            index1 = Module.find_str(data, '[[')
+            index2 = Module.find_str(data[index1:], ']]')
+            if (index1==-1 or index2==-1):
+                break
+            out_string+=data[:index1]
+            module = Module.get_module_by_id(data[index1+2:index1 + index2])
+            out_string+=module.build_module(passed_files, raiseFlag)
+#            tmp=module.build_module(passed_files, raiseFlag)
+#            out_string+=tmp[:len(tmp)-1]
+            data=data[index1+index2+2:]
+        out_string+=data
+        passed_files.remove(module_id)
+        return out_string
+
