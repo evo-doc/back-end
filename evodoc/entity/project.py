@@ -35,6 +35,12 @@ class Project(db.Model):
 
     @classmethod
     def get_project_by_id(cls, projectId, raiseFlag = True):
+    """
+        Returns project found by ID.
+        :param cls: Project
+        :param projectId:
+        :param raiseFlag: If True and Project not found raises DbException
+    """
         result = cls.query.filter_by(id=projectId).first()
         if (result == None) & raiseFlag:
             raise DbException(404, "Project not found.")
@@ -42,6 +48,12 @@ class Project(db.Model):
 
     @classmethod
     def get_project_by_name(cls, projectName, raiseFlag = True):
+    """
+        Deactivates project found by ID.
+        :param cls: Project
+        :param projectName:
+        :param raiseFlag: If True and Project not found raises DbException
+    """
         result = cls.query.filter_by(name=projectName).first()
         if (result == None) & raiseFlag:
             raise DbException(404, "Project not found.")
@@ -49,6 +61,11 @@ class Project(db.Model):
 
     @classmethod
     def get_project_all(cls, raiseFlag = True):
+    """
+        Returns all projects.
+        :param cls: Project
+        :param raiseFlag: If True and Project not found raises DbException
+    """
         result = cls.query.all()
         if (result == None) & raiseFlag:
             raise DbException(404, "Project not found.")
@@ -86,6 +103,12 @@ class Project(db.Model):
 
     @classmethod
     def activate_project_by_id(cls, id, raiseFlag = True):
+    """
+        Activates project found by ID.
+        :param cls: Project
+        :param id:
+        :param raiseFlag: If True and Project not found raises DbException
+    """
         project = cls.get_project_by_id(id, raiseFlag)
         if (project == None):
             return False
@@ -96,6 +119,12 @@ class Project(db.Model):
 
     @classmethod
     def deactivate_project_by_id(cls, id, raiseFlag = True):
+    """
+        Deactivates project found by ID.
+        :param cls: Project
+        :param id:
+        :param raiseFlag: If True and Project not found raises DbException
+    """
         project = cls.get_project_by_id(id, raiseFlag)
         if (project == None):
             return False
