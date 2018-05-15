@@ -1,4 +1,7 @@
 class AppSettings:
+    """
+    Global settings for evodoc
+    """
     DEBUG = False
     DEVELOPMENT = False
     TEST = False

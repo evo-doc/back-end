@@ -11,7 +11,9 @@ Welcome to Evodoc's documentation!
    :caption: Contents:
 
    evodoc
-   api
+   evodoc.api
+   evodoc.entity
+   evodoc.seed
 
 
 
