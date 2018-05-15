@@ -7,10 +7,6 @@ from sqlalchemy.orm import sessionmaker
 import bcrypt
 
 def create_app(additional_config = {}):
-    """
-    Application factory, creating whole app context
-        :param additional_config = {}: Additional config, altering configuration from file and local configuration
-    """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object('evodoc.appsettings.AppSettings')
     if os.path.isfile(os.path.dirname(__file__) + '/../conf/appsettings.local.ini'):

@@ -51,9 +51,6 @@ def registration_action():
 
 @miscapi.route('/stats', methods=['GET'])
 def stats():
-    """
-    Return status with count of users, modules, projects and packages
-    """
     token = request.args.get('token')
     validate_token(token)
     user_count = User.query.count()

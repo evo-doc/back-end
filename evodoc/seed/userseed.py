@@ -2,13 +2,10 @@
 from evodoc.entity import User, UserType, UserToken, db
 
 def initUserSeeds():
-    """
-    Run all user seeds
-    """
-    __baseUserType()
-    __userInsert()
+    baseUserType()
+    userInsert()
 
-def __userInsert():
+def userInsert():
     userList = []
     userAdmin = User("Admin", "admin@nimda.exp", "SuperSecret", None, None, True)
     userAdmin.user_type_id = UserType.get_type_by_name('ADMIN').id
@@ -28,7 +25,7 @@ def __userInsert():
         print("Inserting: ")
         print(seedUser.name)
 
-def __baseUserType():
+def baseUserType():
     user_types = []
     user_types.append(UserType("ADMIN", 2))
     user_types.append(UserType("GUEST", 0))
