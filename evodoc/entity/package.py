@@ -8,7 +8,7 @@ from git import Git
 git_path = ''
 
 class Package(db.Model):
-    __tablename__ = "package"
+    _tablename__ = "package"
     id = Column(Integer, primary_key=True)
     name = Column(String(64))
     url = Column(String(255))
@@ -25,6 +25,12 @@ class Package(db.Model):
 
     @classmethod
     def get_package_by_id(cls, packageId, raiseFlag=True):
+        """
+        Return package by its id, if raise flag is True, excetion is raised when not found
+            :param cls:
+            :param packageId:
+            :param raiseFlag=True: raise flag, if its True
+        """
         package = Package.query.filter_by(id=packageId).first()
         if (package is None) and raiseFlag:
             raise DbException(404, "Package with id: %r not found"%(packageId))
@@ -32,17 +38,30 @@ class Package(db.Model):
 
     @classmethod
     def get_all_packages(cls):
+        """
+        Return all packages in database
+            :param cls:
+        """
         packages = Package.query.all()
         return packages
 
     @classmethod
     def delete_package(cls):
+        """
+        Sets package as deactivated
+            :param cls:
+        """
         cls.active = False
         cls.update = datetime.datetime.utcnow()
         db.session.commit()
 
     @classmethod
     def save_or_create(cls, data):
+        """
+        Save or create new package
+            :param cls:
+            :param data:
+        """
         package = None
         if 'package_id' in data or not data['package_id']:
             package = Package()
@@ -65,10 +84,18 @@ class Package(db.Model):
 
     @classmethod
     def clone_repository(cls):
+        """
+        Clone repository from git
+            :param cls:
+        """
         Git(git_path).clone(cls.url + '.git')
         return True
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'name': self.name,

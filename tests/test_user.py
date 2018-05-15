@@ -524,7 +524,11 @@ class TestUserToken():
         session.query(UserToken).delete()
         session.commit()
         self.tokenList[:] = []
-        assert len(UserToken.get_token_all_by_user_id(self.userList[0].id)) == 0
+        assert len(UserToken.get_token_all_by_user_id(self.userList[0].id, False)) == 0
 
+        #Test something that really shouldn't be there
+        with pytest.raises(DbException) as err:
+            UserToken.get_token_all_by_user_id(0)
+        assert str(err.value) == "(404, 'No userToken found.')"
 
 

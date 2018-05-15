@@ -34,6 +34,12 @@ class User(db.Model):
 
     @classmethod
     def get_user_by_id(cls, userId, raiseFlag = True):
+        """
+            Returns User found by id.
+            :param cls: User
+            :param userId: id
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = User.query.filter_by(id=userId).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
@@ -41,6 +47,12 @@ class User(db.Model):
 
     @classmethod
     def get_user_by_name(cls, userName, raiseFlag = True):
+        """
+            Returns User found by email.
+            :param cls: User
+            :param userName: name (String)
+            :param raiseFlag: If true and no User is found raises DbException.
+        """ 
         user = User.query.filter_by(name=userName).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
@@ -48,6 +60,12 @@ class User(db.Model):
 
     @classmethod
     def get_user_by_email(cls, userEmail, raiseFlag = True):
+        """
+            Returns User found by email.
+            :param cls: User
+            :param userEmail: email (String)
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = User.query.filter_by(email=userEmail).first()
         if (user == None) & raiseFlag:
             raise DbException(404, "User not found.")
@@ -55,6 +73,12 @@ class User(db.Model):
 
     @classmethod
     def get_user_by_username_or_email(cls, username, raiseFlag = True):
+        """
+            Returns User found by username or email.
+            :param cls: User
+            :param username: username or email (String)
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = cls.query.filter((User.email == username) | (User.name == username)).first()
         if (user == None)  & raiseFlag:
             raise DbException(404, "User not found.")
@@ -62,6 +86,11 @@ class User(db.Model):
 
     @classmethod
     def get_user_all(cls, raiseFlag = True):
+        """
+            Returns all users.
+            :param cls: User
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = cls.query.all()
         if (user == None or user == []) and raiseFlag:
             raise DbException(404, "No user found.")
@@ -69,6 +98,12 @@ class User(db.Model):
 
     @classmethod
     def get_user_all_by_user_type_id(cls, userType, raiseFlag = True):
+        """
+            Returns all users with one user type.
+            :param cls: User
+            :param userType: UserType ID
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = User.query.filter_by(user_type_id=userType).all()
         if (user == None or user == []) & raiseFlag:
             raise DbException(404, "No user found.")
@@ -86,6 +121,13 @@ class User(db.Model):
 
     @classmethod
     def update_activation_by_id(cls, id, activated, raiseFlag = True):
+        """
+            Sets activation flag for user found by id. (used to activate user after email verfication)
+            :param cls: User
+            :param id: User ID
+            :param activated: Activation flag (Bool)
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
@@ -126,6 +168,12 @@ class User(db.Model):
 
     @classmethod
     def activate_user_by_id(cls, id, raiseFlag = True):
+        """
+            Activates user. (changes active flag - used to delete or deactivate user)
+            :param cls: User
+            :param id: User ID
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
@@ -136,6 +184,12 @@ class User(db.Model):
 
     @classmethod
     def deactivate_user_by_id(cls, id, raiseFlag = True):
+        """
+            Deactivates user. (changes active flag - used to delete or deactivate user)
+            :param cls: User
+            :param id: User ID
+            :param raiseFlag: If true and no User is found raises DbException.
+        """
         user = User.get_user_by_id(id, raiseFlag)
         if (user == None):
             return False
@@ -145,13 +199,17 @@ class User(db.Model):
         return True
 
     def save_entity(self):
+        """
+            Saves entity. Function is unguarded and its expected that all data being inserted are correct.
+            :param self: Instance of User class
+        """
         db.session.add(self)
         db.session.commit()
 
     @classmethod
     def check_unique(cls, username, email, raiseFlag = False):
         """
-        Check if username and email are not presented in database (check unique)
+            Check if username and email are not presented in database (check unique)
             :param self:
             :param username:
             :param email:
@@ -175,6 +233,11 @@ class User(db.Model):
             return True
 
     def confirm_password(self, password_plain):
+        """
+            Confirms password. Returns True if passwords match and False otherwise.
+            :param self: UserType
+            :param password_plain: Plain text password
+        """
         if (bcrypt.checkpw(password_plain.encode("utf-8"), self.password.encode("utf-8"))):
             return True
         else:
@@ -224,6 +287,13 @@ class User(db.Model):
 
     @classmethod
     def update_user_by_id_from_array(cls, id, dataArray):
+        """
+            Updates User found by users ID.
+            :param cls: User
+            :param id: User ID
+            :param dataArray: Array of data containing variable amout of informations. Contained informations are then updated and informatons not included are left untouched.
+            :param raiseFlag: If true and no User or UserType is found raises DbException.
+        """
         changed = 0
         userEntity = cls.get_user_by_id(id)
         # Name change
@@ -271,6 +341,12 @@ class User(db.Model):
 
     @classmethod
     def get_user_type_from_user_id(cls, id, raiseFlag = True):
+        """
+            Returns UserType found by users ID.
+            :param cls: User
+            :param id: User ID
+            :param raiseFlag: If true and no User or UserType is found raises DbException.
+        """ 
         usr = cls.get_user_by_id(id, raiseFlag)
         if (usr == None): return None
         return UserType.get_type_by_id(usr.user_type_id, raiseFlag)
@@ -292,6 +368,12 @@ class UserType(db.Model):
 
     @classmethod
     def get_type_by_id(cls, typeId, raiseFlag = True):
+        """
+            Returns UserType found by its ID.
+            :param cls: UserType
+            :param typeId: UserType ID
+            :param raiseFlag: If true and no UserType is found raises DbException.
+        """ 
         userType = cls.query.filter_by(id=typeId).first()
         if (userType == None) & raiseFlag:
             raise DbException(404, "UserType not found.")
@@ -305,6 +387,12 @@ class UserType(db.Model):
 
     @classmethod
     def get_type_by_name(cls, typeName, raiseFlag = True):
+        """
+            Returns UserType found by its name.
+            :param cls: UserType
+            :param typeName: UserType name
+            :param raiseFlag: If true and no UserType is found raises DbException.
+        """ 
         userType = cls.query.filter_by(name=typeName).first()
         if (userType == None) & raiseFlag:
             raise DbException(404, "UserType not found.")
@@ -312,13 +400,25 @@ class UserType(db.Model):
 
     @classmethod
     def get_type_all(cls, raiseFlag = True):
+        """
+            Returns list of all types.
+            :param cls: UserType
+            :param raiseFlag: If true and no UserType is found raises DbException.
+        """ 
         userType = cls.query.all()
-        if (userType == None) & raiseFlag:
+        if (userType == None or userType == []) & raiseFlag:
             raise DbException(404, "No userType found.")
         return userType
 
     @classmethod
     def update_type_name_by_id(cls, id, name, raiseFlag = True):
+        """
+            Updates name of UserType found by its ID.
+            :param cls: UserType
+            :param id: UserType ID
+            :param name: String has to be unique
+            :param raiseFlag: If true and no UserType is found raises DbException.
+        """ 
         userType = cls.get_type_by_id(id, raiseFlag)
         if (userType == None):
             return False
@@ -328,6 +428,13 @@ class UserType(db.Model):
 
     @classmethod
     def update_type_permisson_by_id(cls, id, permission, raiseFlag = True):
+        """
+            Updates permission of UserType found by its ID.
+            :param cls: UserType
+            :param id: UserType ID
+            :param permission: Flag you want to set (int)
+            :param raiseFlag: If true and no UserType is found raises DbException.
+        """ 
         userType = cls.get_type_by_id(id, raiseFlag)
         if (userType == None):
             return False
@@ -362,6 +469,12 @@ class UserToken(db.Model):
 
     @classmethod
     def get_token_by_id(cls, tokenId, raiseFlag = True):
+        """
+            Returns token by its id.
+            :param cls: UserToken
+            :param tokenId: UserToken ID
+            :param raiseFlag: If true and no token is found raises DbException.
+        """
         userToken = cls.query.filter_by(id=tokenId).first()
         if (userToken == None) & raiseFlag:
             raise DbException(404, "UserToken not found.")
@@ -376,6 +489,11 @@ class UserToken(db.Model):
 
     @classmethod
     def get_token_all(cls, raiseFlag = True):
+        """
+            Returns all tokens.
+            :param cls: UserToken
+            :param raiseFlag:If true and no tokens are found raises DbException.
+        """
         userToken = cls.query.all()
         if (userToken == None) & raiseFlag:
             raise DbException(404, "No userToken found.")
@@ -383,8 +501,14 @@ class UserToken(db.Model):
 
     @classmethod
     def get_token_all_by_user_id(cls, userId, raiseFlag = True):
+        """
+            Returns all tokens from one user.
+            :param cls: UserToken
+            :param userId: User ID
+            :param raiseFlag: If true and no tokens are found raises DbException.
+        """
         userToken = cls.query.filter_by(user_id=userId).all()
-        if (userToken == None) & raiseFlag:
+        if (userToken == None or userToken == []) & raiseFlag:
             raise DbException(404, "No userToken found.")
         return userToken
 
