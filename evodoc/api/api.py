@@ -15,9 +15,6 @@ def response_ok(data):
 def response_ok_list(data):
     return jsonify(serialize_list(data))
 
-def response_err(data):
-    return jsonify(data.message), data.errorCode
-
 def validate_token(token):
     """
     Validate token and return its instance
