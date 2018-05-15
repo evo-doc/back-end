@@ -106,6 +106,15 @@ class Project(db.Model):
 
     @classmethod
     def create_project(cls, name=None, created=None, update=None, active=True, raiseFlag = True):
+    """
+        Creates project with given parameters.
+        :param cls: Project
+        :param name: Name of project (unique)
+        :param created: Timestamp of creation
+        :param update: Timestamp of last update
+        :param active: Used to deactivate/delete project (Bool)
+        :param raiseFlag: If True and name is already taken raises DbException
+    """
         p = None
         if (cls.get_project_by_name(name,False) != None):
             if(raiseFlag):
@@ -123,6 +132,16 @@ class Project(db.Model):
     @classmethod
     def update_project_by_id(cls, id, name=None, created=None, update=None,
                                  active=None, raiseFlag = True):
+    """
+        Updates project with given parameters.
+        :param cls: Project
+        :param id: ID of project you want to update
+        :param name: Name of project (unique)
+        :param created: Timestamp of creation
+        :param update: Timestamp of last update (if not set will be now)
+        :param active: Used to deactivate/delete project (Bool)
+        :param raiseFlag: If True and name is already taken raises DbException
+    """
         p = cls.get_project_by_id(id,raiseFlag)
         if p==None:
             return p
@@ -153,9 +172,16 @@ class Project(db.Model):
     @classmethod
     def create_or_update_project_by_id(cls, id, name=None, created=None, update=None,
                                        active=None, raiseFlag = True):
-        """
-        Tries to find project if it fails creates new one.
-        """
+    """
+        Creates or updates project with given parameters.
+        :param cls: Project
+        :param id: ID of project you want to update (if None creates project)
+        :param name: Name of project (unique)
+        :param created: Timestamp of creation
+        :param update: Timestamp of last update
+        :param active: Used to deactivate/delete project (Bool)
+        :param raiseFlag: If True and name is already taken raises DbException
+    """
         p = None
         if (id is not None):
             p = cls.get_project_by_id(id,False)
@@ -167,6 +193,13 @@ class Project(db.Model):
 
     @classmethod
     def create_or_update_project_by_id_array(cls, project_id, array, raiseFlag = True):
+    """
+        Creates or updates project with given parameters.
+        :param cls: Project
+        :param project_id: ID of project you want to update (if None creates project)
+        :param array: Updates parameters proide by array leaves the rest untouched
+        :param raiseFlag: If True and name is already taken raises DbException
+    """
         #######################################################################
         if (('name' not in array) or (array['name'] == None)):
             name = None
@@ -190,3 +223,4 @@ class Project(db.Model):
         #######################################################################
         p = cls.create_or_update_project_by_id(project_id, name, created, update, active, raiseFlag)
         return p
+
