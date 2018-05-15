@@ -42,20 +42,3 @@ def create_app(additional_config = {}):
         initUserSeeds()
 
     return app
-
-if __name__ == '__main__':
-    app = create_app()
-
-    if not os.path.exists(os.path.dirname(__file__) + '/' + app.config['GIT_PATH']):
-        os.makedirs(os.path.dirname(__file__) + '/' + app.config['GIT_PATH'])
-
-    git_path = os.path.dirname(__file__) + '/' + app.config['GIT_PATH']
-
-    from evodoc.entity import db
-
-
-    from evodoc.seed.userseed import initUserSeeds
-    from evodoc.api import *
-
-    initUserSeeds()
-    app.run(port=5000)
