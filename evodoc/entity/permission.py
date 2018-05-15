@@ -39,6 +39,12 @@ class ModulePerm (db.Model):
 
     @classmethod
     def get_module_perm_by_id(cls, permId, raiseFlag = True):
+        """
+            Returns module found by ID.
+            :param cls: ModulePerm
+            :param permId: ID of ModulePerm class
+            :param raiseFlag: If True and permission not found raises DbException
+        """
         perm = cls.query.filter_by(id=permId).first()
         if (perm == None) & raiseFlag:
             raise DbException(404, "Permission not found.")
@@ -60,7 +66,13 @@ class ModulePerm (db.Model):
 
     @classmethod
     def get_module_perm_by_user_and_module_id(cls, user_id, module_id, raiseFlag = True):
-        """Get permission for combination of module and user"""
+        """
+            Returns module permission found by user_id and module_id.
+            :param cls: ModulePerm
+            :param user_id: ID of User
+            :param module_id: ID of Module
+            :param raiseFlag: If True and permission not found raises DbException
+        """
         perm = cls.query.filter_by(module_id=module_id).filter_by(user_id=user_id).first()
         if (perm == None) & raiseFlag:
             raise DbException(404, "Permission not found.")
@@ -68,7 +80,13 @@ class ModulePerm (db.Model):
 
     @classmethod
     def get_module_perm_all(cls, raiseFlag = True):
-        """Get all permissions for all modules and all users"""
+        """
+            Returns all permissions for all modules.
+            :param cls: ModulePerm
+            :param user_id: ID of User
+            :param module_id: ID of Module
+            :param raiseFlag: If True and permission not found raises DbException
+        """
         perm = cls.query.all()
         if (perm == None or perm == []) & raiseFlag:
             raise DbException(404, "Permission not found.")
@@ -76,7 +94,12 @@ class ModulePerm (db.Model):
 
     @classmethod
     def get_module_perm_all_by_user_id(cls, permId, raiseFlag = True):
-        """Get all permissions for one user"""
+        """
+            Returns all permissions for one user.
+            :param cls: ModulePerm
+            :param permId: ID of User
+            :param raiseFlag: If True and permission not found raises DbException
+        """
         perm = cls.query.filter_by(user_id=permId).all()
         if (perm == None or perm == []) & raiseFlag:
             raise DbException(404, "Permission not found.")
@@ -84,7 +107,12 @@ class ModulePerm (db.Model):
 
     @classmethod
     def get_module_perm_all_by_module_id(cls, permId, raiseFlag = True):
-        """Get all permissions for one module"""
+        """
+            Returns all permissions for one module.
+            :param cls: ModulePerm
+            :param permId: ID of Module
+            :param raiseFlag: If True and permission not found raises DbException
+        """
         perm = cls.query.filter_by(module_id=permId).all()
         if (perm == None or perm == []) & raiseFlag:
             raise DbException(404, "Permission not found.")
@@ -92,7 +120,13 @@ class ModulePerm (db.Model):
 
     @classmethod
     def update_module_perm_by_id(cls, id, perm, raiseFlag = True):
-        """Updates permission of one ModulePermission by ModulePermission id"""
+        """
+            Updates permissions by ModulePerm ID.
+            :param cls: ModulePerm
+            :param id: ModulePerm ID
+            :param perm: permission flag
+            :param raiseFlag: If True and permission not found raises DbException
+        """
         tmp = cls.get_module_perm_by_id(id,raiseFlag)
         if (tmp == None):
             return False
@@ -102,7 +136,12 @@ class ModulePerm (db.Model):
 
     @classmethod
     def update_module_perm_by_user_and_module_id(cls,user_id,module_id,perm,raiseFlag=True):
-        """Updates permission from combination of user and module id"""
+        """
+            Updates permission from combination of user and module id.
+            :param cls: ModulePerm
+            :param permId: ID of User
+            :param raiseFlag: If True and permission not found raises DbException
+        """
         tmp = cls.get_module_perm_by_user_and_module_id(user_id,module_id,raiseFlag)
         if (tmp == None):
             return False
@@ -129,18 +168,34 @@ class ModulePerm (db.Model):
 #        return True
 
     def check_perm_read_raw(self):
+        """
+            Returns True if read permission was assigned, otherwise False.
+            :param self: Instance of ModulePerm class
+        """
         if ((self.permissions & 1) is 1): return True
         return False
 
     def check_perm_write_raw(self):
+        """
+            Returns True if write permission was assigned, otherwise False.
+            :param self: Instance of ModulePerm class
+        """
         if ((self.permissions & 2) is 2): return True
         return False
 
     def check_perm_share_raw(self):
+        """
+            Returns True if share permission was assigned, otherwise False.
+            :param self: Instance of ModulePerm class
+        """
         if ((self.permissions & 4) is 4): return True
         return False
 
     def check_perm_own_raw(self):
+        """
+            Returns True if own permission was assigned, otherwise False.
+            :param self: Instance of ModulePerm class
+        """
         if ((self.permissions & 8) is 8): return True
         return False
 
