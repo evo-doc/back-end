@@ -42,6 +42,12 @@ class Module(db.Model):
 
     @classmethod
     def get_module_by_id(cls, moduleId, raiseFlag=True):
+    """
+        Returns module found by ID.
+        :param cls: Module
+        :param moduleId:
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         result = cls.query.filter_by(id=moduleId).first()
         if (result == None) & raiseFlag:
             raise DbException(404, "Module not found.")
@@ -49,6 +55,12 @@ class Module(db.Model):
 
     @classmethod
     def get_module_by_name(cls, moduleName, raiseFlag = True):
+    """
+        Returns module found by name.
+        :param cls: Module
+        :param moduleName:
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         result = cls.query.filter_by(name=moduleName).first()
         if (result == None) & raiseFlag:
             raise DbException(404, "Module not found.")
@@ -56,15 +68,26 @@ class Module(db.Model):
 
     @classmethod
     def get_module_all(cls, raiseFlag = True):
+    """
+        Returns all modules.
+        :param cls: Module
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         result = cls.query.all()
-        if (result == None) & raiseFlag:
+        if (result == None or result == []) & raiseFlag:
             raise DbException(404, "Module not found.")
         return result
 
     @classmethod
     def get_module_all_by_project_id(cls, projectId, raiseFlag = True):
+    """
+        Returns all modules in one project.
+        :param cls: Module
+        :param projectId:
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         result = cls.query.filter_by(project_id=projectId).all()
-        if (result == None) & raiseFlag:
+        if (result == None or result == []) & raiseFlag:
             raise DbException(404, "Module not found.")
         return result
 
@@ -104,6 +127,12 @@ class Module(db.Model):
 
     @classmethod
     def activate_module_by_id(cls, id, raiseFlag = True):
+    """
+        Activate module found by ID.
+        :param cls: Module
+        :param moduleId:
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         module = cls.get_module_by_id(id, raiseFlag)
         if (module == None):
             return False
@@ -114,6 +143,12 @@ class Module(db.Model):
 
     @classmethod
     def deactivate_module_by_id(cls, id, raiseFlag = True):
+    """
+        Deactivates module found by ID.
+        :param cls: Module
+        :param moduleId:
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         module = cls.get_module_by_id(id, raiseFlag)
         if (module == None):
             return False
@@ -123,10 +158,19 @@ class Module(db.Model):
         return True
 
     def save_entity(self):
+    """
+        Saves entity. Function is unguarded and its expected that all data being inserted are correct.
+        :param self: Instance of Module class
+    """ 
         db.session.add(self)
         db.session.commit()
 
     def get_data(self, raiseFlag = True):
+    """
+        Returns data from module.
+        :param self: Instance of Module class
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         try:
             with open(os.path.dirname(__file__) + '/../../data/module/' + 
                       str(self.project_id) + '/' + str(self.id) + '.md', 'r') as f:
@@ -139,6 +183,13 @@ class Module(db.Model):
 
     @classmethod
     def create_or_update_module_by_id_from_array(cls,id,array, raiseFlag = True):
+    """
+        Deactivates module found by ID.
+        :param cls: Module
+        :param id: Integer or None
+        :param array: Data to update in array (updates what is included, rest is left untouched)
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         if (('project_id' not in array) or (array['project_id'] == None)):
             project_id = None
         else:
@@ -174,6 +225,18 @@ class Module(db.Model):
 
     @classmethod
     def create_or_update_module_by_id(cls, id, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
+    """
+        Creates or updates module by ID.
+        :param cls: Module
+        :param id: Integer or None
+        :param project_id: Id of project which module is part of
+        :param name: Name of moduleId
+        :param created: Timestamp of creation
+        :param update: Timestamp of last update
+        :param active: Used for deleting/deactivating module (Bool, True by default)
+        :param data: Modue data (text.md)
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         module = None
         if(id is not None):
             module = cls.get_module_by_id(id, False)
@@ -226,6 +289,17 @@ class Module(db.Model):
 
     @classmethod
     def create_module(cls, project_id=None, name=None, created=None, update=None, active=True, data=None, raiseFlag = True):
+    """
+        Creates module.
+        :param cls: Module
+        :param project_id: Id of project which module is part of
+        :param name: Name of moduleId
+        :param created: Timestamp of creation
+        :param update: Timestamp of last update
+        :param active: Used for deleting/deactivating module (Bool, True by default)
+        :param data: Modue data (text.md)
+        :param raiseFlag: If True and Module not found raises DbException
+    """
         if (None != cls.get_module_by_name(name,False)):
             if raiseFlag:
                 raise DbException(400, "Name is already taken.")
@@ -244,7 +318,12 @@ class Module(db.Model):
         return entity
 
     @staticmethod
-    def find_str(text, loking_for):
+    def find_str(text, looking_for):
+    """
+        Tries to find string within text if it succeeds returns index.
+        :param text: Text being searched through
+        :param looking_for: Text you are trying to find
+    """
         i = 0
 
         if loking_for in text:
@@ -259,6 +338,12 @@ class Module(db.Model):
         return -1
 
     def build_module(self, passed_files = [], raiseFlag = True):
+    """
+        Builds module.
+        :param self: Instance of Module class
+        :param passed_files: Modules already used
+        :param raiseFlag: If raiseFlag and modules are in cycle raises DbException
+    """
         module_id = self.id
         
         if module_id in passed_files:
