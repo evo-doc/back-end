@@ -5,38 +5,28 @@ from evodoc.api import response_ok, response_ok_list, response_ok_obj, validate_
 
 project = Blueprint('project', __name__, url_prefix='/project')
 
-@project.route('/<int:id>', methods=['GET'])
-def get_project_by_id_action(id):
+@project.route('',methods=['GET'])
+def get_project_by_id_action():
     """
     Get project data by it's id
-        :param id:
     """
-    data = request.get_json()
-    if data == None or data == {}:
-        raise ApiException(404, "No data suplied")
-    if ('token' not in data) or (data['token'] == None):
-        raise ApiException(403, "Invalid token")
-    token = data['token']
+    token = request.args.get('token')
+    id = request.args.get('id')
     validate_token(token)
     #check permissions in the future
-    data = Project.get_project_by_id(Project, id)
+    data = Project.get_project_by_id(id)
     return response_ok_obj(data)
 
-@project.route('/name/<name>', methods=['GET'])
+@project.route('/name', methods=['GET'])
 def get_project_by_name_action(name):
     """
     Get project data by it's name
-        :param name: Project name
     """
-    data = request.get_json()
-    if data == None or data == {}:
-        raise ApiException(404, "No data suplied")
-    if ('token' not in data) or (data['token'] == None):
-        raise ApiException(403, "Invalid token")
-    token = data['token']
+    token = request.args.get('token')
+    name = request.args.get('name')
     validate_token(token)
     #check permissions in the future
-    data = Project.get_project_by_name(Project, name)
+    data = Project.get_project_by_name(name)
     if (data == None):
         return response_err(ApiException(400, "Name already in use."))
     return response_ok_obj(data)
@@ -46,12 +36,7 @@ def get_project_all_action():
     """
     Get data for all projects
     """
-    data = request.get_json()
-    if data == None or data == {}:
-        raise ApiException(404, "No data suplied")
-    if ('token' not in data) or (data['token'] == None):
-        raise ApiException(403, "Invalid token")
-    token = data['token']
+    token = request.args.get('token')
     validate_token(token)
     #check permissions in the future
     data = Project.get_project_all()

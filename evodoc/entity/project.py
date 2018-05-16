@@ -25,6 +25,10 @@ class Project(db.Model):
         return "<Project %r>" % (self.name)
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'name': self.name,
@@ -149,6 +153,8 @@ class Project(db.Model):
             if(raiseFlag):
                 raise DbException(400, "Name is already taken.")
             return p
+        if active == None: active=True
+        
         p = Project(name, created, update, active)
         db.session.add(p)
         db.session.commit()

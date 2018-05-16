@@ -329,6 +329,10 @@ class User(db.Model):
         return userEntity
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'user_type_id': self.user_type_id,
@@ -443,6 +447,10 @@ class UserType(db.Model):
         return True
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'name': self.name,
@@ -533,6 +541,10 @@ class UserToken(db.Model):
 #        return True
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'user_id': self.user_id,

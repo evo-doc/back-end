@@ -27,6 +27,10 @@ class Module(db.Model):
         self.active = active
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'project_id': self.project_id,

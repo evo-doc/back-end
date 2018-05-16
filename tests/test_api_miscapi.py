@@ -1,8 +1,7 @@
 import pytest, uuid, json
 from flask import url_for
 from datetime import datetime, timedelta
-from evodoc import DbException, ApiException, authenticate
-from evodoc.api import validate_token, validate_data
+from evodoc import DbException, ApiException
 from evodoc.entity import User, UserType, UserToken
 
 @pytest.mark.usefixture("session")
