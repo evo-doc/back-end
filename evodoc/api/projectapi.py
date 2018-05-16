@@ -5,18 +5,20 @@ from evodoc.api import response_ok, response_ok_list, response_ok_obj, validate_
 
 project = Blueprint('project', __name__, url_prefix='/project')
 
-@project.route('/<int:id>', methods=['GET'])
-def get_project_by_id_action(id):
+@project.route('',methods=['GET'])
+def get_project_by_id_action():
     """
     Get project data by it's id
-        :param id:
     """
     data = request.get_json()
     if data == None or data == {}:
         raise ApiException(404, "No data suplied")
     if ('token' not in data) or (data['token'] == None):
         raise ApiException(403, "Invalid token")
+    if ('id' not in data) or (data['id'] == None):
+        raise ApiException(400, "Invalid user id")
     token = data['token']
+    id = data['id']
     validate_token(token)
     #check permissions in the future
     data = Project.get_project_by_id(Project, id)
