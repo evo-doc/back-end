@@ -5,33 +5,28 @@ from evodoc.api import response_ok, response_ok_list, response_ok_obj, validate_
 
 module = Blueprint('module', __name__, url_prefix='/module')
 
-@module.route('/<int:id>', methods=['GET'])
-def get_module_by_id_action(id):
+@module.route('', methods=['GET'])
+def get_module_by_id_action():
     """
     Get module data by it's id
-        :param id:
     """
-    data = request.get_json()
-    if data == None or data == {}:
-        raise ApiException(404, "No data suplied")
-    if ('token' not in data) or (data['token'] == None):
-        raise ApiException(403, "Invalid token")
-    token = data['token']
+    token = request.args.get('token')
+    id = request.args.get('id')
     validate_token(token)
     #check permissions in the future
-    data = Module.get_module_by_id(Module, id)
+    data = Module.get_module_by_id(id)
     return response_ok_obj(data)
 
-@module.route('/name/<name>', methods=['GET'])
+@module.route('/name', methods=['GET'])
 def get_module_by_name_action(name):
     """
     Get module data by it's name
-        :param name: Module name
     """
     token = request.args.get('token')
+    name = request.args.get('name')
     validate_token(token)
     #check permissions in the future
-    data = Module.get_module_by_name(Module, name)
+    data = Module.get_module_by_name(name)
     return response_ok_obj(data)
 
 @module.route('/all', methods=['GET'])
@@ -50,21 +45,17 @@ def get_module_all_action():
     resp = Module.get_module_all()
     return response_ok_list(resp)
 
-@module.route('/project_id/<int:id>', methods=['GET'])
+@module.route('/project_id', methods=['GET'])
 def get_module_all_by_project_id_action(id):
     """
     Get data for all modules in project
         :param id: Project ID
     """
-    data = request.get_json()
-    if data == None or data == {}:
-        raise ApiException(404, "No data suplied")
-    if ('token' not in data) or (data['token'] == None):
-        raise ApiException(403, "Invalid token")
-    token = data['token']
+    token = request.args.get('token')
+    id = request.args.get('id')
     validate_token(token)
     #check permissions in the future
-    data = Module.get_module_all_by_project_id(Module, id)
+    data = Module.get_module_all_by_project_id(id)
     return response_ok_obj(data)
 
 @module.route("/update_or_create", methods=['POST'])
