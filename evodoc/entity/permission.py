@@ -30,6 +30,10 @@ class ModulePerm (db.Model):
         return "<ModulePermission %r>" % (self.id)
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'user_id': self.user_id,
@@ -453,6 +457,10 @@ class ProjectPerm (db.Model):
         return "<ProjectPermission %r>" % (self.id)
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'user_id': self.user_id,

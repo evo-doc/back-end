@@ -25,6 +25,10 @@ class Project(db.Model):
         return "<Project %r>" % (self.name)
 
     def serialize(self):
+        """
+        Serialize object for json
+            :param self:
+        """
         return {
             'id': self.id,
             'name': self.name,
