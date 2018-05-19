@@ -46,7 +46,6 @@ def validate_token(token):
         if token.user.activated == False:
             raise ApiException(200, {"data": "User not activated", "token": authenticate(None, True, token.user_id).token})
         else:
-            print("Wierd")
             raise ApiException(403, "Invalid token.")
     return userToken.token
 

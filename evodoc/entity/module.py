@@ -330,11 +330,11 @@ class Module(db.Model):
         """
         i = 0
 
-        if loking_for in text:
-            c = loking_for[0]
+        if looking_for in text:
+            c = looking_for[0]
             for ch in text:
                 if ch == c:
-                    if text[i:i+len(loking_for)] == loking_for:
+                    if text[i:i+len(looking_for)] == looking_for:
                         return i
 
                 i += 1
